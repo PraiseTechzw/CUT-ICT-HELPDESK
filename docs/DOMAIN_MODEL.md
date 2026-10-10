@@ -1,43 +1,36 @@
-# Proposed Domain Model
+# Implemented and Deferred Domain Model
 
-**Status:** Conceptual model only; no migrations or tables have been created. Names and constraints must be validated with CUT ICT before implementation.
+**Status:** Phase 1 schema is implemented in Laravel migrations and tested with SQLite. Role names, grants, institutional account policy, location ownership, and production database behavior still require CUT ICT review.
 
-## Proposed entities and relationships
+## Implemented entities
 
-- **User**: requester or staff identity. User may have multiple **RoleAssignments**; assignment may be scoped to a campus, zone, or team if confirmed. Authentication source is undecided.
-- **Role / Permission**: authorization catalogue. Prefer a Laravel-compatible authorization approach; do not assume a package before assessing project needs.
-- **Campus** 1—many **OperationalZones**; each zone belongs to a campus. Multiple campuses are supported even if initial deployment is one campus.
-- **ServiceLocation** (building/room/other approved place): belongs to a campus and may have a nullable zone reference. Keep unknown/unassigned locations representable; do not force a fabricated zone.
-- **TechnicalTeam**: may serve many zones, and a zone may be served by multiple specialist teams, through an effective-dated team-zone association if history is operationally important.
-- **TeamMembership**: user/technician and team association with effective dates and optional role-in-team.
-- **TechnicianDeployment**: technician, zone, start date, optional end date, and deployment type/source. Separate this temporary/effective-dated deployment from ordinary team membership or home assignment.
-- **ServiceCategory** and **Priority**: configurable catalogues. Priority behavior and category hierarchy need confirmation.
-- **Ticket**: requester (possibly nullable for a walk-in if a reliable identity is unavailable, subject to policy), created-by staff actor when registered on behalf of someone, category, priority, current status, reported location (possibly unknown), concise subject/description, timestamps, and any approved reference number.
-- **TicketAssignment**: ticket, assigned technician/team/zone as applicable, assigning actor, start/end timestamps, transfer reason, and assignment type. Preserve each assignment event; avoid overwriting history.
-- **TicketStatusHistory**: ticket, old/new status, actor, timestamp, reason; immutable-by-convention after creation.
-- **TicketMessage**: ticket, author, body, created time, visibility (`requester` vs `internal`); enforce visibility at query/serialization/policy boundaries.
-- **WorkLog**: ticket, technician, time/event details, visibility rules, created timestamp; confirm whether duration/time billing is needed before storing it.
-- **ServiceTarget / EscalationRule**: versioned/configurable target and rule definitions only after service policy is confirmed; each applied deadline/escalation should retain the rule/version snapshot needed for audit.
-- **Asset** and **AssetMaintenanceRecord**: optional later-phase inventory and maintenance model, linked to location and/or ticket only where a verified workflow requires it.
-- **NotificationRecord**: intended recipient, event, channel, status/timestamps, minimal payload references; do not store secrets or unnecessary message copies.
-- **AuditEvent**: actor, action, subject reference, timestamp, and safe contextual metadata. Define retention and access controls with ICT governance.
-- **KnowledgeArticle / ArticleFeedback**: author/owner, content, publication state, version history, and requester feedback; scope and moderation policy require confirmation.
+- **User:** Laravel account with name, unique email, password hash, timestamps, and an `is_active` status added through a new migration. No public registration or real user fixture is seeded. User role assignments are global, not campus/zone-scoped.
+- **Role / Permission:** unique role and permission slugs, names/descriptions, and many-to-many `role_user` and `permission_role` pivots with uniqueness constraints and timestamps. Definitions are centrally named and idempotently seeded. Role assignments are handled separately from profile fields.
+- **Campus:** name, globally unique code, optional description, active status, and timestamps.
+- **OperationalZone:** belongs to one campus; code uniqueness is scoped to that campus; optional description, active status, and timestamps.
+- **Building:** belongs to a campus and may reference an operational zone. Codes are unique within campus. A composite foreign key requires any zone to belong to the same campus as the building.
+- **Room:** belongs to a building; room code is unique within that building. Campus context is derived through the building.
+- **AuditEvent:** nullable actor foreign key (`nullOnDelete`), action, optional subject type/id, safe JSON metadata, and indexed creation time. Actor identity can be null on subsequent account deletion; event history remains.
 
-## Key integrity rules to evaluate
+Codes entered through the application are trimmed and uppercased before validation. Names/descriptions and active status are validated server-side. Location references use restrictive deletion; administrative screens offer deactivation instead of physical delete.
 
-1. Foreign keys protect relationships; deletion behavior must preserve history (prefer restrict/soft-delete or archival where appropriate rather than cascading away tickets/audits).
-2. Add indexes for ticket lookup/status/date, current assignments, location/zone filtering, actor/time history, and queue dashboards after query patterns are known.
-3. Use unique constraints for approved stable identifiers (e.g., ticket number, canonical login identifier) only after identifier rules are confirmed.
-4. Use database transactions for ticket changes that also append assignment/status/audit history. Define idempotency for repeated integrations/events if introduced.
-5. Apply effective-date checks to deployments, membership, and team-zone relationships; decide overlap semantics before enforcing them.
-6. Store timestamps consistently (UTC recommended) and render in an agreed local timezone. Confirm timezone/calendar reporting requirements.
-7. Capture historical display/reference values where needed so changes to names/catalogues do not rewrite ticket meaning.
-8. Treat personal data minimization, retention, archival, export, and erasure as governance decisions; do not silently hard-delete regulated history.
+## Not implemented (intentionally deferred)
 
-## Regional deployment model
+No **TechnicalTeam**, **TeamMembership**, **TechnicianDeployment**, user-zone pivot, ticket, assignment/status history, service category, priority, message/work log, SLA/escalation, notification, asset, or knowledge tables exist. The Phase 1 prompt says to build team/deployment tables only if the approved domain model makes them foundational. CUT has not confirmed team membership, temporary deployment, overlap, cross-zone delegation, or ownership rules, so adding them now would encode invented operations. Tickets and their downstream records are explicitly out of scope.
 
-A campus can have configurable zones; locations map to a campus and optionally a zone. Technicians may serve multiple zones and have dated temporary deployments. Specialist teams may support several zones. Ticket assignments and transfers carry their own timestamps and actor/reason so later organizational changes do not alter past responsibility. Unknown, off-campus, or unverified locations need a safe unassigned state pending clarification, not guessed geography.
+## Integrity and transaction rules
+
+1. Foreign keys and unique indexes protect location and role relationships; deleting a parent location with children is restricted.
+2. Role and permission joins reject duplicates. Seeder synchronization makes the proposed catalogue deterministic.
+3. User creation, role synchronization, status changes, and location changes are coordinated transactionally with safe audit events.
+4. Account profile update rules allow only name/email; status and roles have separate validation/permission routes.
+5. There are no ticket history or technician deployment semantics yet; their eventual immutability/effective-date rules need approved requirements.
+6. Tests use synthetic identities/locations and a separate SQLite in-memory database.
+
+## Regional configuration model
+
+The schema supports one or more campuses without hardcoding CUT geography. Each campus may have many operational zones; buildings belong to a campus and may optionally be assigned to a zone in that same campus; each building may have many rooms. No campus, zone, building, or room seed data is fabricated. An unknown location can be represented in a future workflow but is not an implemented ticket-routing state.
 
 ## Decisions still open
 
-Confirm campus and zone hierarchy, identifiers, room/building catalogue ownership, team membership vs deployment semantics, overlapping deployment rules, whether a ticket may target both team and technician, reassignment approvals, requester identity requirements for walk-ins, category/priority taxonomy, SLA calendars and pauses, attachment needs, record retention, audit immutability, and whether asset records belong in this system or another institutional source of truth.
+Confirm approved campus/zone/location identifiers and configuration owners; exact role titles and grants; whether account access should be campus/zone-scoped; team membership vs temporary deployment semantics and overlap rules; student/staff identity source and account recovery; ticket requester/walk-in identity rules; categories, priority, status, assignment and transfer rules; SLA calendar and escalation behavior; retention/legal basis, audit access and immutability; attachment handling; asset source of truth; timezone/reporting rules; and production database/backup choices. Do not treat the proposed schema as an institutional approval.

@@ -1,49 +1,29 @@
 # Project Scope
 
-**Status:** Phase 0 proposal, based on the user-provided brief. Operational details are unverified; see [Requirements and Open Questions](REQUIREMENTS_AND_OPEN_QUESTIONS.md).
+**Status:** Phase 1 foundation is implemented locally from the user-provided briefs. Institutional workflows, role policy, geography, hosting, and visual identity remain unverified; see [Requirements and Open Questions](REQUIREMENTS_AND_OPEN_QUESTIONS.md).
 
-## Problem statement
+## Problem and long-term objective
 
-CUT's ICT helpdesk currently includes a physical walk-in support service. The project intends to complement that service with a digital system that lets authorized personnel register, coordinate, track, resolve, and report on ICT support requests centrally. The existing workflows, volumes, service commitments, and supporting systems have not yet been confirmed.
+The project is intended to complement CUT's physical walk-in ICT helpdesk with a digital service that can eventually register, coordinate, track, resolve, and report on authorized ICT support requests. Existing workflows, volumes, service commitments, regional staffing, and supporting systems have not been confirmed.
 
-## Objectives
+The long-term objective is a secure and maintainable base for requesters and staff across configurable locations, with historical records and authorization that reflect approved institutional practice.
 
-1. Provide a reliable record of support requests from students, employees, and other authorized requesters, including walk-in requests entered by helpdesk staff.
-2. Support configurable campus locations, operational zones, teams, technician deployments, assignments, and escalation without embedding unconfirmed organization details in code.
-3. Give requesters and authorized staff appropriate visibility into status and communication.
-4. Preserve ticket, assignment, and status history as people and organizational configurations change.
-5. Provide a secure, maintainable, testable base for later reporting, knowledge, and asset capabilities.
+## Phase 1 implementation scope
 
-## Stakeholders and user groups
+The current application implements login/logout and active-account enforcement; protected user/account administration; centralized proposed roles and granular permissions; administrator bootstrap without a seeded default user; administrative audit events; campus, operational-zone, building, and room records; server-side hierarchy/uniqueness validation; and feature tests/setup documentation.
 
-- Requesters: students, university employees, and other authorized people.
-- Walk-in helpdesk staff who register requests on a requester's behalf.
-- ICT technicians deployed across operational zones.
-- Zone or regional supervisors.
-- Specialist ICT teams serving one or more zones.
-- Central ICT management.
-- System administrators and authorized auditors.
-- CUT ICT leadership and institutional technology/security stakeholders (specific approvers to be confirmed).
+The UI uses responsive Blade layouts, labeled forms, and reusable field-error presentation. Because approved CUT assets were not available, it uses neutral non-official styling and system fonts. No real staff/student records or institutional location names are supplied as seed data.
 
-## Proposed capabilities (not implemented)
+## Later capabilities (not implemented)
 
-Ticket registration and categorization; requester-visible status and communication; assignment and transfer history; technician work logs and internal notes; configurable locations, zones, teams, and temporary deployments; escalation; resolution and feedback; notifications; reporting and audit; knowledge articles; and equipment/maintenance records. The service catalogue and operational rules require ICT confirmation.
+Ticket intake/categorization, requester and walk-in communications, assignment/transfer history, team membership, effective-dated technician deployments, scoped regional roles, routing/escalation, resolution/feedback, notifications, reporting, knowledge, assets/maintenance, identity-provider and email integrations, and production deployment remain later work. Team/user-zone relationships were intentionally not added because their institutional semantics are not confirmed.
 
-## Scope boundaries for Phase 0
+## Stakeholders and proposed user groups
 
-Included: inspect the repository, capture the source brief, document architecture and proposed domain model, identify risks and unanswered questions, record setup and testing strategy, and plan later implementation. The repository currently has no application code.
+The briefs identify possible requesters (students, employees, other authorized people), walk-in intake staff, technicians across zones, regional supervisors, specialist teams, central ICT management, system administrators, and auditors. These are proposed personas; CUT ICT must confirm actual responsibilities and approvals.
 
-Excluded: implementing the helpdesk, creating the full database schema, inventing real zones or service policies, populating production-like records, implementing SSO or internal integrations, configuring production credentials, deployment, and production infrastructure changes.
+## Scope boundaries and assumptions
 
-## Assumptions and exclusions
+The implementation is a Laravel modular monolith with Blade and relational storage. SQLite was used locally; MySQL/MariaDB and institutional hosting have not been verified. Role labels/grants, global rather than regional role assignments, and the password/account lifecycle are implementation proposals, not institutional policy. No SSO, LDAP, Active Directory, mail, or other internal integration is configured.
 
-- Laravel/PHP and SQL are the preferred direction, not proof of a currently provisioned runtime.
-- A modular monolith is the provisional architecture.
-- MySQL/MariaDB is preferred unless institutional constraints establish another SQL database.
-- Blade with reusable components should be evaluated before a separate frontend.
-- CUT-approved logo, palette, slogan, accessibility, hosting, privacy, retention, backup, and security standards must be obtained rather than guessed.
-- This phase does not define service-level targets, escalation contacts, identity provider, operational boundaries, or legally mandated data retention.
-
-## Branding and interface constraints
-
-The initial repository inspection found no approved CUT identity assets. Obtain the official logo, palette, slogan, and brand guidance from the university before interface design; do not invent them. When approved, keep branding configuration and reusable design tokens centralized rather than scattering guessed colour values or repeated branding markup. The eventual interface must be accessible, responsive, and suitable for university staff and students, with the applicable accessibility standard confirmed by CUT.
+This phase does not implement ticketing or change production data/infrastructure. Before real use, CUT must confirm supported versions/hosting, identity source, account recovery, access policy, official locations and owners, privacy/retention/audit rules, approved CUT branding/accessibility standard, production database/backups, and security/release process.

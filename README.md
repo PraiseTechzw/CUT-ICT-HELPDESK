@@ -1,52 +1,64 @@
 # CUT ICT Helpdesk
 
-A planned digital helpdesk and support-management system for Chinhoyi University of Technology (CUT), Zimbabwe. The intended service complements the existing walk-in ICT helpdesk and centralizes authorized support-request handling. This repository is at **Phase 0: architecture, requirements, and engineering foundation**; it is not yet a runnable Laravel application.
+A digital support-management foundation for Chinhoyi University of Technology (CUT), Zimbabwe, intended to complement the existing walk-in ICT helpdesk. **Phase 1 is implemented and locally verified** for authentication, account/role administration, administrative audit, and configurable campus locations. This is not a ticketing system and is **not approved or ready for production deployment**.
 
-## Current repository status
+## Current status
 
-The initial repository contained only `.gitignore`, `LICENSE`, and this placeholder README. There was no Laravel source, Composer manifest or lockfile, frontend manifest, migrations, test suite, environment example, or project documentation. The working tree was clean at inspection. In the current development environment, Git, Node.js 22, npm 10, and a MySQL client are available; PHP and Composer are not. No application runtime, database connection, tests, or integrations have been verified.
+- Laravel **13.35.0** with PHP **8.3.6** in the implementation sandbox; Laravel Fortify provides the authentication backend.
+- Blade, Tailwind CSS 4, and Vite provide the server-rendered administrative interface.
+- SQLite is used for local development and isolated in-memory tests. MySQL/MariaDB and CUT hosting have not been verified.
+- Login and logout are implemented; public registration and password reset are disabled. No SSO/LDAP/AD integration is assumed.
+- Seven proposed roles and granular Phase 1 permissions are seeded. The catalogue remains subject to CUT ICT approval. No default or seeded privileged account is created.
+- Users can be created, searched, viewed, edited, activated/deactivated, and assigned/revoked roles by authorized administrators. Campus, operational-zone, building, and room records have guarded administration.
+- Official CUT logo, colours, and typefaces have not been supplied. The interface uses neutral styling and local system fonts; it does not fetch an unapproved third-party font.
+- Tickets, teams, technician deployments, regional user assignments, assets, knowledge, notifications, SSO, email delivery, production integrations, and deployment are out of scope.
 
-## Intended technology direction
+## Quick start
 
-- Backend: Laravel / PHP, using a modular monolith and Laravel conventions.
-- Database: MySQL or MariaDB unless verified institutional infrastructure dictates otherwise.
-- Frontend: evaluate Laravel Blade and reusable components before introducing a separate frontend.
-- Tests: Laravel-supported PHPUnit or Pest, selected after project initialization.
-- Authentication: Laravel-compatible; university identity integration requires authorization and technical verification.
+See [Setup](docs/SETUP.md) for supported prerequisites and a safe complete sequence. In brief, from an isolated local checkout with PHP extensions and Node.js installed:
 
-Exact supported versions must be selected during bootstrap based on Laravel's current requirements and the institution's hosting/runtime constraints. No framework or dependency has been installed by Phase 0.
+```sh
+# In a fresh local shell only; prevent inherited production settings overriding .env.
+unset APP_ENV APP_KEY DB_CONNECTION DB_DATABASE DB_URL
+composer install --no-interaction
+cp .env.example .env                 # only when .env does not already exist
+php artisan key:generate
+touch database/database.sqlite
+npm ci --ignore-scripts
+php artisan migrate --seed
+npm run build
+php artisan app:create-administrator # prompts for a one-time administrator password
+php artisan serve --host=127.0.0.1 --port=8000
+```
+
+Open `http://127.0.0.1:8000/login`. Keep `.env`, local databases, credentials, and real account data out of Git. `db:seed` creates only the proposed role/permission catalogue; it does not create users. The bootstrap command is restricted to `local`/`testing` unless an operator explicitly overrides that guard. Do not use the override in production without a separately approved procedure.
+
+## Quality checks
+
+```sh
+php artisan test
+./vendor/bin/pint --test
+npm run build
+composer audit --locked
+npm audit --audit-level=moderate
+```
+
+The test base class forces a test-only application environment and SQLite `:memory:` database before the Laravel app boots, then fails closed if either is not active. The final local run reported **27 tests passed (144 assertions)**. PHP and frontend dependency audits returned no advisories at the time they were run. These checks do not establish production readiness, MySQL compatibility, institutional policy approval, or a completed security review.
 
 ## Documentation
 
-- [Phase 0 source brief](docs/PHASE0_BRIEF.md)
-- [Project scope](docs/PROJECT_SCOPE.md)
-- [Architecture](docs/ARCHITECTURE.md)
-- [Domain model](docs/DOMAIN_MODEL.md)
+- [Phase 0 brief](docs/PHASE0_BRIEF.md)
+- [Phase 1 implementation brief](docs/PHASE1_BRIEF.md)
+- [Architecture and security boundaries](docs/ARCHITECTURE.md)
+- [Implemented and deferred domain model](docs/DOMAIN_MODEL.md)
 - [Roles and permissions](docs/ROLES_AND_PERMISSIONS.md)
 - [Feature roadmap](docs/FEATURE_ROADMAP.md)
 - [Requirements and open questions](docs/REQUIREMENTS_AND_OPEN_QUESTIONS.md)
 - [Development guidelines](docs/DEVELOPMENT_GUIDELINES.md)
-- [Setup](docs/SETUP.md)
-- [Testing strategy](docs/TESTING_STRATEGY.md)
+- [Setup and administrator bootstrap](docs/SETUP.md)
+- [Testing strategy and observed evidence](docs/TESTING_STRATEGY.md)
+- [Laravel/PHP implementation sources](docs/PHASE1_IMPLEMENTATION_SOURCES.md)
 
-## Prerequisites and setup
+## Next step
 
-The application has not yet been initialized. Before bootstrapping, install a PHP version supported by the Laravel release selected for the project, Composer, required PHP extensions, Node.js and the chosen package manager, and a supported MySQL/MariaDB service. Follow [Setup](docs/SETUP.md) for the safe initialization sequence; do not run those commands until versions and institutional hosting constraints are confirmed.
-
-## Development commands
-
-No application commands are available yet because `artisan`, `composer.json`, and `package.json` do not exist. Once the app is initialized, the expected Laravel workflow will generally include:
-
-```sh
-composer install
-cp .env.example .env
-php artisan key:generate
-php artisan migrate
-php artisan test
-```
-
-These are future commands, not commands verified in this repository. Use only after the bootstrap and environment configuration steps in `docs/SETUP.md`.
-
-## Project status and next step
-
-Phase 0 proposes architecture and a phased plan; it does not implement ticketing, migrations, authentication, integrations, or deployment. The next phase is **Phase 1: confirm bootstrap constraints, initialize a compatible Laravel application, and define authentication/authorization foundations**. See [Feature roadmap](docs/FEATURE_ROADMAP.md) and [Requirements and open questions](docs/REQUIREMENTS_AND_OPEN_QUESTIONS.md) for acceptance criteria and dependencies.
+Request CUT ICT review of proposed roles, account lifecycle, location ownership, data retention, branding/accessibility, hosting, and security requirements. Rehearse installation and migrations on the institution's chosen database before proceeding. Continue to ticket intake only after the Phase 1 foundation and open decisions have been reviewed; see the [roadmap](docs/FEATURE_ROADMAP.md).

@@ -1,76 +1,91 @@
 # Setup and Bootstrap
 
-**Current state:** Documentation-only repository; no Laravel application is installed. `php` and `composer` were not found in the Phase 0 sandbox. No database connection was tested. Do not run application setup commands until the environment and versions are approved.
+**Status:** A Laravel application is present. The following procedure is for an isolated local development environment only; it is not a production deployment guide.
 
-## Prerequisites to confirm and install
+## Verified implementation environment
 
-Obtain the institutional hosting/deployment requirements, then select a supported Laravel release and its compatible PHP version/extensions from the official Laravel requirements. Install that PHP runtime and Composer, Node.js and the selected package manager, and a supported MySQL/MariaDB server/client or the institution-mandated SQL equivalent. Decide whether local development uses Docker or host services; no container tooling was verified here. Record actual version outputs in onboarding docs when established.
+This Phase 1 implementation was checked in a sandbox with PHP 8.3.6, Composer 2.7.1, Laravel 13.35.0, Node.js 22.13.0, npm 10.9.2, and Vite 8.3.4. The installed PHP extensions support SQLite and the Laravel application. The application and tests were exercised with SQLite; no CUT-hosted runtime, production database, MySQL/MariaDB service, institutional identity provider, or mail service was verified. Confirm CUT's supported versions and hosting requirements before deployment.
 
-## Safe bootstrap sequence for this existing Git repository
+Laravel 13 requires PHP 8.3 or later; the official compatibility and authentication references are recorded in [Phase 1 implementation sources](PHASE1_IMPLEMENTATION_SOURCES.md). Install Composer, Node.js/npm, and the PHP extensions required by the locked dependencies, including PDO SQLite for local testing.
 
-The repository is not literally empty: it contains Git history, `.gitignore`, `LICENSE`, `README.md`, and Phase 0 docs. **Do not run `composer create-project laravel/laravel .` in this directory**; Composer may reject a non-empty target or overwrite/conflict with existing project files.
+## Local installation
 
-After approving versions and reviewing a clean working tree:
+From the repository root, on a clean local checkout:
 
-1. After recording the institution-approved Laravel release in `APPROVED_LARAVEL_VERSION`, create Laravel in a temporary directory. The shell guard intentionally stops if the version has not been approved/set:
+Use a fresh local shell and ensure inherited Laravel environment variables do not point to a shared/production system. In Bash or `sh`, clear the common overrides before invoking Artisan:
+
+```sh
+unset APP_ENV APP_KEY DB_CONNECTION DB_DATABASE DB_URL
+```
+
+The tracked `.env.example` then selects `APP_ENV=local` and SQLite, and `key:generate` writes a local key into the ignored `.env`. If you use another shell, apply the equivalent there. Verify locally that the active database is the intended disposable SQLite file before running migrations; never print credentials or target settings into shared logs.
+
+1. Install the locked dependencies:
 
    ```sh
-   export LARAVEL_VERSION="${APPROVED_LARAVEL_VERSION:?Set APPROVED_LARAVEL_VERSION to the approved release first}"
-   composer create-project laravel/laravel /tmp/cut-ict-helpdesk-app "$LARAVEL_VERSION"
+   composer install --no-interaction
+   npm ci --ignore-scripts
    ```
 
-2. Review the generated files and PHP/platform requirements. Decide whether Laravel's default frontend starter kit is needed; do not introduce one without an approved authentication/UI decision.
-3. Merge the generated application into the repository, preserving `.git`, the existing `LICENSE`, README, and `docs/`. Review every collision rather than overwriting blindly. Example only after review, using `rsync` if installed:
-
-   ```sh
-   REPO_DIR=/home/ubuntu/CUT-ICT-HELPDESK
-   rsync -a --exclude='.git/' --exclude='LICENSE' --exclude='README.md' --exclude='docs/' /tmp/cut-ict-helpdesk-app/ "$REPO_DIR/"
-   ```
-
-   The generated `.gitignore` may differ; compare and merge its Laravel rules instead of allowing an unreviewed replacement. Do not copy `.env` or generated secrets from another environment.
-4. From the repository root, inspect `composer.json`, `.env.example`, generated frontend manifests, and git diff. Configure required dependencies and local environment privately. Never commit `.env` or credentials.
-5. Only when `.env` is absent, create it from the reviewed example; generate an application key locally:
+2. Create local configuration only if it does not already exist, then generate a local application key:
 
    ```sh
    cp .env.example .env
    php artisan key:generate
    ```
 
-6. Configure a dedicated, non-production development database with least-privilege credentials, then verify:
+   Review `.env` locally without printing or sharing its contents. It is ignored by Git. The example defaults to a local SQLite database and contains no real credentials.
+
+3. Create the local SQLite file if it is absent, then migrate and seed the role/permission catalogue:
 
    ```sh
-   php artisan about
-   php artisan migrate:status
-   php artisan test
+   touch database/database.sqlite
+   php artisan migrate --seed
    ```
 
-   Run migrations only after the first schema is reviewed; do not run against production. Follow `docs/TESTING_STRATEGY.md`.
-7. Inspect `git status` and the complete diff. Commit only reviewed source/docs; exclude `.env`, credentials, generated secrets, caches, and local data.
+   The seeder creates proposed role and permission definitions only—no users, CUT locations, or privileged default account.
 
-## Usual commands after initialization
+4. Build the frontend and create the first administrator interactively:
 
-These are expected Laravel commands only after initialization; they are not available or verified today:
+   ```sh
+   npm run build
+   php artisan app:create-administrator
+   ```
+
+   The command asks for a name, email, and password (minimum 12 characters plus confirmation). It hashes the password, assigns the proposed System Administrator role, and does not print or log the password. It refuses to run outside `local`/`testing` unless the explicit `--force` override is supplied. That override is **not** an approved production bootstrap procedure; do not use it in production without a separately reviewed operational plan.
+
+5. Start the local web server:
+
+   ```sh
+   php artisan serve --host=127.0.0.1 --port=8000
+   ```
+
+   Visit `http://127.0.0.1:8000/login`. The Vite production build must exist for the Blade layouts to load assets in the default local web-server flow.
+
+## Tests and quality checks
 
 ```sh
-composer install
-npm install                 # use the package manager actually selected by the generated app
-cp .env.example .env        # only if no local .env exists
-php artisan key:generate
 php artisan test
-npm run build               # only if defined by package.json
+./vendor/bin/pint --test
+npm run build
+composer audit --locked
+npm audit --audit-level=moderate
 ```
 
-For local serving, use the command documented by the selected Laravel version and frontend setup. Do not guess or record a command as successful until it has actually run.
+The test harness sets `APP_ENV=testing`, a test-only application key, array-backed session/cache, synchronous queue, and SQLite `:memory:` **before application bootstrap**. It fails closed unless Laravel reports the `testing` environment and SQLite memory database. Thus an inherited shell variable such as `APP_ENV=PROD` cannot redirect the suite to a configured institutional database. Never weaken this guard or point tests at shared data.
 
-## Database configuration and migrations
+## Authentication and account operation notes
 
-Select the SQL engine/version with institutional support. Create an isolated development database; set connection name, host, port, database, username and password only in local ignored environment configuration. Verify connectivity through Laravel after bootstrap without printing secrets. Do not invent zones or staff as seed data. Migrations and reference-data seeders should follow a reviewed domain model and use synthetic test fixtures.
+- Login is served by Fortify. Login attempts are rate-limited; inactive accounts cannot authenticate and are logged out of protected routes if deactivated after login.
+- Public registration, profile self-service, and password-reset/email flows are disabled. SSO, LDAP, and Active Directory are not configured.
+- Create accounts through the authorized account-management screens. New accounts receive only the proposed Requester role.
+- There is not yet an in-app password-reset workflow for existing accounts. Agree an account recovery process and mail/identity ownership with CUT ICT before operational use.
+- Role definitions and grants are seeded. The application supports assignment/revocation, but not web-based creation/editing of the role or permission catalogue.
 
-## Troubleshooting and safeguards
+## Database and migration safeguards
 
-- `php`/`composer` missing: install approved versions; current Phase 0 sandbox lacks them.
-- Composer platform conflict: verify Laravel/PHP/extension compatibility; do not bypass platform checks or blindly upgrade.
-- Existing-file conflicts during bootstrap: stop and review the generated diff; preserve Git history, license, Phase 0 docs, and approved README.
-- Database connection error: verify local service state and non-secret connection settings; never paste credentials into tickets or logs.
-- Migration uncertainty: use a disposable database and inspect SQL/diff; never test destructive changes on institutional data.
-- Identity, email, SSO, and other integrations remain disabled until authorized and technically verified.
+The local `.env.example` selects SQLite for the least-setup development path. The tests use an isolated in-memory database, independently of `.env`. Production SQL engine/version, backup/restore, session/caching topology, connection credentials, and migration rollout remain unverified. Choose these with CUT ICT before deployment. Do not use `migrate:fresh`, database wiping, or local sample data on an institutional/shared database. Run reviewed forward migrations only against a purpose-built environment.
+
+## Configuration and production boundary
+
+The example file is not a production configuration. A real deployment needs a secret, unique application key; HTTPS; secure session/cookie settings; `APP_DEBUG=false`; least-privilege credentials; a supported SQL database; operational backups and tested restore; monitored logs; an approved administrator recovery process; and a reviewed retention/privacy/access policy. Identity, email, notifications, SSO, internal integrations, and production infrastructure changes have not been configured or authorized here. Do not put credentials in Git, chat, screenshots, build logs, or audit metadata.

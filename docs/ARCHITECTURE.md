@@ -1,52 +1,62 @@
 # Architecture
 
-**Status:** Proposed for review. No application framework has been installed or verified in this repository.
+**Status:** Implemented Phase 1 foundation, pending CUT ICT review. The framework and local flows have been verified; hosting, institutional policy, and production configuration have not.
 
 ## Approach
 
-Use a **Laravel modular monolith**: one deployable application and relational database, organized around Laravel conventions and cohesive feature responsibilities. This fits the current requirements without introducing distributed-system overhead. Revisit only when verified scale, integration, security, or independent deployment requirements justify a change.
+The application is a **Laravel modular monolith** using one deployable web application, Eloquent, Blade, and a relational database. The implementation uses Laravel 13, Laravel Fortify for the authentication backend, server-side Blade views, Tailwind CSS, and Vite. It does not add a separate frontend client or a third-party role/permission package.
 
-## Application boundaries
+The repository's long-term target remains a SQL database appropriate to CUT-supported infrastructure. Only SQLite has been tested locally. Do not treat that local choice as approval of the production database engine.
 
-- **Identity and access:** authenticated identities, user lifecycle, roles/permissions, and policy checks; identity-provider integration only after approval.
-- **Ticketing:** ticket lifecycle, requester, category/priority references, current status, and status history.
-- **Operations:** campuses, locations, zones, teams, memberships, and effective-dated technician deployments.
-- **Assignment and escalation:** assignment/transfer events, routing decisions, service targets and escalation rules once confirmed.
-- **Communications:** requester-visible messages, private internal notes, notifications, and delivery status.
-- **Assets and knowledge:** later-stage inventory/maintenance and curated knowledge content.
-- **Reporting and audit:** authorized operational summaries and append-oriented audit events, avoiding sensitive data in logs.
+## Implemented boundaries
 
-These are responsibility boundaries, not a requirement to create a custom framework, separate services, repositories, or namespaces before there is a concrete need. Prefer Laravel's `app/Models`, `app/Http`, `app/Policies`, `app/Notifications`, `routes`, `database`, `resources`, and `tests` conventions; split domain folders only when they improve cohesion.
+- **Identity and access:** users, active/inactive status, proposed role/permission catalogues, password login/logout, gated administration, and command-line first-administrator bootstrap.
+- **Regional configuration:** campuses, campus-scoped operational zones, buildings, optional building-to-zone association within the same campus, and building-scoped rooms.
+- **Administrative audit:** append-oriented event records for account, role, and location administration. Metadata contains action/context and field names, not password or changed-field values.
+- **Web presentation:** responsive Blade layouts and forms, accessible labels/validation messages, neutral styling, and local system fonts. No official CUT visual asset is present.
 
-## Request and data flow (target)
+## Explicitly deferred boundaries
 
-1. An HTTP route dispatches to a focused controller.
-2. Authentication middleware establishes the actor; middleware and policy/Form Request authorization deny unauthorized access by default.
-3. A Form Request validates input and its authorization rules or a policy enforces access.
-4. A controller coordinates an application action/service only where a meaningful multi-step workflow exists.
-5. A transaction persists the ticket change and its history/event records together where atomic consistency is required.
-6. Notifications are queued or dispatched after committed state; retries and duplicate delivery behavior are designed explicitly.
-7. A response exposes only fields the actor is allowed to see. Internal notes are never serialized to requester-facing views.
+Ticket lifecycle, requester communications, assignment and escalation, teams, memberships, temporary technician deployments, per-zone user grants, service catalogues, SLAs, notifications, uploads, assets, knowledge, reports, SSO, email/password-reset delivery, and production integrations are not implemented. The Phase 1 prompt permits deferring team/deployment tables where the governing model and staffing semantics are not approved; those relationships remain documented proposals, not schema.
 
-## Data and operations
+## Authentication and request flow
 
-Use relational foreign keys, unique constraints and indexes appropriate to actual query paths. Model zone membership and temporary deployments with effective dates; never equate a technician's normal assignment with a temporary deployment. Retain historical assignments/statuses rather than rewriting old tickets when organizational structures change. Support an unknown or unassigned location safely. Details are in [Domain Model](DOMAIN_MODEL.md).
+1. Laravel's `web` middleware supplies session handling and CSRF protection to state-changing forms.
+2. Fortify serves login/logout. Registration, profile mutation, and password-reset features are disabled. Successful authentication regenerates the session; logout invalidates it and regenerates the CSRF token using framework conventions.
+3. Authentication and authorization remain separate. The `EnsureAccountIsActive` middleware invalidates a protected session for an account deactivated after login. Fortify refuses inactive accounts at login. Login attempts are rate-limited by email/IP.
+4. A route, middleware, controller authorization check, or Form Request enforces the required granular ability server-side. Hiding a navigation link is not the security boundary.
+5. Form Requests validate normalized user email/location codes and parent-child relations before data changes. User profile fields are separate from role/status actions.
+6. Multi-write administration operations use database transactions. The audit logger records actor/action/subject and safe field-name metadata.
+7. Blade escapes displayed values; read-only screens limit access using the same permission abilities. Referenced locations are deactivated rather than physically deleted through the UI, and foreign keys restrict damaging deletes.
 
-## Security boundaries
+## Data integrity
 
-Authorization is server-side and applies to every read and write, including regional data isolation. Separate public requester communication from internal notes. Validate uploads and store them privately with authorization-controlled access. Protect state-changing requests with framework CSRF mechanisms, rate-limit sensitive endpoints, avoid logging secrets or unnecessary personal data, and audit important administrative/ticket actions. Production secrets stay outside Git. University SSO, email credentials, and internal APIs require verified requirements and explicit ICT authorization.
+- Role and permission slugs are centrally defined in `App\Support\Roles` and `App\Support\Permissions` and seeded idempotently.
+- Campuses have globally unique codes; zones are unique within a campus; buildings are unique within a campus; rooms are unique within a building.
+- Managed location codes are trimmed and uppercased before validation/storage.
+- A building belongs to a campus and may have a zone only from that same campus; a composite foreign key enforces that relationship at the database layer.
+- Users have global role assignments only. No campus/zone-scoped staff assignments exist yet.
+- Referential deletes are restricted for location hierarchy. Audit actor references become null if an account is later deleted, preserving the event.
 
-## Architectural decisions and rationale
+## Security and privacy boundaries
 
-| Decision | Provisional choice | Rationale / revisit trigger |
+No public registration, default privileged user, SSO/LDAP/AD, reset mail, production secret, or external font service is configured. Passwords are hashed by Laravel; account/role controls are separated; self-role changes and self-deactivation are rejected. The active-account middleware ends sessions after deactivation. Audit payloads deliberately omit secret and changed-field values.
+
+These controls are a development foundation, not a completed security/privacy review. Institutional password policy, account recovery, data classification/retention, audit immutability/access, session encryption/deployment settings, hosting/network protections, and production secret management remain CUT ICT decisions. Ticket privacy and cross-zone record authorization are future-phase concerns and are not claimed as implemented.
+
+## Architectural decisions
+
+| Decision | Current implementation | Rationale / revisit trigger |
 |---|---|---|
-| Deployment shape | Laravel modular monolith | Simple operations and strong Laravel conventions; revisit for demonstrated independent scaling/deployment needs. |
-| Frontend | Evaluate Blade/components first | Reduces duplication and operational complexity; revisit if verified interaction needs justify a separate client. |
-| Persistence | One SQL database, prefer MySQL/MariaDB | Relational ticket/history/organization data; verify institutional support before selecting version. |
-| Domain organization | Cohesive modules using standard Laravel structure | Clear ownership without premature architecture. |
-| Organization configuration | Effective-dated relational records | Supports temporary deployments, historical integrity, and configuration change. |
-| Integrations | Defer | Require authorization, interface documentation, test access, and operational ownership. |
+| Deployment shape | Laravel modular monolith | Fits the present bounded capabilities without distributed-service overhead. |
+| Authentication | Laravel Fortify backend with custom active-user check | Maintained Laravel-native flow; reset and registration remain off until requirements exist. |
+| Authorization | Central permission constants, relational roles/grants, Laravel Gates/Form Requests | Granular and testable; no unnecessary package; proposals require institutional approval. |
+| Frontend | Blade, Tailwind CSS, Vite | Server-rendered admin workflows; revisit only for validated interaction needs. |
+| Local/test database | SQLite; tests use `:memory:` | Easy local setup and isolated tests. Production SQL remains undecided. |
+| Code catalogue | Idempotent seeder for proposed role/permission reference data | No real or privileged sample accounts. |
+| Teams and user-zone scope | Deferred | Staffing, effective-date, delegation, and scope rules are not verified. |
+| Integrations | Deferred | Require authorized ownership, interfaces, credentials, and test environments. |
 
 ## Current state
 
-The repository is a clean initial commit with only `.gitignore`, `LICENSE`, and a placeholder README. There is no `artisan`, `composer.json`, frontend manifest, migration, or test harness. PHP and Composer are not installed in this environment, so no application bootstrap or runtime check was possible.
+Laravel **13.35.0** and PHP **8.3.6** were observed in the sandbox. The implementation has PHPUnit feature/unit coverage, and Vite production assets build successfully. Dependency audits and detailed test evidence are in [Testing Strategy](TESTING_STRATEGY.md) and [Requirements and Open Questions](REQUIREMENTS_AND_OPEN_QUESTIONS.md). Local success does not establish production readiness or institutional approval.

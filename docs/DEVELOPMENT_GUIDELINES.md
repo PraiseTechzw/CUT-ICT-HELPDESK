@@ -1,35 +1,36 @@
 # Development Guidelines
 
-**Status:** Proposed; apply after the Laravel version and tooling are approved and the app is initialized.
+**Status:** Applied to the Laravel 13 Phase 1 foundation; continue to use these conventions while documenting institutional decisions separately from implementation choices.
 
 ## General principles
 
-Prefer readable Laravel conventions, cohesive responsibilities, strict typing where appropriate, explicit names, and small focused files. Keep controllers focused on HTTP coordination; validate through Form Requests; enforce access through policies/middleware and server-side checks; keep workflows in a service/action only when that separates meaningful business behavior. Models express relationships and persistence behavior but should not become giant workflow containers. Avoid giant controllers/templates, unrelated helpers, duplicate rules, speculative abstractions, unnecessary dependencies, and commented-out code. Comments should explain non-obvious decisions.
+Prefer readable Laravel conventions, strict typing where appropriate, explicit names, and focused files. Keep controllers focused on HTTP coordination; validate through Form Requests; enforce access through Gates, middleware, and server-side checks. Use a service/action only where it separates a meaningful workflow. Avoid giant controllers/templates, duplicated rules, speculative abstractions, unnecessary dependencies, and commented-out code. Comments should explain non-obvious decisions.
 
 ## Naming and organization
 
-Follow the selected Laravel version's conventions for namespaces, classes, routes, migrations, factories, and tests. Keep HTTP code in `app/Http`, policies in `app/Policies`, models in `app/Models`, notifications in `app/Notifications`, migrations/seeders/factories in `database`, web/API routes in `routes`, UI assets in `resources`, and tests under `tests`. Add cohesive domain folders only where they help navigation. Use descriptive route names and enum/config values from a reviewed central source rather than magic strings scattered through views.
+Follow the installed Laravel conventions for namespaces, routes, migrations, factories, and tests. Keep HTTP code in `app/Http`, policies/middleware/providers/support in their framework-appropriate locations, models in `app/Models`, migrations/seeders/factories in `database`, routes in `routes`, views/assets in `resources`, and tests under `tests`. Role and permission identifiers live in `App\Support\Roles` and `App\Support\Permissions`; do not scatter authorization decisions as role-name checks.
 
 ## Validation, authorization, and data exposure
 
-Validate every untrusted input on the server. Treat route IDs, `user_id`, `zone_id`, role and assignment fields from clients as untrusted; derive authority from the authenticated actor and persisted scope. Deny by default and test forbidden access as well as allowed access. Do not rely on hiding buttons in the UI. Keep requester-visible communication distinct from internal notes at query, policy, resource/serialization, notification, export, and attachment layers. Never put plaintext passwords or production secrets in ticket text, logs, fixtures, Git, screenshots, or documentation.
+Validate untrusted inputs on the server. Route IDs, role IDs, location parents, and status fields are untrusted. Derive authority from the authenticated actor and persisted relationships; do not rely on hiding buttons. Account profile fields, account status, and role assignments are separate actions. Admin users cannot change their own roles or deactivate themselves. Future ticket code must enforce requester ownership and regional scope at every read/write, and keep private notes/attachments out of requester responses and exports. Never put plaintext passwords, real personal data, or production secrets in tickets, logs, fixtures, Git, screenshots, or documentation.
 
 ## Database and migrations
 
-Migrations are forward-only shared history: do not edit a migration already applied in shared environments; add a new corrective migration. Use foreign keys, appropriate nullability, uniqueness and indexes; document destructive or locking changes and provide a safe rollout/backfill plan. Preserve ticket assignment/status history and avoid destructive cascades. Use transactions when a business event and its history must commit atomically. Seed only deterministic reference data after catalogue approval; never insert fictional CUT zones, real staff, or production-like personal data. Test migrations on an isolated database and verify rollback where safe.
+Treat shared migrations as history: add a corrective migration instead of rewriting one already applied in shared environments. Use foreign keys, nullability, uniqueness, and indexes; preserve location hierarchy with restrictive deletion and deactivation. Managed codes are canonicalized before validation. Use transactions when current state and an audit/event record must commit together. Seed deterministic proposed role/permission catalogues only; do not fabricate CUT zones or staff. Exercise migrations against isolated databases and verify rollback where safe.
 
 ## Testing and quality
 
-Use the existing supported PHPUnit or Pest choice after bootstrap; don't add a test framework before checking Laravel defaults. Write focused unit tests for pure rules and feature tests for HTTP behavior. Every permission boundary requires positive and negative tests, particularly regional isolation and internal-note privacy. Cover transitions, reassignment history, unassigned locations, temporary deployments, notification failures, and transaction rollback as features arrive. Keep fixtures synthetic and minimal. Run formatter/static analysis/lint commands only once they exist; record actual commands and outcomes.
+The project uses PHPUnit via `php artisan test`, Laravel Pint, Vite, and Tailwind CSS 4. Tests force `APP_ENV=testing` and SQLite `:memory:` before application boot and fail closed if isolation is not active. Use synthetic fixtures; do not copy production data. Run `php artisan test`, `./vendor/bin/pint --test`, `npm run build`, and the Composer/npm audits after changes. Capture actual command outcomes; do not describe a check as passed until it ran successfully.
+
+The present suite covers Phase 1 authentication, account/role/location administration, and constraints. It does not cover ticket privacy, team/deployment scope, MySQL compatibility, production configuration, browser E2E, UAT, or security review. Add those checks with their features.
 
 ## Code review checklist
 
-- Does the change meet an approved requirement and avoid unconfirmed institutional policy?
-- Is the change in the right responsibility/module, consistent with the chosen Laravel version?
-- Are validation, server-side authorization, regional scope, and internal/private data visibility enforced and tested?
-- Are database constraints, transaction boundaries, history retention, indexes, and migration rollout safe?
-- Are logs, responses, notifications, attachments, exports, and errors free of secrets and unauthorized data?
-- Are tests deterministic, readable, and based on synthetic data?
-- Are accessibility, responsive behavior, and approved CUT branding considered for UI changes?
-- Are setup/docs/open questions updated, and are commands/results described truthfully?
-- Are dependencies justified, maintained, compatible, and license-reviewed?
+- Does the change meet an explicitly approved requirement without inventing CUT policy?
+- Are authorization and validation enforced server-side on every route/action?
+- Are relational constraints, transaction boundaries, history retention, and migration rollout safe?
+- Are logs, responses, notifications, uploads, exports, and exceptions free of secrets and unauthorized data?
+- Are tests isolated, deterministic, synthetic, and meaningful at security boundaries?
+- Are accessibility and approved CUT branding considered without presenting guessed identity as official?
+- Are setup/open-question docs current and observed results truthful?
+- Are dependencies maintained, compatible, justified, and license-reviewed?

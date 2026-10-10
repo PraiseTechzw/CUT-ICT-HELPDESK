@@ -1,44 +1,40 @@
 # Roles and Permissions
 
-**Status:** Proposal for CUT ICT review. These are conceptual roles, not confirmed institutional job titles or an implemented access-control configuration.
+**Status:** Implemented proposal catalogue for Phase 1 administrative screens. These names and grants are not confirmed CUT job titles or institutional policy. Review and approve them before real accounts are provisioned.
 
-## Proposed roles
+## Centralized role catalogue
 
-- **Requester**: submits and follows their own requests; may be a student, employee, or other authorized person.
-- **Walk-in helpdesk registrar**: creates a ticket on behalf of a walk-in requester and views only the records needed for intake and follow-up.
-- **Technician**: views and updates tickets assigned to them or otherwise explicitly in their authorized scope; records work and communicates with requesters.
-- **Zone supervisor**: manages queues and assignments for approved zones, subject to explicit cross-zone exceptions.
-- **Specialist team member/lead**: accesses tickets routed to their team and performs approved team-level assignment actions.
-- **Central ICT manager**: cross-zone operational oversight and configuration/reporting access as authorized.
-- **System administrator**: manages technical configuration and accounts; administrative access does not automatically grant permission to read all ticket content.
-- **Auditor**: read-only access to approved audit/operational records, with sensitive content limited by mandate.
+`App\Support\Roles` defines these stable slugs:
 
-Roles may be combined only where approved. A person can have multiple scoped assignments; authorization must be evaluated server-side on each request.
+| Slug | Proposed label | Seeded Phase 1 grants |
+|---|---|---|
+| `requester` | Requester | View campuses, zones, buildings, and rooms. No ticket permission exists yet. |
+| `helpdesk-officer` | Helpdesk Officer | Same Phase 1 location-view grants; walk-in registration workflows are not implemented. |
+| `technician` | Technician | Same Phase 1 location-view grants; no assignments or technician-specific record access exists yet. |
+| `regional-supervisor` | Regional Supervisor | Same Phase 1 location-view grants; no scoped regional queue is implemented. |
+| `ict-manager` | ICT Manager | Location-view grants, `users.view`, and `audit.view`. |
+| `system-administrator` | System Administrator | Every current Phase 1 administrative permission. This role does not confer ticket access because ticket capabilities do not exist. |
+| `auditor` | Auditor | `audit.view` only. |
 
-## Illustrative permission matrix
+The labels are descriptive proposals; the implementation deliberately does not seed any people or privileged default accounts. The database seeder creates/updates role and permission reference records only. Users created through administration receive the proposed Requester role; authorized administrators can later assign or revoke roles, including revoking all roles from another account. Last-active-administrator and self-change safeguards remain in place.
 
-| Capability | Requester | Registrar | Technician | Zone supervisor | Specialist team | Central manager | System admin | Auditor |
-|---|---|---|---|---|---|---|---|---|
-| Create own ticket | Yes | On behalf, if authorized | If policy permits | If policy permits | If policy permits | If policy permits | Not by admin status alone | No |
-| View requester-visible ticket | Own | Intake scope | Assigned/authorized scope | Authorized zone(s) | Authorized team scope | Authorized cross-zone scope | Not by admin status alone | Mandate-limited |
-| Add requester-visible message | Own ticket | If delegated workflow permits | Assigned scope | If permitted | If permitted | If permitted | No by admin status alone | No |
-| Add internal note/work log | No | Limited intake note, if approved | Assigned scope | Authorized zone(s) | Authorized team scope | Authorized scope | No by admin status alone | Read-only if mandated |
-| Assign/transfer | No | Intake queue only if approved | Limited/none unless delegated | Approved zone(s) | Team queue only | Authorized cross-zone | Configuration only; no operational privilege implied | No |
-| Manage zones/teams/catalogues | No | No | No | Limited delegated scope if approved | No | Approved system configuration only | Yes, but separate from ticket-content permission | No |
-| View reports/audit | Own status only | Limited | Assigned scope | Authorized zone(s) | Team scope | Authorized management scope | Technical admin audit as needed | Approved read-only scope |
+## Centralized permission catalogue
 
-This table is a starting point only. Exact role/permission combinations and separation-of-duties rules require institutional approval.
+`App\Support\Permissions` defines granular abilities:
 
-## Regional access rules
+- `users.view`, `users.create`, `users.edit`, `users.deactivate`, `users.assign_roles`
+- `campuses.view`, `campuses.manage`
+- `zones.view`, `zones.manage`
+- `buildings.view`, `buildings.manage`
+- `rooms.view`, `rooms.manage`
+- `audit.view`
 
-1. Derive zone/team authorization from current effective-dated assignments and the requested record—not from client-supplied zone IDs.
-2. Deny by default; tests must cover direct URL/API access to another zone's ticket, history, notes, attachments, reports, and export endpoints.
-3. Cross-zone work is an explicit grant or documented delegation, time-bounded where appropriate and auditable.
-4. Preserve historical actors and assignments even when a technician leaves a zone or a zone is reorganized. Historical record visibility still follows the approved audit policy.
-5. Unknown/unassigned location does not grant broad access; route it to a designated triage workflow once that workflow is approved.
-6. System administration is distinct from permission to read sensitive ticket content. Use separate capabilities for identity/configuration administration and operational data access.
-7. Internal notes and private attachments must never appear in requester-facing responses, notifications, exports, or caches.
+Laravel Gates register permission abilities; Form Requests, middleware, and controllers authorize all sensitive operations server-side. Views conditionally display links/actions for usability but do not replace server-side checks. Account profile fields, status, and roles use distinct workflows. Accounts cannot change their own roles or deactivate themselves.
 
-## Responsibilities requiring confirmation
+## Regional access rules in this phase
 
-CUT ICT must identify the role/permission approver, account lifecycle owner, zone and team administrators, cross-zone delegation authority, audit access owner, escalation decision maker, data protection/security contacts, and whether student/employee identity sources differ. No SSO, production administrator, or real staff account is assumed or created by Phase 0.
+Campus/location administration is controlled by global Phase 1 permissions. There is no user-to-zone relationship, scoped role assignment, regional supervisor queue, ticket authorization, or cross-zone delegation yet. A location being visible to a role does not grant access to future ticket content. Ticket, history, internal-note, attachment, report, and export policies must be designed and tested in the later phase that creates them.
+
+## Governance responsibilities requiring confirmation
+
+CUT ICT must approve role titles/grants, account lifecycle ownership, who may create/deactivate accounts or assign privileged roles, whether role assignments need campus/zone scope, auditor mandate, cross-zone delegation, password recovery, and emergency administrator recovery. Until approved, treat the seed catalogue as a technical baseline, not permission to give real users those rights.
