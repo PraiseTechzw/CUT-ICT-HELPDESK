@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\TechnicianDeploymentController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\UserRoleController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\TicketAnalyticsController;
 use App\Http\Controllers\TicketCatalogueController;
 use App\Http\Controllers\TicketController;
@@ -26,6 +27,8 @@ Route::get('/', fn () => auth()->check()
 
 Route::middleware(['auth', 'account.active'])->group(function (): void {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{notification}/open', [NotificationController::class, 'open'])->name('notifications.open');
 
     Route::get('/reports/tickets', TicketAnalyticsController::class)
         ->middleware('can:tickets.view_all')

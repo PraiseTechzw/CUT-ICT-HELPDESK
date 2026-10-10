@@ -18,7 +18,10 @@ use Illuminate\Validation\ValidationException;
 
 class TicketWorkflow
 {
-    public function __construct(private readonly AuditLogger $auditLogger) {}
+    public function __construct(
+        private readonly AuditLogger $auditLogger,
+        private readonly TicketNotificationService $ticketNotifications,
+    ) {}
 
     /** @return list<string> */
     public function allowedTransitionsFor(Ticket $ticket, User $actor): array
@@ -98,6 +101,7 @@ class TicketWorkflow
                 'from_technician_id' => $previousId,
                 'to_technician_id' => $nextId,
             ]);
+            $this->ticketNotifications->assignmentChanged($lockedTicket, $technician, $actor);
         });
     }
 
@@ -129,6 +133,7 @@ class TicketWorkflow
                 'from_status' => $previousStatus,
                 'to_status' => $nextStatus,
             ]);
+            $this->ticketNotifications->statusChanged($lockedTicket, $actor);
         });
     }
 
@@ -169,6 +174,7 @@ class TicketWorkflow
                 'from_status' => $previousStatus,
                 'previous_technician_id' => $previousTechnicianId,
             ]);
+            $this->ticketNotifications->reopened($lockedTicket, $actor);
         });
     }
 

@@ -12,6 +12,7 @@ use App\Models\Ticket;
 use App\Models\TicketCategory;
 use App\Models\TicketPriority;
 use App\Models\User;
+use App\Services\TicketNotificationService;
 use App\Services\TicketWorkflow;
 use App\Support\AuditLogger;
 use App\Support\Permissions;
@@ -69,11 +70,14 @@ class TicketController extends Controller
         ]);
     }
 
-    public function store(StoreTicketRequest $request, AuditLogger $auditLogger): RedirectResponse
-    {
+    public function store(
+        StoreTicketRequest $request,
+        AuditLogger $auditLogger,
+        TicketNotificationService $ticketNotifications,
+    ): RedirectResponse {
         $validated = $request->validated();
 
-        $ticket = DB::transaction(function () use ($request, $validated, $auditLogger): Ticket {
+        $ticket = DB::transaction(function () use ($request, $validated, $auditLogger, $ticketNotifications): Ticket {
             $ticket = new Ticket($validated);
             $ticket->requester()->associate($request->user());
             $ticket->status = TicketStatus::OPEN;
@@ -88,6 +92,7 @@ class TicketController extends Controller
             $auditLogger->record($request->user(), 'ticket.created', $ticket, [
                 'fields' => ['subject', 'description', 'ticket_category_id', 'ticket_priority_id'],
             ]);
+            $ticketNotifications->ticketCreated($ticket, $request->user());
 
             return $ticket;
         });
@@ -136,18 +141,25 @@ class TicketController extends Controller
         ]);
     }
 
-    public function storeComment(StoreTicketCommentRequest $request, Ticket $ticket, AuditLogger $auditLogger): RedirectResponse
-    {
+    public function storeComment(
+        StoreTicketCommentRequest $request,
+        Ticket $ticket,
+        AuditLogger $auditLogger,
+        TicketNotificationService $ticketNotifications,
+    ): RedirectResponse {
         $validated = $request->validated();
-        $ticket->comments()->create([
-            'author_id' => $request->user()->id,
-            'visibility' => $validated['visibility'],
-            'body' => $validated['body'],
-        ]);
+        DB::transaction(function () use ($ticket, $request, $validated, $auditLogger, $ticketNotifications): void {
+            $ticket->comments()->create([
+                'author_id' => $request->user()->id,
+                'visibility' => $validated['visibility'],
+                'body' => $validated['body'],
+            ]);
 
-        $auditLogger->record($request->user(), 'ticket.comment_added', $ticket, [
-            'visibility' => $validated['visibility'],
-        ]);
+            $auditLogger->record($request->user(), 'ticket.comment_added', $ticket, [
+                'visibility' => $validated['visibility'],
+            ]);
+            $ticketNotifications->commentAdded($ticket, $request->user(), $validated['visibility']);
+        });
 
         return back()->with('status', 'Reply added.');
     }

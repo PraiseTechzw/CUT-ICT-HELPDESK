@@ -14,6 +14,13 @@
         @auth
             <nav aria-label="Main navigation" class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
                 <a class="underline-offset-4 hover:underline" href="{{ route('dashboard') }}">Home</a>
+                @php($unreadNotificationCount = auth()->user()->unreadNotifications()->count())
+                <a class="underline-offset-4 hover:underline" href="{{ route('notifications.index') }}">
+                    Notifications
+                    @if ($unreadNotificationCount > 0)
+                        <span class="ml-1 rounded-full bg-blue-100 px-2 py-0.5 text-xs text-blue-900" aria-label="{{ $unreadNotificationCount }} unread notifications">{{ $unreadNotificationCount }}</span>
+                    @endif
+                </a>
                 @if (auth()->user()->can('tickets.view_own') || auth()->user()->can('tickets.view_all') || auth()->user()->can('tickets.view_assigned'))<a class="underline-offset-4 hover:underline" href="{{ route('tickets.index') }}">Tickets</a>@endif
                 @can('tickets.view_all')<a class="underline-offset-4 hover:underline" href="{{ route('reports.tickets.index') }}">Reports</a>@endcan
                 @can('tickets.catalogues.manage')<a class="underline-offset-4 hover:underline" href="{{ route('admin.ticket-catalogues.index') }}">Ticket settings</a>@endcan

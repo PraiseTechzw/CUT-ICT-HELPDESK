@@ -1,6 +1,6 @@
 # Feature Roadmap
 
-**Status:** Phase 0 documentation and Phases 1–4 implementation are complete locally. Phases 3–4 contain provisional metadata/reporting designs pending CUT ICT review and validation against institutional technical/privacy requirements.
+**Status:** Phase 0 documentation and Phases 1–5 implementation are complete locally. Phases 3–5 contain provisional metadata, reporting, audit, and notification designs pending CUT ICT review and validation against institutional technical/privacy requirements.
 
 ## Phase 0 — Foundation (complete)
 
@@ -36,31 +36,39 @@ The user approved the low-impact foundation on 2026-10-10. **Delivered:** unseed
 
 ## Phase 4 — Reporting and analytics (implemented provisionally)
 
-The user re-scoped Phase 4 to reporting and analytics on 2026-10-10; the previous routing/notification workstream remains deferred. **Delivered:** a read-only aggregate report of tickets created over an inclusive date range; daily volume; current status, category, and priority counts; a 30-calendar-day default; a 366-day maximum; and an index supporting date-range queries. Only users with the existing global `tickets.view_all` permission may access it. No ticket identities/text, record drill-down, export, service-level calculation, productivity score, or new permission grant is introduced.
+The user re-scoped Phase 4 to reporting and analytics on 2026-10-10. **Delivered:** a read-only aggregate report of tickets created over an inclusive date range; daily volume; current status, category, and priority counts; a 30-calendar-day default; a 366-day maximum; and an index supporting date-range queries. Only users with the existing global `tickets.view_all` permission may access it. No ticket identities/text, record drill-down, export, service-level calculation, productivity score, or new permission grant is introduced. Phase 5 adds only in-app notification delivery; automatic routing and external communication remain deferred.
 
 **Provisional definitions:** date bounds use the configured application timezone; all groupings include tickets created within the selected range; statuses are current at report time; category/priority display current catalogue labels. Audience, metrics, timezone, small-cell rules, export and retention remain subject to CUT ICT approval.
 
 **Observed checks:** 49 tests passed (326 assertions); Pint passed for 107 PHP files; Composer validation and Vite build passed. All 17 migrations ran on a fresh disposable SQLite database, which was removed. SQLite is the only exercised engine.
 
-## Phase 5 — Requester portal, technician workspace, and supervisor views (deferred)
+## Phase 5 — System auditing and in-app notifications (implemented locally)
+
+**Delivered:** a database-only Laravel notification channel and generic ticket activity notifications; active Helpdesk Officers receive ticket-intake alerts, while assignment/status/reopen/public-reply/internal-note recipients are selected using existing ownership, assignment, and permissions. Notification payloads contain only ticket ID, event code, and generic text—no subject, description, comment, or internal-note body. Authenticated users see only their own inbox; ticket links recheck `TicketPolicy`. Added the inbox, unread navigation count, audit action/actor/inclusive-date filters, and application-level Eloquent guards against updating/deleting audit event instances. No email/SMS delivery, auto-routing, team/zone access, or new permission grants were added.
+
+**Observed checks:** 54 PHPUnit tests passed (363 assertions); Pint passed for 113 PHP files; Composer validation and Vite production build passed. All 18 migrations ran on a fresh disposable SQLite database that was removed after verification. SQLite is the only exercised engine.
+
+**Provisional boundaries and unresolved risks:** audit model hooks are application-level only and do not prevent bulk SQL or database-administrator changes; retention, integrity guarantees, audit access, notification recipient/timing policies, and institutional content/privacy classifications need CUT ICT approval. Notifications are synchronous database writes in the same transactional workflow; production delivery reliability, retention, and database performance need evaluation. No notifications are sent externally.
+
+## Phase 6 — Requester portal, technician workspace, and supervisor views (deferred)
 
 **Prerequisites:** validated personas, mobile/browser support, accessibility requirements, user research, approved regional authorization, and CUT identity assets. **Deliverables:** responsive scoped workflows and supervisor views. **Tests:** end-to-end role journeys, keyboard accessibility, and regional data isolation.
 
-## Phase 6 — Service targets, knowledge, and feedback (deferred)
+## Phase 7 — Service targets, knowledge, and feedback (deferred)
 
 **Prerequisites:** approved SLA definitions/calendars, article ownership/moderation, and feedback policy.
 
-## Phase 7 — Assets and maintenance (deferred)
+## Phase 8 — Assets and maintenance (deferred)
 
 **Prerequisites:** source-of-truth decision, approved asset identifiers, custodianship, and integrations. Do not create a duplicate authoritative inventory without institutional approval.
 
-## Phase 8 — Hardening, integrations, UAT, pilot, and deployment (not started)
+## Phase 9 — Hardening, integrations, UAT, pilot, and deployment (not started)
 
 **Prerequisites:** security/privacy review, hosting and backup plan, authorized integrations, support model, UAT, and explicit release approval. **Deliverables:** reviewed threat model, restore-tested backups, monitoring/runbooks, migration rehearsal, integration/regression/performance tests, and rollback/incident evidence. No deployment occurs as part of this implementation.
 
-## Deferred workstream — Routing, escalation, communication, and notifications
+## Deferred workstream — Routing, escalation, and external communication
 
-The earlier roadmap placed these capabilities in Phase 4; they remain deferred after the user's Phase 4 re-scope. They require approved specialist coverage, service targets, escalation pathways, channels, delivery ownership, privacy, and retention. Public replies and internal notes exist, but external delivery and automated routing do not.
+The earlier roadmap placed these capabilities in Phase 4; the user re-scoped Phase 4 and Phase 5 now provides database-only in-app notices. Automatic routing/escalation and email/SMS or other external delivery remain deferred pending approved specialist coverage, service targets, escalation pathways, delivery ownership, privacy, and retention. Public replies and internal notes exist, but no external communication is sent.
 
 ## Cross-phase exit discipline
 
