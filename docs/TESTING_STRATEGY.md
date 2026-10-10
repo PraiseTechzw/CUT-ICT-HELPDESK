@@ -1,6 +1,6 @@
 # Testing Strategy
 
-**Status:** Phase 1 and the user-approved Phase 2 prototype have automated local coverage. Institutional database compatibility, browser-based end-to-end/accessibility tests, independent security review, and UAT are not complete.
+**Status:** Phases 1–3 have automated local coverage, including metadata-only Phase 3 access boundaries. Institutional database compatibility, browser-based end-to-end/accessibility tests, independent security review, and UAT are not complete.
 
 ## Test setup and isolation
 
@@ -11,7 +11,7 @@
 
 ## Implemented coverage
 
-The latest full run reported **36 tests passed (212 assertions)**, covering:
+The latest full run reported **45 tests passed (295 assertions)**, covering:
 
 - Login page, valid/invalid credentials, inactive login/session denial, session ID rotation, logout invalidation/CSRF regeneration, guest-route protection, and rate limiting.
 - Requester denial for account/location administration; account creation, normalized email, least-privilege role, password hashing, audit metadata, protected-field mass-assignment resistance, role assignment/revocation, self-change denial, deactivation/reactivation, last-admin safeguards, account search, and bootstrap command.
@@ -23,14 +23,18 @@ The latest full run reported **36 tests passed (212 assertions)**, covering:
 - Requesters can explicitly reopen only their own resolved/closed ticket; reopening clears current assignment and records assignment/status history.
 - Category/priority catalogues start empty; System Administrator can configure categories, but has no ticket-content access; requester ticket intake supports optional configured category/priority.
 - Ticket descriptions and comment bodies do not appear in audit metadata.
+- Phase 3 team administration is System Administrator-only; no teams/memberships/deployments are seeded; generic teams have no zone mapping.
+- Membership dates are inclusive, nullable end dates mean ongoing, same-team overlap/duplicate periods are rejected, and overlapping periods across different teams are allowed. Database uniqueness and restrictive foreign keys are exercised.
+- Deployments validate technician/zone relationships and date order, reject exact duplicates, permit overlapping periods, and preserve references. Memberships/deployments do not grant ticket access; assigned-only technician authorization remains intact.
 - Guest root redirection and the framework health endpoint.
 
 ## Actual checks performed
 
-- `composer test` — **36 passed, 212 assertions**; test database is in-memory SQLite.
+- `composer test` — **45 passed, 295 assertions**; test database is in-memory SQLite.
 - `npm run build` — passed; Vite production assets generated.
 - `composer audit --locked` — no security vulnerability advisories found; `npm audit --audit-level=moderate` — zero vulnerabilities found in the final Phase 2 verification.
-- `./vendor/bin/pint --test` — passed for 87 PHP files; PHP syntax lint passed for the application, bootstrap, config, database, route, and test PHP files; `composer validate --no-check-publish` passed.
+- `./vendor/bin/pint --test` — passed for 101 PHP files; `composer validate --no-check-publish` passed.
+- Fresh-migration check: all 15 migrations ran and showed `Ran` on a new disposable SQLite database; the temporary database file was removed after verification. This is not MySQL/MariaDB or production migration verification.
 
 Commands/results describe this sandbox verification only. Do not infer that security review, MySQL/MariaDB migrations, CI, deployment, institutional UAT, or production readiness have been completed.
 
@@ -38,4 +42,4 @@ Commands/results describe this sandbox verification only. Do not infer that secu
 
 Before a pilot, add independent security/privacy review and browser-based accessibility/keyboard testing against CUT's approved standard; test SQL-engine-specific migrations and a fresh-install/upgrade path on CUT's selected database; review authorization for any regional/team additions; exercise inactive account/technician behavior; test all status/assignment concurrency paths; validate audit access/retention; and perform approved UAT and backup/restore rehearsal.
 
-Later features require coverage for scoped team/deployment authorization and effective-date boundaries, unknown-location triage, attachments and malware scanning, notification retries/duplicate delivery, SLA calendars/clock behavior, privacy retention/export/deletion, asset integrations, and reporting definitions. Meaningful boundary assertions matter more than a percentage-only coverage threshold.
+Later features require separate tests before any CUT-approved regional/team authorization is introduced, plus unknown-location triage, attachments and malware scanning, notification retries/duplicate delivery, SLA calendars/clock behavior, privacy retention/export/deletion, asset integrations, and reporting definitions. Meaningful boundary assertions matter more than a percentage-only coverage threshold.

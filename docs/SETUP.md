@@ -1,6 +1,6 @@
 # Setup and Bootstrap
 
-**Status:** A Laravel application with the Phase 1 foundation and Phase 2 ticketing MVP is present. This procedure is for an isolated local development environment only; it is not a production deployment guide.
+**Status:** A Laravel application with Phase 1–3 foundations is present. Phase 3 team/membership/deployment records are provisional, non-operational metadata. This procedure is for isolated local development only; it is not a production deployment guide.
 
 ## Verified implementation environment
 
@@ -43,7 +43,7 @@ The tracked `.env.example` then selects `APP_ENV=local` and SQLite, and `key:gen
    php artisan migrate --seed
    ```
 
-   The seeder creates proposed role and permission definitions only—no users, CUT locations, ticket categories, ticket priorities, or privileged default account. Category and priority configuration is empty until a System Administrator enters approved values through **Ticket settings**.
+   The seeder creates proposed role and permission definitions only—no users, CUT locations, teams, technician memberships/deployments, ticket categories, ticket priorities, or privileged default account. Catalogues and teams remain empty until an authorized System Administrator configures local records.
 
 4. Build the frontend and create the first administrator interactively:
 
@@ -70,7 +70,14 @@ The tracked `.env.example` then selects `APP_ENV=local` and SQLite, and `key:gen
 - Helpdesk Officers can view all tickets globally, triage them, and manually assign an active Technician. Technicians see/work only their individually assigned tickets.
 - Public replies are visible to requesters; internal notes and technician identities are not. Internal-note reading and writing use separate permissions. Status/assignment history and audit metadata omit ticket/comment text.
 - Category and priority rows are optional and empty until configured. No CUT-specific categories, rankings, locations, teams, or assignments are preloaded.
-- Regional ticket permissions, teams, deployments, SLAs, automatic routing, attachments, notifications/email, and production integrations are not implemented.
+- Regional ticket permissions, team-based ticket routing, SLAs, automatic routing, attachments, notifications/email, and production integrations are not implemented.
+
+## Phase 3 metadata behavior
+
+- Teams are generic, unseeded records without assumed CUT names or zone mappings. Only the System Administrator permission `teams.manage` can create or update teams, memberships, and deployments.
+- Membership start/end dates are inclusive calendar dates; a blank membership end date means ongoing. Different-team memberships may overlap; same-Technician/same-team overlaps are rejected. Referenced memberships cannot be physically deleted.
+- Temporary deployments require an existing Technician-role account, an existing operational zone, and inclusive start/end dates. Overlaps are allowed; they are not schedules, exclusive assignments, or authorization grants. Exact duplicate date records are rejected.
+- These records do not change ticket permissions, routing, assignment, or escalation. Technicians remain restricted to individually authorized tickets under Phase 2. No team/zone access isolation is implemented.
 
 ## Tests and quality checks
 
@@ -82,7 +89,7 @@ composer audit --locked
 npm audit --audit-level=moderate
 ```
 
-The current full suite reports **36 passed tests (212 assertions)**. The test harness sets `APP_ENV=testing`, a test-only application key, array-backed session/cache, synchronous queue, and SQLite `:memory:` **before application bootstrap**. It fails closed unless Laravel reports the `testing` environment and SQLite memory database. Thus an inherited shell variable such as `APP_ENV=PROD` cannot redirect the suite to a configured institutional database. Never weaken this guard or point tests at shared data.
+The current full suite reports **45 passed tests (295 assertions)**. The test harness sets `APP_ENV=testing`, a test-only application key, array-backed session/cache, synchronous queue, and SQLite `:memory:` **before application bootstrap**. It fails closed unless Laravel reports the `testing` environment and SQLite memory database. Thus an inherited shell variable such as `APP_ENV=PROD` cannot redirect the suite to a configured institutional database. Never weaken this guard or point tests at shared data.
 
 ## Authentication and account operation notes
 
@@ -94,7 +101,7 @@ The current full suite reports **36 passed tests (212 assertions)**. The test ha
 
 ## Database and migration safeguards
 
-The local `.env.example` selects SQLite for the least-setup development path. The tests use an isolated in-memory database, independently of `.env`. Production SQL engine/version, backup/restore, session/caching topology, connection credentials, and migration rollout remain unverified. Choose these with CUT ICT before deployment. Do not use `migrate:fresh`, database wiping, or local sample data on an institutional/shared database. Run reviewed forward migrations only against a purpose-built environment.
+The local `.env.example` selects SQLite for the least-setup development path. The tests use an isolated in-memory database, independently of `.env`. All 15 current migrations were also run and checked on a fresh temporary SQLite database, which was deleted afterward. Production SQL engine/version, backup/restore, session/caching topology, connection credentials, and migration rollout remain unverified. Choose these with CUT ICT before deployment. Do not use `migrate:fresh`, database wiping, or local sample data on an institutional/shared database. Run reviewed forward migrations only against a purpose-built environment.
 
 ## Configuration and production boundary
 

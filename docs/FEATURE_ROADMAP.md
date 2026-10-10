@@ -1,6 +1,6 @@
 # Feature Roadmap
 
-**Status:** Phase 0 documentation is complete. Phase 1 and the user-approved Phase 2 MVP are implemented and locally tested, pending CUT ICT review and validation against institutional technical/privacy requirements.
+**Status:** Phase 0 documentation and Phases 1–3 implementation are complete locally. Phase 3 is a provisional metadata-only foundation pending CUT ICT review and validation against institutional technical/privacy requirements.
 
 ## Phase 0 — Foundation (complete)
 
@@ -24,9 +24,15 @@ The user explicitly directed ticketing and technician workflows to Phase 2, movi
 
 **Not approved for real use:** The Helpdesk Officer queue is global; tickets do not carry campus/zone location. Exact role grants, catalogue values/owners, privacy/retention, internal-note governance, closure/reopen policy, and administrator ticket visibility need CUT review. System Administrator can configure the catalogues but receives no seeded ticket-content permission.
 
-## Phase 3 — Teams, memberships, and technician deployments (deferred)
+## Phase 3 — Teams, memberships, and technician deployments (implemented provisionally)
 
-**Prerequisites:** CUT-approved team structure, home/ordinary membership, temporary deployment, effective-date/overlap, delegation, regional scope, and administration rules. **Deliverables:** only the approved relationships and necessary administration. **Tests:** membership/deployment dates, overlap, scope authorization, historical integrity, and cross-zone access. No names, staffing schedules, or zone boundaries should be invented.
+The user approved the low-impact foundation on 2026-10-10. **Delivered:** unseeded generic teams without zone mappings; dated technician memberships; date-bounded technician deployments to existing zones; System Administrator-only routes, Form Requests and Gates; safe audit events; and responsive admin screens. Membership dates are inclusive; null end means ongoing; overlaps are permitted across different teams but rejected for the same Technician/team; deployments require both dates, permit overlap, and reject exact duplicate periods. Referenced rows use restrictive foreign keys and no hard-delete routes.
+
+**Strict access boundary:** membership and deployment data do not change ticket visibility, assignment, routing, or escalation. Phase 2 remains authoritative: Technicians can access tickets only when individually authorized under the existing rules. No `team_id` or location field was added to tickets.
+
+**Observed checks:** 45 tests passed (295 assertions); Pint passed for 101 PHP files; Composer validation and Vite build passed. All 15 migrations ran on a fresh disposable SQLite database, whose file was removed after status verification. SQLite is the only exercised engine.
+
+**Still requires CUT confirmation:** official team structure and ownership, membership/deployment operational meaning, overlap policy, delegation, regional access, and administration responsibilities. No CUT team names, staffing schedules, or zone boundaries were invented. This foundation must not be treated as institutional policy or production authorization.
 
 ## Phase 4 — Routing, escalation, communication, and notifications (deferred)
 
@@ -50,4 +56,4 @@ The user explicitly directed ticketing and technician workflows to Phase 2, movi
 
 ## Cross-phase exit discipline
 
-Review schema, migrations, authorization boundaries, open questions, and meaningful automated tests before expanding the data surface. Record material changes and approval rationale. The current Phase 2 code is an implementation prototype with user-approved defaults; it must not be represented as CUT policy or production-ready behavior.
+Review schema, migrations, authorization boundaries, open questions, and meaningful automated tests before expanding the data surface. Record material changes and approval rationale. Phases 2–3 are implementation prototypes with user-approved defaults; they must not be represented as CUT policy or production-ready behavior.

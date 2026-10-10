@@ -1,6 +1,6 @@
 # Project Scope
 
-**Status:** Phase 1 foundation and a user-approved Phase 2 ticketing MVP are implemented locally from the supplied briefs and chat-confirmed defaults. Institutional workflows, role policy, geography, hosting, and visual identity remain unverified; see [Requirements and Open Questions](REQUIREMENTS_AND_OPEN_QUESTIONS.md).
+**Status:** Phases 1–3 are implemented locally from the supplied briefs and user-approved provisional defaults. Institutional workflows, role policy, geography, hosting, and visual identity remain unverified; see [Requirements and Open Questions](REQUIREMENTS_AND_OPEN_QUESTIONS.md).
 
 ## Problem and long-term objective
 
@@ -18,9 +18,13 @@ The user approved a conservative ticketing MVP for Phase 2. It includes requeste
 
 The UI uses responsive Blade layouts, labeled forms, and reusable field-error presentation. Requesters cannot see internal notes, technician identities, or other requesters' ticket data. The seeded System Administrator can configure catalogues but has no ticket-content permission by default.
 
+## Phase 3 implementation scope
+
+Phase 3 adds generic, unseeded team records, effective-dated Technician memberships, and date-bounded deployments to existing operational zones. System Administrators alone can manage these records. Membership dates are inclusive, null end dates mean ongoing, cross-team overlaps are permitted, and same-Technician/same-team overlaps are rejected. Deployment overlaps are allowed as records, not shifts or exclusive assignments. These records do not change ticket access, routing, assignment, escalation, or schedules. The design is provisional pending CUT ICT confirmation.
+
 ## Out of scope
 
-Team membership, effective-dated technician deployments, user-zone assignments, regional ticket authorization, location assignment on tickets, automatic routing, escalation, SLAs, attachments, email/notifications, reporting, knowledge, assets/maintenance, identity-provider integrations, external services, and production deployment remain deferred. No real staff/student records, CUT locations, categories, priorities, schedules, or assignments are supplied as seed data.
+Team-based ticket access/routing, user-zone authorization, regional ticket authorization, location assignment on tickets, automatic routing, escalation, SLAs, attachments, email/notifications, reporting, knowledge, assets/maintenance, identity-provider integrations, external services, and production deployment remain deferred. No real staff/student records, CUT locations, teams, categories, priorities, schedules, or assignments are supplied as seed data.
 
 ## Stakeholders and proposed user groups
 
@@ -28,6 +32,6 @@ The briefs identify possible requesters (students, employees, other authorized p
 
 ## Scope boundaries and assumptions
 
-The implementation is a Laravel modular monolith with Blade and relational storage. SQLite was used locally; MySQL/MariaDB and institutional hosting have not been verified. The Phase 2 chat-approved defaults are implementation behavior for a prototype, not approved CUT policy. The Helpdesk Officer queue is global; technicians are scoped only to individual assignment, not region. Role grants and catalogue ownership/values remain adjustable proposals. No SSO, LDAP, Active Directory, mail, or other internal integration is configured.
+The implementation is a Laravel modular monolith with Blade and relational storage. SQLite was used locally; MySQL/MariaDB and institutional hosting have not been verified. The Phase 2 and Phase 3 chat-approved defaults are prototype behavior, not approved CUT policy. The Helpdesk Officer queue is global; technicians are scoped only to individual assignment, not region. Phase 3 membership/deployment records do not change that scope. Role grants and catalogue ownership/values remain adjustable proposals. No SSO, LDAP, Active Directory, mail, or other internal integration is configured.
 
 Before real use, CUT must confirm supported versions/hosting, identity source, account recovery, role and ticket-access policy, approved locations and owners, privacy/retention/audit rules, category/priority/status semantics, official branding/accessibility standard, production database/backups, and security/release process.

@@ -1,11 +1,14 @@
 # Implemented and Deferred Domain Model
 
-**Status:** Phase 1 and the user-approved Phase 2 schema are implemented and tested with SQLite. Role names/grants, institutional privacy rules, ticket catalogue values, location ownership, and production database behavior still require CUT ICT review.
+**Status:** Phases 1–3 are implemented and tested with SQLite. Phase 3 team/membership/deployment semantics are user-approved provisional implementation choices, not CUT policy. Role names/grants, institutional privacy rules, ticket catalogue values, location ownership, and production database behavior still require CUT ICT review.
 
 ## Implemented entities
 
 - **User:** account with name, unique email, password hash, timestamps, and `is_active`. No public registration or real user fixture is seeded. User role assignments are global, not campus/zone-scoped.
 - **Role / Permission:** unique role and permission slugs, names/descriptions, and many-to-many `role_user` and `permission_role` pivots with uniqueness constraints and timestamps. Definitions are centrally named and idempotently seeded. Role assignments are separate from profile fields.
+- **Team:** generic administrator-configured name, unique slug, optional description, active flag, and timestamps. No team names are seeded, and teams have no assumed campus/zone mapping.
+- **TechnicianTeamMembership:** Technician user, team, inclusive `starts_on`, nullable inclusive `ends_on`, and timestamps. A null end means ongoing. A technician may have overlapping memberships in different teams; overlapping periods for the same technician/team are rejected, and a database unique index prevents duplicate start dates for that pair.
+- **TechnicianDeployment:** Technician user, existing operational-zone reference, required inclusive `starts_on`/`ends_on`, and timestamps. Overlaps are permitted and are not interpreted as schedules, exclusive assignments, or authorization grants. Exact duplicate technician/zone/date periods are rejected.
 - **Campus / OperationalZone / Building / Room:** configurable campus hierarchy; a zone belongs to a campus, a building belongs to a campus and may reference a zone from that same campus, and a room belongs to a building. Parent references and scoped code uniqueness are enforced; locations are deactivated rather than deleted through the UI.
 - **TicketCategory / TicketPriority:** configurable name, unique slug, sort order, active flag, and timestamps. Both catalogues begin empty; no CUT-specific values are fabricated. Deactivation preserves historical references.
 - **Ticket:** one requester, an optional individual technician assignee, optional category and priority references, subject, description, controlled status, and timestamps. The current schema does not associate a ticket with a campus, zone, building, or room.
@@ -31,7 +34,7 @@ The central statuses are:
 
 Assignment of an Open ticket sets it to Assigned. Ordinary transitions are Assigned → In Progress; In Progress → Waiting on Requester or Resolved; Waiting on Requester → In Progress or Resolved; and Resolved → Closed by helpdesk staff. Requesters and helpdesk triage can use the separate reopen action on a resolved/closed ticket; reopening clears its current technician and returns it to Open. Technicians cannot close or reopen tickets. Each state/assignment change is transacted with its history row.
 
-There is no team, queue-based assignment, regional scope, automatic routing, SLA, or notification record in this model. Helpdesk visibility is global for the seeded Helpdesk Officer permission; technicians see only tickets individually assigned to them; requesters see only their own.
+There is no team/queue-based ticket assignment, regional ticket scope, automatic routing, SLA, or notification record in this model. Phase 3 memberships and deployments are administrative records only and cannot change ticket access. Helpdesk visibility is global for the seeded Helpdesk Officer permission; technicians see only tickets individually assigned to them; requesters see only their own.
 
 ## Integrity and privacy rules
 
@@ -44,10 +47,11 @@ There is no team, queue-based assignment, regional scope, automatic routing, SLA
 7. Audit metadata excludes ticket text, descriptions, and comment content. Public/internal visibility and non-secret workflow metadata may be recorded.
 8. Ticket and catalogue physical deletion is not exposed; referenced rows use restrictive deletes. Reopen, unassignment, and reassignment leave explicit history.
 9. Feature tests use synthetic identities and SQLite in-memory isolation.
+10. `teams.manage` is granted only to System Administrators. Membership changes are transactionally checked for same-team date overlap; deployments must reference existing technicians/zones, validate ordered dates, permit overlap, and reject exact duplicates. Restrictive foreign keys retain membership/deployment references. These records do not add `team_id` or zone fields to tickets or change `TicketPolicy`.
 
 ## Deferred entities and decisions
 
-No **TechnicalTeam**, **TeamMembership**, **TechnicianDeployment**, user-zone pivot, SLA/calendar, escalation rule, attachment/upload, asset, knowledge, notification, or reporting table exists. Tickets are not region-scoped, and no ticket location or walk-in proxy identity is captured. Team membership, temporary deployment, overlap, cross-zone delegation, privacy/retention, and authorization ownership still need CUT decisions before expanding the data model.
+No user-zone pivot, ticket-location fields, team-based routing, SLA/calendar, escalation rule, attachment/upload, asset, knowledge, notification, or reporting table exists. Tickets are not region-scoped, and no ticket location or walk-in proxy identity is captured. The generic team/membership/deployment schema is provisional; CUT must still confirm official organization structure, responsible administrators, regional delegation, privacy/retention, and whether future records should influence access.
 
 The category and priority values are empty. The System Administrator role can configure those reference lists, but by default does not receive ticket-content permissions. Exact values, catalogue owner, priority interpretation, and whether other roles should configure catalogues require approval.
 

@@ -29,4 +29,9 @@ class OperationalZone extends Model
     {
         return $this->hasMany(Building::class);
     }
+
+    public function technicianDeployments(): HasMany
+    {
+        return $this->hasMany(TechnicianDeployment::class);
+    }
 }

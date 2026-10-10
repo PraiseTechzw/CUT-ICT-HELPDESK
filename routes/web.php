@@ -8,6 +8,9 @@ use App\Http\Controllers\Admin\CampusController;
 use App\Http\Controllers\Admin\OperationalZoneController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\RoomController;
+use App\Http\Controllers\Admin\TeamController;
+use App\Http\Controllers\Admin\TeamMembershipController;
+use App\Http\Controllers\Admin\TechnicianDeploymentController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\UserRoleController;
 use App\Http\Controllers\DashboardController;
@@ -52,5 +55,15 @@ Route::middleware(['auth', 'account.active'])->group(function (): void {
         Route::resource('buildings', BuildingController::class)->except(['show', 'destroy']);
         Route::resource('rooms', RoomController::class)->except(['show', 'destroy']);
         Route::get('audit', [AuditEventController::class, 'index'])->name('audit.index');
+    });
+
+    Route::prefix('admin')->name('admin.')->middleware('can:teams.manage')->group(function (): void {
+        Route::resource('teams', TeamController::class)->except(['show', 'destroy']);
+        Route::resource('team-memberships', TeamMembershipController::class)
+            ->except(['show', 'destroy'])
+            ->parameters(['team-memberships' => 'membership']);
+        Route::resource('technician-deployments', TechnicianDeploymentController::class)
+            ->except(['show', 'destroy'])
+            ->parameters(['technician-deployments' => 'deployment']);
     });
 });

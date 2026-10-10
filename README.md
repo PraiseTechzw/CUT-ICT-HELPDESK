@@ -1,6 +1,6 @@
 # CUT ICT Helpdesk
 
-A digital support-management foundation for Chinhoyi University of Technology (CUT), Zimbabwe, intended to complement the existing walk-in ICT helpdesk. **Phase 1 and the user-approved Phase 2 MVP are implemented and locally verified.** Institutional policies, deployment requirements, and production readiness remain unapproved.
+A digital support-management foundation for Chinhoyi University of Technology (CUT), Zimbabwe, intended to complement the existing walk-in ICT helpdesk. **Phases 1–3 are implemented and locally verified; Phase 3 is a provisional, metadata-only design pending CUT review.** Institutional policies, deployment requirements, and production readiness remain unapproved.
 
 ## Current status
 
@@ -13,9 +13,9 @@ A digital support-management foundation for Chinhoyi University of Technology (C
 - Requesters can create, view, publicly reply to, and reopen only their own tickets. Helpdesk Officers can triage all tickets and manually assign an active individual Technician. Technicians can view/work only their assigned tickets.
 - Public replies and internal work notes are stored separately. Requesters cannot see internal notes or technician identities; reading internal notes has a separate explicit permission from writing them. Audit events never store ticket descriptions or comment bodies.
 - The lifecycle is Open → Assigned → In Progress → Waiting on Requester → Resolved → Closed. Reopening is an explicit action that returns the ticket to the unassigned Open queue.
-- Category and priority catalogues are configurable, but are deliberately empty initially; no CUT-specific values are invented. The current System Administrator grant allows catalogue configuration but does not by itself grant ticket-content access.
+- Category and priority catalogues are configurable, but are deliberately empty initially; no CUT-specific values are invented. The System Administrator grant allows catalogue and Phase 3 metadata administration but does not by itself grant ticket-content access.
 - Official CUT logo, colours, and typefaces have not been supplied. The interface uses neutral styling and local system fonts.
-- Team membership, temporary deployments, regional ticket scoping, attachments, SLA timers, automatic routing, notifications/email, assets, knowledge, production integrations, and deployment remain out of scope.
+- Generic teams, dated technician memberships, and temporary zone deployments are record-only administration. They do not affect ticket access, routing, assignment, escalation, or scheduling. Regional ticket scoping, attachments, SLA timers, automatic routing, notifications/email, assets, knowledge, production integrations, and deployment remain out of scope.
 
 ## Quick start
 
@@ -35,7 +35,7 @@ php artisan app:create-administrator # prompts for a one-time administrator pass
 php artisan serve --host=127.0.0.1 --port=8000
 ```
 
-Open `http://127.0.0.1:8000/login`. Keep `.env`, local databases, credentials, and real account data out of Git. `db:seed` creates only role/permission definitions; ticket categories and priorities remain empty until configured. It does not create users. The bootstrap command is restricted to `local`/`testing` unless an operator explicitly overrides that guard. Do not use the override in production without a separately approved procedure.
+Open `http://127.0.0.1:8000/login`. Keep `.env`, local databases, credentials, and real account data out of Git. `db:seed` creates role/permission definitions only; it does not create users, teams, memberships, deployments, or ticket categories/priorities. The bootstrap command is restricted to `local`/`testing` unless an operator explicitly overrides that guard. Do not use the override in production without a separately approved procedure.
 
 ## Quality checks
 
@@ -47,7 +47,7 @@ composer audit --locked
 npm audit --audit-level=moderate
 ```
 
-The most recent full run reported **36 tests passed (212 assertions)**. Pint passed for 87 PHP files, PHP syntax lint and Composer validation passed, and Vite production assets built successfully. The locked Composer audit found no security advisories, and npm audit found zero vulnerabilities. The test base class forces a test-only application environment and SQLite `:memory:` database before Laravel boots, then fails closed if either is not active. These checks do not establish production readiness, MySQL compatibility, institutional policy approval, or a completed security review.
+The most recent full run reported **45 tests passed (295 assertions)**. Pint passed for 101 PHP files, Composer validation and the Vite production build passed. A fresh, disposable SQLite database ran all 15 migrations successfully and was removed after the status check. The locked Composer audit found no security advisories and npm audit found zero vulnerabilities. Tests force a test-only environment and SQLite `:memory:` database before Laravel boots, then fail closed if isolation is not active. These checks do not establish production readiness, MySQL compatibility, CUT policy approval, or a completed security review.
 
 ## Documentation
 

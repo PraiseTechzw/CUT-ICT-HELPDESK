@@ -1,6 +1,6 @@
 # Development Guidelines
 
-**Status:** Applied to the Laravel 13 Phase 1 foundation and the user-approved Phase 2 ticketing MVP; continue to use these conventions while documenting institutional decisions separately from implementation choices.
+**Status:** Applied to the Laravel 13 Phase 1 foundation, Phase 2 ticketing MVP, and user-approved provisional Phase 3 metadata; continue to separate implementation choices from CUT decisions.
 
 ## General principles
 
@@ -12,17 +12,17 @@ Follow the installed Laravel conventions for namespaces, routes, migrations, fac
 
 ## Validation, authorization, and data exposure
 
-Validate untrusted inputs on the server. Route IDs, role IDs, location parents, catalogue IDs, status, and visibility fields are untrusted. Derive authority from the authenticated actor and persisted relationships; do not rely on hiding buttons. Account profile fields, account status, and role assignments are separate actions. Admin users cannot change their own roles or deactivate themselves. Ticket code enforces requester ownership and assigned-Technician scope at every read/write; no regional scope exists yet. Keep private notes out of requester responses and exports, and do not implement attachments before storage/scanning/retention controls are approved. Never put plaintext passwords, real personal data, or production secrets in tickets, logs, fixtures, Git, screenshots, or documentation.
+Validate untrusted inputs on the server. Route IDs, role IDs, location parents, catalogue IDs, status, visibility, technician/team/zone IDs, and effective dates are untrusted. Derive authority from the authenticated actor and persisted relationships; do not rely on hiding buttons. Phase 3 team administration uses a separate System Administrator-only ability; its records do not grant ticket permissions. Validate inclusive date ranges, open-ended memberships, duplicate starts, and same-team overlap server-side and preserve foreign-key references. Ticket code continues to enforce requester ownership and assigned-Technician scope; no regional scope exists. Keep private notes out of requester responses and exports, and do not implement attachments before storage/scanning/retention controls are approved. Never put plaintext passwords, real personal data, or production secrets in tickets, logs, fixtures, Git, screenshots, or documentation.
 
 ## Database and migrations
 
-Treat shared migrations as history: add a corrective migration instead of rewriting one already applied in shared environments. Use foreign keys, nullability, uniqueness, and indexes; preserve location hierarchy and ticket histories with restrictive deletion/deactivation. Managed codes are canonicalized before validation. Use transactions when current state and an audit/history record must commit together. Seed deterministic proposed role/permission catalogues only; ticket category/priority values remain empty until approved configuration. Do not fabricate CUT zones, staff, catalogue values, teams, or schedules. Exercise migrations against isolated databases and verify rollback where safe.
+Treat shared migrations as history: add a corrective migration instead of rewriting one already applied in shared environments. Use foreign keys, nullability, uniqueness, and indexes; preserve location hierarchy, membership/deployment references, and ticket histories with restrictive deletion/deactivation. Membership periods are inclusive; null end means ongoing; same-team overlap checks run inside a serialized transaction. Use transactions when state and an audit/history record must commit together. Seed deterministic role/permission catalogues only; ticket catalogues and teams remain empty until configured. Do not fabricate CUT zones, staff, catalogue values, teams, or schedules. Exercise migrations against isolated databases and verify rollback where safe.
 
 ## Testing and quality
 
 The project uses PHPUnit via `php artisan test`, Laravel Pint, Vite, and Tailwind CSS 4. Tests force `APP_ENV=testing` and SQLite `:memory:` before application boot and fail closed if isolation is not active. Use synthetic fixtures; do not copy production data. Run `php artisan test`, `./vendor/bin/pint --test`, `npm run build`, and the Composer/npm audits after changes. Capture actual command outcomes; do not describe a check as passed until it ran successfully.
 
-The present suite covers Phase 1 authentication/account/role/location administration plus Phase 2 ticket ownership, assigned-technician scoping, public/internal comment visibility, manual assignment, lifecycle/history, catalogue access, and audit text redaction. It does not cover team/deployment or regional scope, MySQL compatibility, production configuration, browser E2E, UAT, or independent security review. Add those checks with those features.
+The present suite covers Phase 1 authentication/account/role/location administration, Phase 2 ticket boundaries/workflows, and Phase 3 admin-only team metadata, inclusive dates, duplicate/overlap rules, relationships, and no ticket-access expansion. It does not cover CUT-approved regional behavior, MySQL compatibility, production configuration, browser E2E, UAT, concurrency under another database engine, or independent security review.
 
 ## Code review checklist
 

@@ -48,6 +48,7 @@ class RolePermissionSeeder extends Seeder
                 Permissions::ROOMS_MANAGE,
                 Permissions::AUDIT_VIEW,
                 Permissions::TICKETS_CATALOGUES_MANAGE,
+                Permissions::TEAMS_MANAGE,
             ];
 
             $roleDefinitions = [

@@ -1,6 +1,6 @@
 # Requirements and Open Questions
 
-**Purpose:** Distinguish user-provided requirements, implemented facts, engineering proposals, and institutional decisions not yet verified. As of 2026-10-10, Phase 1 and a user-approved Phase 2 ticketing MVP exist locally; this document does not constitute CUT ICT approval.
+**Purpose:** Distinguish user-provided requirements, implemented facts, engineering proposals, and institutional decisions not yet verified. As of 2026-10-10, Phases 1–3 are implemented locally; Phase 3 remains a provisional metadata design, not CUT ICT approval.
 
 ## Verified repository and sandbox facts
 
@@ -8,8 +8,8 @@
 - Laravel **13.35.0**, PHP **8.3.6**, Composer **2.7.1**, Node.js **22.13.0**, npm **10.9.2**, and Vite **8.3.4** were observed in the implementation sandbox.
 - Laravel Fortify provides login/logout. Blade, Tailwind CSS 4, Vite, Laravel Gates, Form Requests, and custom relational role/permission tables are used.
 - Local application database is SQLite. PHPUnit tests use SQLite `:memory:` after the test harness forces `APP_ENV=testing` before Laravel boots. No CUT database, MySQL/MariaDB service, hosting, SSO, mail service, or production environment was verified.
-- Latest full local run: **36 tests passed (212 assertions)**. Pint, PHP syntax lint, Composer validation, and Vite build succeeded. The locked Composer audit found no security advisories, and npm audit found zero vulnerabilities. See [Testing Strategy](TESTING_STRATEGY.md).
-- Phase 1 changes were pushed to GitHub `main` as commit `1878469` (`Implement Phase 1 helpdesk foundation`). Phase 2 work is a separate local, uncommitted change set; it has not been pushed.
+- Latest full local run: **45 tests passed (295 assertions)**. Pint passed for 101 PHP files; Composer validation and Vite build succeeded. All 15 migrations ran on a fresh disposable SQLite database, which was removed. The final Composer audit found no advisories and npm audit found zero vulnerabilities. See [Testing Strategy](TESTING_STRATEGY.md).
+- Phase 1 commit `1878469` and Phase 2 commit `9e7ba09` are on GitHub `main`. The current repository also contains the tested provisional Phase 3 implementation described below; its design remains subject to CUT review.
 
 ## User-provided requirements and approved implementation defaults
 
@@ -29,23 +29,25 @@ On 2026-10-10, the user directed ticketing and technician workflows to Phase 2 a
 
 This user approval authorized the implementation defaults for this repository. It does not confirm that CUT ICT has approved the global queue, role grants, state labels, category/priority owner, retention, or production use.
 
-## Implemented baseline and Phase 2 boundary
+On 2026-10-10, the user approved a provisional Phase 3 foundation subject to these constraints: generic unseeded teams with no assumed zone mapping; multiple inclusive-dated technician memberships, allowing overlaps across teams but rejecting same-technician/same-team overlaps and duplicate starts; inclusive start/end date deployments to existing zones, allowing overlap as records only; `teams.manage` restricted to System Administrators; no tickets access, routing, assignment, escalation, schedule, or regional-scope changes; no destructive migrations; tests and documentation; and continued adaptation pending CUT confirmation.
+
+## Implemented baseline and Phase 2/3 boundary
 
 Authentication and admin workflows exist locally; roles/permissions are centrally seeded; locations form a campus → zone/building → room hierarchy with validation and database constraints; administrative audit events omit secrets and changed text values. No default administrator or fictitious institutional geography is seeded.
 
 Phase 2 adds ticket/requester, category, priority, comment, status-history, and assignment-history records; requester/Helpdesk Officer/Technician permissions; manual assignment; controlled state transitions; public/internal comments; configurable empty catalogues; and safe audit events. Requester ownership and assigned-technician scopes are enforced in query and record policies. Internal-note reading uses an explicit ability separate from note creation and ticket visibility. The seeded System Administrator can manage category/priority lists but does not have ticket-content permission by default.
 
-No team/deployment model, ticket location, campus/zone-scoped ticket authorization, attachments, SLA, automation, email/notifications, reporting, SSO, production integrations, or deployment has been added. No MySQL/MariaDB behavior is verified.
+Phase 3 adds generic teams, dated Technician memberships, and temporary deployments to existing zones as administrative metadata only. `teams.manage` is granted only to System Administrators. Membership/deployment records do not change Phase 2 ticket visibility, routing, assignment, or escalation; tickets still have no team/location fields and technicians remain authorized only by existing individual assignment rules. No team-based ticket access, scheduling, automatic routing, regional ticket authorization, attachments, SLA, automation, email/notifications, reporting, SSO, production integrations, or deployment has been added. No MySQL/MariaDB behavior is verified.
 
 ## Engineering proposals, not CUT approvals
 
-Laravel 13/Fortify and the SQLite local default were selected for a testable bootstrap. The ticket MVP adopts the chat-approved defaults above, but the global helpdesk triage permission and status vocabulary remain proposals until CUT review. Categories/priorities can be configured by the seeded System Administrator role; this operator choice is adjustable and requires approval. Role assignments remain global; there are no regional ticket constraints.
+Laravel 13/Fortify and the SQLite local default were selected for a testable bootstrap. The Phase 2 ticket MVP and Phase 3 metadata design follow chat-approved defaults, but the global helpdesk triage permission, status vocabulary, team structure, date rules, and admin grants remain proposals until CUT review. Categories/priorities and metadata can be configured by the seeded System Administrator role; these operator choices require institutional approval. Role assignments remain global; there are no regional ticket constraints.
 
 ## Unverified institutional assumptions and risks
 
 The supported PHP/Laravel/database versions, hosting model, authentication source, identity lifecycle, email delivery, official brand assets and accessibility target, data classification, lawful basis, retention, backup/recovery, incident ownership, account recovery, location owners, ticket privacy, role grants, audit mandate, and release process remain unknown. Local test success does not establish secure production settings or MySQL compatibility.
 
-The Phase 2 global Helpdesk Officer queue and unscoped ticket locations are significant data-access assumptions. Internal-note policy, requester identity/walk-in handling, catalogue ownership/values, status closure rules, privacy/retention, administrator content access, and the team/regional model also need explicit CUT decisions before real data use.
+The Phase 2 global Helpdesk Officer queue and unscoped ticket locations are significant data-access assumptions. Internal-note policy, requester identity/walk-in handling, catalogue ownership/values, status closure rules, privacy/retention, administrator content access, and the official team/regional model also need explicit CUT decisions before real data use. The Phase 3 metadata does not implement those access rules.
 
 ## Questions for CUT ICT before operational use
 
@@ -69,4 +71,4 @@ The Phase 2 global Helpdesk Officer queue and unscoped ticket locations are sign
 18. Which logo, colour palette, typography, accessibility standard, language, and device/browser matrix are approved?
 19. Which test data, CI provider, dependency/secret scanning, code review, migration, and deployment process should be used?
 
-Record each answer with approver, date, and evidence before translating it into production behavior. The current Phase 2 implementation is a local prototype and must not be treated as CUT policy.
+Record each answer with approver, date, and evidence before translating it into production behavior. The Phase 2–3 implementation is a local prototype and must not be treated as CUT policy.

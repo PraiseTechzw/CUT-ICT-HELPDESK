@@ -16,6 +16,7 @@
                 <a class="underline-offset-4 hover:underline" href="{{ route('dashboard') }}">Home</a>
                 @if (auth()->user()->can('tickets.view_own') || auth()->user()->can('tickets.view_all') || auth()->user()->can('tickets.view_assigned'))<a class="underline-offset-4 hover:underline" href="{{ route('tickets.index') }}">Tickets</a>@endif
                 @can('tickets.catalogues.manage')<a class="underline-offset-4 hover:underline" href="{{ route('admin.ticket-catalogues.index') }}">Ticket settings</a>@endcan
+                @can('teams.manage')<a class="underline-offset-4 hover:underline" href="{{ route('admin.teams.index') }}">Teams &amp; deployments</a>@endcan
                 @can('users.view')<a class="underline-offset-4 hover:underline" href="{{ route('admin.users.index') }}">Accounts</a>@endcan
                 @can('users.assign_roles')<a class="underline-offset-4 hover:underline" href="{{ route('admin.roles.index') }}">Roles</a>@endcan
                 @can('campuses.view')<a class="underline-offset-4 hover:underline" href="{{ route('admin.campuses.index') }}">Campuses</a>@endcan

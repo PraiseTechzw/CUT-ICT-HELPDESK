@@ -60,6 +60,8 @@ final class Permissions
 
     public const TICKETS_CATALOGUES_MANAGE = 'tickets.catalogues.manage';
 
+    public const TEAMS_MANAGE = 'teams.manage';
+
     /** @return array<string, string> */
     public static function definitions(): array
     {
@@ -91,6 +93,7 @@ final class Permissions
             self::TICKETS_COMMENT_PUBLIC => 'Add requester-visible ticket replies',
             self::TICKETS_COMMENT_INTERNAL => 'Add internal ticket work notes',
             self::TICKETS_CATALOGUES_MANAGE => 'Configure ticket category and priority catalogues',
+            self::TEAMS_MANAGE => 'Manage teams, technician memberships, and deployments',
         ];
     }
 }
