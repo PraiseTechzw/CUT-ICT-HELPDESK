@@ -34,6 +34,32 @@ final class Permissions
 
     public const AUDIT_VIEW = 'audit.view';
 
+    public const TICKETS_CREATE = 'tickets.create';
+
+    public const TICKETS_VIEW_OWN = 'tickets.view_own';
+
+    public const TICKETS_REPLY_OWN = 'tickets.reply_own';
+
+    public const TICKETS_REOPEN_OWN = 'tickets.reopen_own';
+
+    public const TICKETS_VIEW_ALL = 'tickets.view_all';
+
+    public const TICKETS_VIEW_INTERNAL = 'tickets.view_internal';
+
+    public const TICKETS_TRIAGE = 'tickets.triage';
+
+    public const TICKETS_ASSIGN = 'tickets.assign';
+
+    public const TICKETS_VIEW_ASSIGNED = 'tickets.view_assigned';
+
+    public const TICKETS_WORK_ASSIGNED = 'tickets.work_assigned';
+
+    public const TICKETS_COMMENT_PUBLIC = 'tickets.comment_public';
+
+    public const TICKETS_COMMENT_INTERNAL = 'tickets.comment_internal';
+
+    public const TICKETS_CATALOGUES_MANAGE = 'tickets.catalogues.manage';
+
     /** @return array<string, string> */
     public static function definitions(): array
     {
@@ -52,6 +78,19 @@ final class Permissions
             self::ROOMS_VIEW => 'View rooms',
             self::ROOMS_MANAGE => 'Manage rooms',
             self::AUDIT_VIEW => 'View administrative audit events',
+            self::TICKETS_CREATE => 'Create support tickets',
+            self::TICKETS_VIEW_OWN => 'View own tickets',
+            self::TICKETS_REPLY_OWN => 'Reply publicly to own tickets',
+            self::TICKETS_REOPEN_OWN => 'Reopen own resolved or closed tickets',
+            self::TICKETS_VIEW_ALL => 'View all tickets for helpdesk triage',
+            self::TICKETS_VIEW_INTERNAL => 'Read internal ticket work notes',
+            self::TICKETS_TRIAGE => 'Triage tickets and manage ticket status',
+            self::TICKETS_ASSIGN => 'Assign tickets to individual technicians',
+            self::TICKETS_VIEW_ASSIGNED => 'View tickets assigned to the signed-in technician',
+            self::TICKETS_WORK_ASSIGNED => 'Update status and work on assigned tickets',
+            self::TICKETS_COMMENT_PUBLIC => 'Add requester-visible ticket replies',
+            self::TICKETS_COMMENT_INTERNAL => 'Add internal ticket work notes',
+            self::TICKETS_CATALOGUES_MANAGE => 'Configure ticket category and priority catalogues',
         ];
     }
 }

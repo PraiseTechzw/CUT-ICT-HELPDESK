@@ -1,47 +1,53 @@
 # Feature Roadmap
 
-**Status:** Phase 0 documentation is complete. Phase 1 is implemented and locally tested, pending CUT ICT review and validation against the institution's technical/policy requirements. No ticketing work has started.
+**Status:** Phase 0 documentation is complete. Phase 1 and the user-approved Phase 2 MVP are implemented and locally tested, pending CUT ICT review and validation against institutional technical/privacy requirements.
 
 ## Phase 0 — Foundation (complete)
 
-**Delivered:** preserved source brief; scope, architecture, domain model, proposed permissions, setup/testing guidance, open questions, and phased roadmap. The findings were based on the repository and user brief; institutional operations were not independently verified.
+**Delivered:** preserved source brief; scope, architecture, domain model, proposed permissions, setup/testing guidance, open questions, and phased roadmap. Institutional operations were not independently verified.
 
 ## Phase 1 — Application bootstrap, identity, roles, and regional configuration (implemented locally)
 
-**Delivered:** Laravel 13 application bootstrap; Fortify login/logout; active-account checks, rate limiting, protected routes, test-safe session behavior, proposed role/permission catalogue, user search/create/profile/status/role administration, guarded campus/zone/building/room configuration, safe administrative audit events, Blade screens, isolated PHPUnit tests, and setup/security documentation.
+**Delivered:** Laravel 13 bootstrap; Fortify login/logout; active-account checks and rate limiting; proposed role/permission catalogue; account administration; guarded campus/zone/building/room configuration; safe administrative audit events; Blade screens, isolated PHPUnit tests, and setup/security documentation.
 
-**Observed checks:** 27 PHPUnit tests passed (144 assertions), Vite production asset build succeeded, Pint passed, and PHP/npm dependency audits returned no advisories at the time of execution. See [Testing Strategy](TESTING_STRATEGY.md). This does not establish production readiness, CUT approval, MySQL compatibility, or security/UAT acceptance.
+**Observed checks at Phase 1 completion:** 27 PHPUnit tests passed (144 assertions), Vite build succeeded, Pint passed, and dependency audits reported no advisories at the time. See [Testing Strategy](TESTING_STRATEGY.md). This does not establish production readiness, CUT approval, SQL compatibility, or security/UAT acceptance.
 
-**Open dependencies:** approve framework/hosting/database versions, identity and password recovery, proposed role grants, location ownership, privacy/retention/audit policy, accessibility/branding, and deployment/security controls. Teams, technician deployments, user-zone relationships, and per-region authorization remain unimplemented pending confirmed semantics.
+## Phase 2 — Ticket intake and individual technician workflow (implemented locally)
 
-## Phase 2 — Teams, memberships, and technician deployments
+The user explicitly directed ticketing and technician workflows to Phase 2, moving ahead of the earlier roadmap's team-first staging. The user approved the conservative MVP defaults in chat on 2026-10-10; this is user authorization for the implementation, **not CUT institutional policy approval**.
 
-**Prerequisites:** CUT-approved team structure, staffing, home/ordinary membership, temporary deployment, effective-date/overlap, delegation, and administration rules. **Deliverables:** only the approved relationships and necessary administration. **Tests:** membership/deployment dates, overlap, scope authorization, historical integrity, and cross-zone access. No names, staffing schedules, or zone boundaries should be invented.
+**Delivered:** requester-owned ticket intake and views; global Helpdesk Officer triage queue; manual assignment to one active Technician; assigned-only technician views/work; separate public replies and internal notes; fixed status lifecycle with explicit reopen; transactional assignment/status histories; empty-by-default configurable categories and priorities; permission-guarded screens and privacy-focused tests.
 
-## Phase 3 — Ticket intake, catalogues, assignment, and histories
+**Approved implementation defaults:** Requesters read/reply only to their own tickets; technicians read/work only their assignments; helpdesk triage sees all tickets; public and internal comments are separate; lifecycle is Open → Assigned → In Progress → Waiting on Requester → Resolved → Closed; reopen is an explicit operation; categories/priorities are configurable with no invented seeds; no team/zone routing, SLA, auto-routing, notification, or email features.
 
-**Prerequisites:** confirmed intake channels, walk-in identity/minimization rules, category/priority/status catalogues, assignment authority, and retention. **Deliverables:** create/view/update ticket, queue, assignment/status history. **Tests:** validation, state transitions, transactions, requester ownership, and staff-scoped access.
+**Observed checks:** 36 PHPUnit tests passed (212 assertions), Pint and PHP syntax lint passed, Composer validation passed, and Vite production assets built successfully. See [Testing Strategy](TESTING_STRATEGY.md). SQLite is the only exercised database engine. No migration has been rehearsed on a CUT-selected database.
 
-## Phase 4 — Routing, escalation, communication, and notifications
+**Not approved for real use:** The Helpdesk Officer queue is global; tickets do not carry campus/zone location. Exact role grants, catalogue values/owners, privacy/retention, internal-note governance, closure/reopen policy, and administrator ticket visibility need CUT review. System Administrator can configure the catalogues but receives no seeded ticket-content permission.
 
-**Prerequisites:** approved routing, specialist coverage, targets, escalation, channels, and delivery ownership. **Deliverables:** deterministic routing/transfers, public messages, internal notes, and notification retry behavior. **Tests:** routing matrix, duplicate delivery, privacy boundaries, and clock/calendar rules.
+## Phase 3 — Teams, memberships, and technician deployments (deferred)
 
-## Phase 5 — Requester portal, technician workspace, and supervisor views
+**Prerequisites:** CUT-approved team structure, home/ordinary membership, temporary deployment, effective-date/overlap, delegation, regional scope, and administration rules. **Deliverables:** only the approved relationships and necessary administration. **Tests:** membership/deployment dates, overlap, scope authorization, historical integrity, and cross-zone access. No names, staffing schedules, or zone boundaries should be invented.
 
-**Prerequisites:** validated personas, mobile/browser support, accessibility requirements, user research, and CUT-approved identity assets. **Deliverables:** responsive workflows and scoped operational queues. **Tests:** end-to-end role journeys, keyboard accessibility, and regional data isolation.
+## Phase 4 — Routing, escalation, communication, and notifications (deferred)
 
-## Phase 6 — Service targets, knowledge, reports, and feedback
+**Prerequisites:** approved routing, specialist coverage, service targets, escalation, channels, delivery ownership, privacy, and retention. **Deliverables:** deterministic routing/transfers, approved notification behavior, and retry handling. Public replies and internal notes exist in Phase 2, but external delivery does not.
 
-**Prerequisites:** approved SLA definitions/calendars, reporting audience, metric definitions, article ownership/moderation, and feedback policy. **Deliverables:** versioned targets, articles, feedback, and authorized reports with reproducible metrics.
+## Phase 5 — Requester portal, technician workspace, and supervisor views (deferred)
 
-## Phase 7 — Assets and maintenance
+**Prerequisites:** validated personas, mobile/browser support, accessibility requirements, user research, approved regional authorization, and CUT identity assets. **Deliverables:** responsive scoped workflows and supervisor views. **Tests:** end-to-end role journeys, keyboard accessibility, and regional data isolation.
+
+## Phase 6 — Service targets, knowledge, reports, and feedback (deferred)
+
+**Prerequisites:** approved SLA definitions/calendars, reporting audience, metric definitions, article ownership/moderation, and feedback policy.
+
+## Phase 7 — Assets and maintenance (deferred)
 
 **Prerequisites:** source-of-truth decision, approved asset identifiers, custodianship, and integrations. Do not create a duplicate authoritative inventory without institutional approval.
 
-## Phase 8 — Hardening, integrations, UAT, pilot, and deployment
+## Phase 8 — Hardening, integrations, UAT, pilot, and deployment (not started)
 
 **Prerequisites:** security/privacy review, hosting and backup plan, authorized integrations, support model, UAT, and explicit release approval. **Deliverables:** reviewed threat model, restore-tested backups, monitoring/runbooks, migration rehearsal, integration/regression/performance tests, and rollback/incident evidence. No deployment occurs as part of this implementation.
 
 ## Cross-phase exit discipline
 
-Complete review of schema, migrations, authorization boundaries, documented open questions, and meaningful automated tests before expanding the data surface. Record material changes and approval rationale in project documentation. Do not proceed from Phase 1 directly into ticketing until the foundation and required institutional decisions have been reviewed.
+Review schema, migrations, authorization boundaries, open questions, and meaningful automated tests before expanding the data surface. Record material changes and approval rationale. The current Phase 2 code is an implementation prototype with user-approved defaults; it must not be represented as CUT policy or production-ready behavior.

@@ -1,6 +1,6 @@
 # Project Scope
 
-**Status:** Phase 1 foundation is implemented locally from the user-provided briefs. Institutional workflows, role policy, geography, hosting, and visual identity remain unverified; see [Requirements and Open Questions](REQUIREMENTS_AND_OPEN_QUESTIONS.md).
+**Status:** Phase 1 foundation and a user-approved Phase 2 ticketing MVP are implemented locally from the supplied briefs and chat-confirmed defaults. Institutional workflows, role policy, geography, hosting, and visual identity remain unverified; see [Requirements and Open Questions](REQUIREMENTS_AND_OPEN_QUESTIONS.md).
 
 ## Problem and long-term objective
 
@@ -10,13 +10,17 @@ The long-term objective is a secure and maintainable base for requesters and sta
 
 ## Phase 1 implementation scope
 
-The current application implements login/logout and active-account enforcement; protected user/account administration; centralized proposed roles and granular permissions; administrator bootstrap without a seeded default user; administrative audit events; campus, operational-zone, building, and room records; server-side hierarchy/uniqueness validation; and feature tests/setup documentation.
+The application implements login/logout and active-account enforcement; protected user/account administration; centralized proposed roles and granular permissions; administrator bootstrap without a seeded default user; administrative audit events; campus, operational-zone, building, and room records; server-side hierarchy/uniqueness validation; feature tests and setup documentation.
 
-The UI uses responsive Blade layouts, labeled forms, and reusable field-error presentation. Because approved CUT assets were not available, it uses neutral non-official styling and system fonts. No real staff/student records or institutional location names are supplied as seed data.
+## Phase 2 implementation scope
 
-## Later capabilities (not implemented)
+The user approved a conservative ticketing MVP for Phase 2. It includes requester-owned ticket intake and view/reply, a global Helpdesk Officer triage queue, manual assignment to one active individual Technician, assigned-only Technician ticket access, public replies separated from internal notes, explicit state transitions and reopen, status/assignment history, and configurable category/priority catalogues with no invented initial values.
 
-Ticket intake/categorization, requester and walk-in communications, assignment/transfer history, team membership, effective-dated technician deployments, scoped regional roles, routing/escalation, resolution/feedback, notifications, reporting, knowledge, assets/maintenance, identity-provider and email integrations, and production deployment remain later work. Team/user-zone relationships were intentionally not added because their institutional semantics are not confirmed.
+The UI uses responsive Blade layouts, labeled forms, and reusable field-error presentation. Requesters cannot see internal notes, technician identities, or other requesters' ticket data. The seeded System Administrator can configure catalogues but has no ticket-content permission by default.
+
+## Out of scope
+
+Team membership, effective-dated technician deployments, user-zone assignments, regional ticket authorization, location assignment on tickets, automatic routing, escalation, SLAs, attachments, email/notifications, reporting, knowledge, assets/maintenance, identity-provider integrations, external services, and production deployment remain deferred. No real staff/student records, CUT locations, categories, priorities, schedules, or assignments are supplied as seed data.
 
 ## Stakeholders and proposed user groups
 
@@ -24,6 +28,6 @@ The briefs identify possible requesters (students, employees, other authorized p
 
 ## Scope boundaries and assumptions
 
-The implementation is a Laravel modular monolith with Blade and relational storage. SQLite was used locally; MySQL/MariaDB and institutional hosting have not been verified. Role labels/grants, global rather than regional role assignments, and the password/account lifecycle are implementation proposals, not institutional policy. No SSO, LDAP, Active Directory, mail, or other internal integration is configured.
+The implementation is a Laravel modular monolith with Blade and relational storage. SQLite was used locally; MySQL/MariaDB and institutional hosting have not been verified. The Phase 2 chat-approved defaults are implementation behavior for a prototype, not approved CUT policy. The Helpdesk Officer queue is global; technicians are scoped only to individual assignment, not region. Role grants and catalogue ownership/values remain adjustable proposals. No SSO, LDAP, Active Directory, mail, or other internal integration is configured.
 
-This phase does not implement ticketing or change production data/infrastructure. Before real use, CUT must confirm supported versions/hosting, identity source, account recovery, access policy, official locations and owners, privacy/retention/audit rules, approved CUT branding/accessibility standard, production database/backups, and security/release process.
+Before real use, CUT must confirm supported versions/hosting, identity source, account recovery, role and ticket-access policy, approved locations and owners, privacy/retention/audit rules, category/priority/status semantics, official branding/accessibility standard, production database/backups, and security/release process.
