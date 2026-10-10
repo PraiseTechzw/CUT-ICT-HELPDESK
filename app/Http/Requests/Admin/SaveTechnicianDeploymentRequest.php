@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Admin;
 
-use App\Models\TechnicianDeployment;
 use App\Models\User;
 use App\Support\Permissions;
 use App\Support\Roles;
@@ -42,25 +41,6 @@ class SaveTechnicianDeploymentRequest extends FormRequest
                 $validator->errors()->add('technician_id', 'Choose an account that has the Technician role.');
             }
 
-            if ($validator->errors()->has('technician_id')
-                || $validator->errors()->has('operational_zone_id')
-                || $validator->errors()->has('starts_on')
-                || $validator->errors()->has('ends_on')) {
-                return;
-            }
-
-            $deployment = $this->route('deployment');
-            $duplicate = TechnicianDeployment::query()
-                ->where('technician_id', $this->input('technician_id'))
-                ->where('operational_zone_id', $this->input('operational_zone_id'))
-                ->whereDate('starts_on', $this->input('starts_on'))
-                ->whereDate('ends_on', $this->input('ends_on'))
-                ->when($deployment instanceof TechnicianDeployment, fn ($query) => $query->where('id', '!=', $deployment->getKey()))
-                ->exists();
-
-            if ($duplicate) {
-                $validator->errors()->add('ends_on', 'This exact technician, zone, and date period is already recorded.');
-            }
         }];
     }
 }

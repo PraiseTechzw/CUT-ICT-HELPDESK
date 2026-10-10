@@ -182,7 +182,7 @@ class TeamsAndDeploymentsTest extends TestCase
         ])->assertRedirect();
         $this->post(route('admin.technician-deployments.store'), [
             ...$payload, 'starts_on' => '2026-05-01', 'ends_on' => '2026-05-31',
-        ])->assertSessionHasErrors('ends_on');
+        ])->assertRedirect();
         $this->post(route('admin.technician-deployments.store'), [
             ...$payload, 'operational_zone_id' => 999999,
         ])->assertSessionHasErrors('operational_zone_id');
@@ -202,7 +202,7 @@ class TeamsAndDeploymentsTest extends TestCase
         ])->assertRedirect(route('admin.technician-deployments.index'));
 
         $deployments = TechnicianDeployment::query()->with('operationalZone.campus')->get();
-        $this->assertCount(2, $deployments);
+        $this->assertCount(3, $deployments);
         $this->assertSame('2026-05-20', $deployments->first()->ends_on->format('Y-m-d'));
         $this->assertSame($zone->id, $deployments->first()->operationalZone->id);
         $this->assertSame($campus->id, $deployments->first()->operationalZone->campus->id);

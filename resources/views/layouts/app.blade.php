@@ -15,6 +15,7 @@
             <nav aria-label="Main navigation" class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
                 <a class="underline-offset-4 hover:underline" href="{{ route('dashboard') }}">Home</a>
                 @if (auth()->user()->can('tickets.view_own') || auth()->user()->can('tickets.view_all') || auth()->user()->can('tickets.view_assigned'))<a class="underline-offset-4 hover:underline" href="{{ route('tickets.index') }}">Tickets</a>@endif
+                @can('tickets.view_all')<a class="underline-offset-4 hover:underline" href="{{ route('reports.tickets.index') }}">Reports</a>@endcan
                 @can('tickets.catalogues.manage')<a class="underline-offset-4 hover:underline" href="{{ route('admin.ticket-catalogues.index') }}">Ticket settings</a>@endcan
                 @can('teams.manage')<a class="underline-offset-4 hover:underline" href="{{ route('admin.teams.index') }}">Teams &amp; deployments</a>@endcan
                 @can('users.view')<a class="underline-offset-4 hover:underline" href="{{ route('admin.users.index') }}">Accounts</a>@endcan

@@ -1,6 +1,6 @@
 # Project Scope
 
-**Status:** Phases 1–3 are implemented locally from the supplied briefs and user-approved provisional defaults. Institutional workflows, role policy, geography, hosting, and visual identity remain unverified; see [Requirements and Open Questions](REQUIREMENTS_AND_OPEN_QUESTIONS.md).
+**Status:** Phases 1–4 are implemented locally from the supplied briefs and user-approved/user-directed provisional defaults. Institutional workflows, role policy, geography, hosting, reporting policy, and visual identity remain unverified; see [Requirements and Open Questions](REQUIREMENTS_AND_OPEN_QUESTIONS.md).
 
 ## Problem and long-term objective
 
@@ -16,15 +16,19 @@ The application implements login/logout and active-account enforcement; protecte
 
 The user approved a conservative ticketing MVP for Phase 2. It includes requester-owned ticket intake and view/reply, a global Helpdesk Officer triage queue, manual assignment to one active individual Technician, assigned-only Technician ticket access, public replies separated from internal notes, explicit state transitions and reopen, status/assignment history, and configurable category/priority catalogues with no invented initial values.
 
-The UI uses responsive Blade layouts, labeled forms, and reusable field-error presentation. Requesters cannot see internal notes, technician identities, or other requesters' ticket data. The seeded System Administrator can configure catalogues but has no ticket-content permission by default.
+The UI uses responsive Blade layouts, labeled forms, and reusable field-error presentation. Requesters cannot see internal notes, technician identities, or other requesters' ticket data. The seeded System Administrator can configure catalogues and Phase 3 metadata but has no ticket-content permission or report access by default.
 
 ## Phase 3 implementation scope
 
 Phase 3 adds generic, unseeded team records, effective-dated Technician memberships, and date-bounded deployments to existing operational zones. System Administrators alone can manage these records. Membership dates are inclusive, null end dates mean ongoing, cross-team overlaps are permitted, and same-Technician/same-team overlaps are rejected. Deployment overlaps are allowed as records, not shifts or exclusive assignments. These records do not change ticket access, routing, assignment, escalation, or schedules. The design is provisional pending CUT ICT confirmation.
 
+## Phase 4 implementation scope
+
+Phase 4 adds read-only aggregate analytics for tickets created within an inclusive date range: daily volume, current status, category, and priority counts. The default range is the last 30 calendar days, with a 366-day maximum. Access is restricted to users already holding global `tickets.view_all`; no ticket-level identities/text, drill-down, export, or new role grant is added. Metric definitions and timezone are provisional.
+
 ## Out of scope
 
-Team-based ticket access/routing, user-zone authorization, regional ticket authorization, location assignment on tickets, automatic routing, escalation, SLAs, attachments, email/notifications, reporting, knowledge, assets/maintenance, identity-provider integrations, external services, and production deployment remain deferred. No real staff/student records, CUT locations, teams, categories, priorities, schedules, or assignments are supplied as seed data.
+Team-based ticket access/routing, user-zone authorization, regional ticket authorization, location assignment on tickets, automatic routing, escalation, SLAs, historical-as-of/service-level/productivity analytics, report export, attachments, email/notifications, knowledge, assets/maintenance, identity-provider integrations, external services, and production deployment remain deferred. No real staff/student records, CUT locations, teams, categories, priorities, schedules, or assignments are supplied as seed data.
 
 ## Stakeholders and proposed user groups
 

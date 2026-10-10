@@ -1,6 +1,6 @@
 # CUT ICT Helpdesk
 
-A digital support-management foundation for Chinhoyi University of Technology (CUT), Zimbabwe, intended to complement the existing walk-in ICT helpdesk. **Phases 1–3 are implemented and locally verified; Phase 3 is a provisional, metadata-only design pending CUT review.** Institutional policies, deployment requirements, and production readiness remain unapproved.
+A digital support-management foundation for Chinhoyi University of Technology (CUT), Zimbabwe, intended to complement the existing walk-in ICT helpdesk. **Phases 1–4 are implemented and locally verified; Phase 3 and Phase 4 contain provisional designs pending CUT review.** Institutional policies, deployment requirements, and production readiness remain unapproved.
 
 ## Current status
 
@@ -13,9 +13,10 @@ A digital support-management foundation for Chinhoyi University of Technology (C
 - Requesters can create, view, publicly reply to, and reopen only their own tickets. Helpdesk Officers can triage all tickets and manually assign an active individual Technician. Technicians can view/work only their assigned tickets.
 - Public replies and internal work notes are stored separately. Requesters cannot see internal notes or technician identities; reading internal notes has a separate explicit permission from writing them. Audit events never store ticket descriptions or comment bodies.
 - The lifecycle is Open → Assigned → In Progress → Waiting on Requester → Resolved → Closed. Reopening is an explicit action that returns the ticket to the unassigned Open queue.
-- Category and priority catalogues are configurable, but are deliberately empty initially; no CUT-specific values are invented. The System Administrator grant allows catalogue and Phase 3 metadata administration but does not by itself grant ticket-content access.
+- Category and priority catalogues are configurable, but are deliberately empty initially; no CUT-specific values are invented. The System Administrator grant allows catalogue and Phase 3 metadata administration but does not by itself grant ticket-content or report access.
 - Official CUT logo, colours, and typefaces have not been supplied. The interface uses neutral styling and local system fonts.
 - Generic teams, dated technician memberships, and temporary zone deployments are record-only administration. They do not affect ticket access, routing, assignment, escalation, or scheduling. Regional ticket scoping, attachments, SLA timers, automatic routing, notifications/email, assets, knowledge, production integrations, and deployment remain out of scope.
+- Ticket analytics are aggregate-only for users already holding global `tickets.view_all`. The report shows daily volume and current status/category/priority counts for tickets created within a date range; it does not expose individual ticket records or add ticket access to other roles.
 
 ## Quick start
 
@@ -47,7 +48,7 @@ composer audit --locked
 npm audit --audit-level=moderate
 ```
 
-The most recent full run reported **45 tests passed (295 assertions)**. Pint passed for 101 PHP files, Composer validation and the Vite production build passed. A fresh, disposable SQLite database ran all 15 migrations successfully and was removed after the status check. The locked Composer audit found no security advisories and npm audit found zero vulnerabilities. Tests force a test-only environment and SQLite `:memory:` database before Laravel boots, then fail closed if isolation is not active. These checks do not establish production readiness, MySQL compatibility, CUT policy approval, or a completed security review.
+The most recent full run reported **49 tests passed (326 assertions)**. Pint passed for 107 PHP files, Composer validation and the Vite production build passed. A fresh, disposable SQLite database ran all 17 migrations successfully and was removed after the status check. The latest dependency audits found no Composer advisories and zero npm vulnerabilities. Tests force a test-only environment and SQLite `:memory:` database before Laravel boots, then fail closed if isolation is not active. These checks do not establish production readiness, MySQL compatibility, CUT policy approval, or a completed security review.
 
 ## Documentation
 
@@ -65,4 +66,4 @@ The most recent full run reported **45 tests passed (295 assertions)**. Pint pas
 
 ## Next step
 
-Request CUT ICT review of role grants, privacy/retention, category and priority values, regional authorization, branding/accessibility, database/hosting, and security requirements. Rehearse installation and migrations on the institution's chosen database before operational use. Do not infer CUT approval or production readiness from this local implementation; see the [roadmap](docs/FEATURE_ROADMAP.md).
+Request CUT ICT review of role grants, report audience/metrics/timezone, privacy/retention, category and priority values, regional authorization, branding/accessibility, database/hosting, and security requirements. Rehearse installation and migrations on the institution's chosen database before operational use. Do not infer CUT approval or production readiness from this local implementation; see the [roadmap](docs/FEATURE_ROADMAP.md).

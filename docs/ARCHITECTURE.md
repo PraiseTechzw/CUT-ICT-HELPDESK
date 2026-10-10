@@ -1,6 +1,6 @@
 # Architecture
 
-**Status:** Phases 1–3 are implemented and tested locally. Phase 3's generic teams, dated memberships, and deployments are provisional administrative metadata only; hosting, institutional policy, and production configuration have not been verified or approved.
+**Status:** Phases 1–4 are implemented and tested locally. Phase 3's teams/memberships/deployments and Phase 4's aggregate analytics are provisional; hosting, institutional policy, and production configuration have not been verified or approved.
 
 ## Approach
 
@@ -19,11 +19,12 @@ The repository's long-term target remains a SQL database appropriate to CUT-supp
 - **Configurable catalogues:** administrators can configure and deactivate categories/priorities. Values are not seeded, and referenced values are not physically deleted.
 - **Administrative audit:** append-oriented event records for account, role, location, ticket, comment, status, assignment, and catalogue actions. Ticket descriptions and comment bodies are never written to the audit event metadata.
 - **Team and deployment metadata:** unseeded generic teams, effective-dated Technician memberships, and date-bounded deployments to existing zones. Only System Administrators can manage these records; no team/zone mapping, ticket access, routing, schedule, or escalation behavior is inferred.
+- **Reporting:** read-only aggregate counts for tickets created in a selected date range: daily volume, current status, category, and priority. Access reuses `tickets.view_all`; output contains no ticket identifiers, titles, descriptions, requester or technician identities, and no export/drill-down is provided.
 - **Web presentation:** responsive Blade layouts and forms, accessible labels/validation messages, neutral styling, and local system fonts. No official CUT visual asset is present.
 
 ## Explicitly deferred boundaries
 
-No team-based ticket assignment, user-zone grants, regional ticket authorization, automatic routing, escalation, SLAs/calendars, attachments, malware scanning, notifications/email delivery, assets, knowledge, reporting, SSO, password-reset mail, production integrations, or deployment are implemented. Ticket records have no campus/zone ownership or cross-zone segregation yet. The helpdesk-wide triage permission is global in this MVP and must be reviewed before any operational use.
+No team-based ticket assignment, user-zone grants, regional ticket authorization, automatic routing, escalation, SLAs/calendars, attachments, malware scanning, notifications/email delivery, assets, knowledge, historical-as-of reporting, service-level/productivity metrics, export, SSO, password-reset mail, production integrations, or deployment are implemented. Ticket records have no campus/zone ownership or cross-zone segregation yet. The helpdesk-wide triage permission is global in this MVP and must be reviewed before any operational use.
 
 ## Authentication and request flow
 
@@ -37,16 +38,16 @@ No team-based ticket assignment, user-zone grants, regional ticket authorization
 8. Assignment, status transitions, and reopening use database transactions with row locks and append status/assignment history. The allowed state transitions live centrally in `App\Support\TicketStatus` and workflow operations are implemented in `TicketWorkflow`.
 9. Audit events record action, actor/subject, safe IDs/status/visibility metadata, or changed field names. Ticket descriptions and comment bodies are omitted.
 10. Referenced records use restrictive deletes or are deactivated, preserving ticket history and catalogue references.
-11. `teams.manage` is granted only to the proposed System Administrator role. Memberships require a current Technician-role account, team, and valid inclusive start/end dates. Blank membership end date means ongoing. Cross-team date overlaps are allowed; same-technician/same-team overlaps are rejected transactionally, and a unique index prevents duplicate starts. Deployments require an existing Technician-role account and zone plus a valid inclusive date range; overlapping deployments are allowed, while exact duplicate periods are prevented. These records never affect ticket authorization.
+11. `teams.manage` is granted only to the proposed System Administrator role. Memberships require a current Technician-role account, team, and valid inclusive start/end dates. Blank membership end date means ongoing. Cross-team date overlaps are allowed; same-technician/same-team overlaps are rejected transactionally, and a unique index prevents duplicate starts. Deployments require an existing Technician-role account and zone plus a valid inclusive date range; all overlaps, including exact duplicate periods, are allowed as records. These records never affect ticket authorization.
 
 ## Data integrity
 
-- Role and permission slugs are centrally defined in `App\Support\Roles` and `App\Support\Permissions` and seeded idempotently. System Administrator grants are explicit; new ticket-data permissions are not implicitly inherited. In the default seed, a System Administrator can configure catalogues but does not gain ticket-content visibility.
+- Role and permission slugs are centrally defined in `App\Support\Roles` and `App\Support\Permissions` and seeded idempotently. System Administrator grants are explicit; new ticket-data permissions are not implicitly inherited. In the default seed, a System Administrator can configure catalogues and Phase 3 metadata but does not gain ticket-content visibility or report access.
 - Campuses have globally unique codes; zones are unique within a campus; buildings are unique within a campus; rooms are unique within a building.
 - Managed location codes are trimmed and uppercased before validation/storage.
 - A building belongs to a campus and may have a zone only from that same campus; a composite foreign key enforces that relationship at the database layer.
 - Ticket categories and priorities have unique slugs and sort order; no values are seeded. Ticket-to-catalogue foreign keys are optional and restrict deletion.
-- A ticket has exactly one requester and at most one current technician assignee. Assignment history supports unassignment and reassignment without a team model.
+- A ticket has exactly one requester and at most one current technician assignee. Assignment history supports individual unassignment/reassignment; no team-based ticket assignment exists despite the separate Phase 3 Team metadata model.
 - Ticket statuses are controlled strings from a centralized set. Assignment moves Open to Assigned; work moves Assigned to In Progress, In Progress to Waiting on Requester or Resolved, Waiting on Requester to In Progress or Resolved, and helpdesk triage moves Resolved to Closed. Reopening uses a separate action and returns to Open.
 - Ticket comments and histories are append-oriented application records. Physical deletion of ticket records is not exposed.
 
@@ -69,8 +70,19 @@ These controls are a development foundation, not a completed security/privacy re
 | Ticket catalogues | Configurable tables with no seeded values | CUT categories/priorities are not known; a privileged local UI permits later configuration. |
 | System Administrator ticket access | No ticket-content permission by default | Avoid implicit access escalation when new permission definitions are added. |
 | Teams and user-zone scope | Provisional metadata only: generic teams, dated memberships, zone deployments; no ticket access effects | CUT must confirm official structure, date/overlap semantics, delegation, and any future regional scope before operational use. |
+| Reporting | Aggregate-only ticket counts, limited to existing global-triage permission; no record drill-down or export | Audience, metric definitions, timezone, small-cell policy, and export/retention rules require CUT approval. |
 | Integrations | Deferred | Require authorized ownership, interfaces, credentials, and test environments. |
+
+## Verification of provisional design decisions
+
+This is a source/test consistency review, **not institutional approval**:
+
+- **Phase 2 access defaults:** code and feature tests enforce requester ownership, assigned-technician-only access, global Helpdesk Officer triage, and a System Administrator role without ticket-content access. The global triage policy remains provisional for CUT.
+- **Phase 3 teams and dates:** teams have no zone mapping and are not seeded. Memberships use inclusive calendar dates, allow cross-team overlap, reject same-technician/team overlap and duplicate starts, and permit null ongoing ends. Deployments reference existing zones, validate ordered inclusive dates, and permit overlaps, including exact duplicates.
+- **Phase 3 administration and isolation:** the seeded `teams.manage` grant is System Administrator-only and enforced on routes/requests/controllers. Tests confirm memberships/deployments do not grant ticket access; ticket schema and `TicketPolicy` remain individually scoped. Migrations use restrictive foreign keys and membership uniqueness; a later forward migration removes the deployment exact-period uniqueness constraint without deleting rows. Rolling that migration back will fail safely if duplicate periods have since been recorded; no rows are deleted. Only disposable SQLite data was migrated.
+- **Phase 4 reporting proposal:** the report reuses `tickets.view_all`, returns aggregates only, and adds no ticket-data grants, identities, ticket text, drill-down, export, or storage table. Date range and metric semantics are documented as provisional; tests cover role denial, privacy, grouping, boundaries, and range limits.
+- **Remaining unverified choices:** institutional role approval, regional access, team ownership, retention, report audiences/definitions/timezone, production SQL behavior, hosting/security configuration, and deployment remain unresolved.
 
 ## Current state
 
-Laravel **13.35.0** and PHP **8.3.6** were observed in the sandbox. The current full suite reports **45 passing tests (295 assertions)**; Pint passed for 101 PHP files, Composer validation and Vite build passed, and all 15 migrations ran on a fresh disposable SQLite database. The database was removed after verification. Local success does not establish production readiness, institutional approval, or SQL-engine compatibility.
+Laravel **13.35.0** and PHP **8.3.6** were observed in the sandbox. The current full suite reports **49 passing tests (326 assertions)**; Pint passed for 107 PHP files, Composer validation and Vite build passed, and all 17 migrations ran on a fresh disposable SQLite database. The database was removed after verification. Local success does not establish production readiness, institutional approval, or SQL-engine compatibility.
