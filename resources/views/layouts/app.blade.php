@@ -82,7 +82,7 @@
                 </details>
 
                     <details class="sidebar-group" open>
-                        <summary class="sidebar-link {{ request()->routeIs('admin.users.*', 'admin.roles.*') ? 'is-active' : '' }}">
+                        <summary class="sidebar-link {{ request()->routeIs('admin.users.*', 'admin.roles.*', 'admin.departments.*') ? 'is-active' : '' }}">
                             <svg data-lucide="users-round" aria-hidden="true"></svg>
                             <span>Users</span><svg class="sidebar-chevron" data-lucide="chevron-down" aria-hidden="true"></svg>
                         </summary>
@@ -91,6 +91,7 @@
                             @can('users.create')<a class="sidebar-sublink {{ request()->routeIs('admin.users.create') ? 'is-current' : '' }}" href="{{ route('admin.users.create') }}">Add User</a>@else<span class="sidebar-sublink is-unavailable" aria-disabled="true">Add User</span>@endcan
                             @can('users.assign_roles')<a class="sidebar-sublink {{ request()->routeIs('admin.roles.*') ? 'is-current' : '' }}" href="{{ route('admin.roles.index') }}">Roles &amp; Permissions</a>@else<span class="sidebar-sublink is-unavailable" aria-disabled="true">Roles &amp; Permissions</span>@endcan
                             @can('user_groups.manage')<a class="sidebar-sublink {{ request()->routeIs('admin.user-groups.*') ? 'is-current' : '' }}" href="{{ route('admin.user-groups.index') }}">User Groups</a>@else<span class="sidebar-sublink is-unavailable" aria-disabled="true">User Groups</span>@endcan
+                            <a class="sidebar-sublink {{ request()->routeIs('admin.departments.*') ? 'is-current' : '' }}" href="{{ route('admin.departments.index') }}">Departments</a>
                         </div>
                     </details>
 
@@ -121,12 +122,12 @@
                     </details>
 
                 <details class="sidebar-group" open>
-                    <summary class="sidebar-link">
+                    <summary class="sidebar-link {{ request()->routeIs('admin.equipment.*') ? 'is-active' : '' }}">
                         <svg data-lucide="package" aria-hidden="true"></svg>
                         <span>Assets</span><svg class="sidebar-chevron" data-lucide="chevron-down" aria-hidden="true"></svg>
                     </summary>
                     <div class="sidebar-submenu">
-                        <span class="sidebar-sublink is-unavailable">Equipment</span>
+                        <a class="sidebar-sublink {{ request()->routeIs('admin.equipment.*') ? 'is-current' : '' }}" href="{{ route('admin.equipment.index') }}">Equipment</a>
                         <span class="sidebar-sublink is-unavailable">Maintenance</span>
                         <span class="sidebar-sublink is-unavailable">Asset Categories</span>
                     </div>
