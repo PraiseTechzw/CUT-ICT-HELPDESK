@@ -37,7 +37,7 @@ On 2026-10-10, the user directed Phase 4 to reporting and analytics. The provisi
 
 Authentication and admin workflows exist locally; roles/permissions are centrally seeded; locations form a campus → zone/building → room hierarchy with validation and database constraints; administrative audit events omit secrets and changed text values. No default administrator or fictitious institutional geography is seeded.
 
-Phase 2 adds ticket/requester, category, priority, comment, status-history, and assignment-history records; requester/Helpdesk Officer/Technician permissions; manual assignment; controlled state transitions; public/internal comments; configurable empty catalogues; and safe audit events. Requester ownership and assigned-technician scopes are enforced in query and record policies. Internal-note reading uses an explicit ability separate from note creation and ticket visibility. The seeded System Administrator can manage category/priority lists but does not have ticket-content permission by default.
+Phase 2 adds ticket/requester, category, priority, comment, status-history, and assignment-history records; requester/Helpdesk Officer/Technician permissions; manual assignment; controlled state transitions; public/internal comments; configurable empty catalogues; and safe audit events. Requester ownership and assigned-technician scopes are enforced in query and record policies. Internal-note reading uses an explicit ability separate from note creation and ticket visibility. System Administrators receive all permissions currently defined by the application, including ticket-content access.
 
 Phase 3 adds generic teams, dated Technician memberships, and temporary deployments to existing zones as administrative metadata only. `teams.manage` is granted only to System Administrators. Membership/deployment records do not change Phase 2 ticket visibility, routing, assignment, or escalation; tickets still have no team/location fields and technicians remain authorized only by existing individual assignment rules.
 
@@ -60,7 +60,7 @@ The Phase 2 global Helpdesk Officer queue and unscoped ticket locations are sign
 3. Is SSO required? Which identity source, unique identifiers, test tenant, provisioning, deprovisioning, and account recovery process apply?
 4. Who may create accounts, activate/deactivate users, assign privileged roles, and conduct emergency administrator recovery?
 5. Are the proposed roles, labels, and grants correct? Must any role be scoped by campus/zone, or must separation of duties be stricter?
-6. Should Helpdesk Officer access remain global, or be restricted by campus/zone/team? Should ICT Managers, System Administrators, supervisors, or auditors receive ticket-content permissions?
+6. Should Helpdesk Officer access remain global, or be restricted by campus/zone/team? The current implementation gives System Administrators full application permissions; should this administrator-wide ticket access be retained for production?
 7. Which campuses, operational zones, buildings, rooms, identifiers, and configuration owners are approved? How should unknown/off-campus locations be represented on tickets?
 8. What teams, memberships, technician deployments, delegation, temporary assignment, and overlap semantics are authoritative?
 9. How are walk-in requesters identified, and what is the minimum allowed personal data?

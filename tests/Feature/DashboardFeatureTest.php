@@ -40,7 +40,7 @@ class DashboardFeatureTest extends TestCase
             ->assertSee('1');
     }
 
-    public function test_administrator_dashboard_does_not_expose_ticket_metrics_without_ticket_permission(): void
+    public function test_administrator_dashboard_exposes_ticket_metrics_and_full_ticket_visibility(): void
     {
         $administrator = $this->userWithRole(Roles::SYSTEM_ADMINISTRATOR, 'Dashboard Administrator');
         $requester = $this->userWithRole(Roles::REQUESTER, 'Ticket Owner');
@@ -52,10 +52,9 @@ class DashboardFeatureTest extends TestCase
             ->assertSee('Current System Status')
             ->assertSee('Ticket Trends')
             ->assertSee('Recent Tickets')
-            ->assertSee('Ticket data is restricted')
-            ->assertSee('Ticket details are restricted for this account.')
-            ->assertDontSee('Restricted ticket subject')
-            ->assertDontSee('Total tickets');
+            ->assertSee('Restricted ticket subject')
+            ->assertSee('Total tickets')
+            ->assertSee(route('tickets.index'));
     }
 
     private function userWithRole(string $roleSlug, string $name): User

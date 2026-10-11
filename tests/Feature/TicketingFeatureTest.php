@@ -345,10 +345,15 @@ class TicketingFeatureTest extends TestCase
     public function test_system_administrator_receives_every_defined_permission(): void
     {
         $administrator = $this->userWithRole(Roles::SYSTEM_ADMINISTRATOR, 'Full Permission Administrator');
+        $assignedPermissions = $administrator->roles()->with('permissions')->get()
+            ->flatMap(fn (Role $role) => $role->permissions)
+            ->pluck('slug')
+            ->unique()
+            ->all();
 
         $this->assertEqualsCanonicalizing(
             array_keys(Permissions::definitions()),
-            $administrator->getAllPermissions()->pluck('slug')->all(),
+            $assignedPermissions,
         );
     }
 

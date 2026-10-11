@@ -54,7 +54,7 @@ There is no team/queue-based ticket assignment, regional ticket scope, automatic
 
 No user-zone pivot, ticket-location fields, team-based routing, SLA/calendar, escalation rule, attachment/upload, asset, knowledge, notification, or reporting fact table exists. The current aggregate report is derived from existing tickets and adds no record-level view. Tickets are not region-scoped, and no ticket location or walk-in proxy identity is captured. The generic team/membership/deployment schema and report definitions are provisional; CUT must still confirm official organization structure, responsible administrators, regional delegation, privacy/retention, reporting audience/timezone/metric definitions, and whether future records should influence access.
 
-The category and priority values are empty. The System Administrator role can configure those reference lists, but by default does not receive ticket-content permissions. Exact values, catalogue owner, priority interpretation, and whether other roles should configure catalogues require approval.
+The category and priority values are empty. System Administrators can configure those reference lists and receive all currently defined ticket permissions. Exact values, catalogue owner, priority interpretation, and whether other roles should configure catalogues require approval.
 
 ## Decisions still open
 

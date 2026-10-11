@@ -44,7 +44,7 @@ No team-based ticket assignment, user-zone grants, regional ticket authorization
 
 ## Data integrity
 
-- Role and permission slugs are centrally defined in `App\Support\Roles` and `App\Support\Permissions` and seeded idempotently. System Administrator grants are explicit; new ticket-data permissions are not implicitly inherited. In the default seed, a System Administrator can configure catalogues and Phase 3 metadata but does not gain ticket-content visibility or report access.
+- Role and permission slugs are centrally defined in `App\Support\Roles` and `App\Support\Permissions` and seeded idempotently. System Administrators receive every currently defined permission; rerunning the role seeder applies newly added permissions.
 - Campuses have globally unique codes; zones are unique within a campus; buildings are unique within a campus; rooms are unique within a building.
 - Managed location codes are trimmed and uppercased before validation/storage.
 - A building belongs to a campus and may have a zone only from that same campus; a composite foreign key enforces that relationship at the database layer.
@@ -56,9 +56,9 @@ No team-based ticket assignment, user-zone grants, regional ticket authorization
 
 ## Security and privacy boundaries
 
-No public registration, default privileged user, SSO/LDAP/AD, reset mail, production secret, or external font service is configured. Passwords are hashed by Laravel; account/role controls are separated; self-role changes and self-deactivation are rejected. The active-account middleware ends sessions after deactivation. Requesters do not see internal notes, technician identities, or other requesters' tickets. Internal-note visibility is separately permissioned from ticket visibility and note creation. The seeded System Administrator does not have ticket-content permissions. Audit payloads and notification payloads omit secrets and ticket/comment text; notification recipient and inbox access are independently checked. Audit model hooks provide application-level guardrails only, not tamper-proof or immutable database storage.
+No public registration, default privileged user, SSO/LDAP/AD, reset mail, production secret, or external font service is configured. Passwords are hashed by Laravel; account/role controls are separated; self-role changes and self-deactivation are rejected. The active-account middleware ends sessions after deactivation. Requesters do not see internal notes, technician identities, or other requesters' tickets. Internal-note visibility is separately permissioned from ticket visibility and note creation. System Administrators receive all currently defined permissions, including ticket-content access. Audit payloads and notification payloads omit secrets and ticket/comment text; notification recipient and inbox access are independently checked. Audit model hooks provide application-level guardrails only, not tamper-proof or immutable database storage.
 
-These controls are a development foundation, not a completed security/privacy review. The proposed global Helpdesk Officer queue, administrator visibility, privacy classification/retention, audit immutability/access, session/deployment settings, cross-campus access rules, hosting/network protections, and production secret management require CUT ICT review. No regional access isolation is claimed.
+These controls are a development foundation, not a completed security/privacy review. Global Helpdesk Officer and System Administrator visibility, privacy classification/retention, audit immutability/access, session/deployment settings, cross-campus access rules, hosting/network protections, and production secret management require CUT ICT review. No regional access isolation is claimed.
 
 ## Architectural decisions
 
@@ -71,7 +71,7 @@ These controls are a development foundation, not a completed security/privacy re
 | Local/test database | SQLite; tests use `:memory:` | Easy local setup and isolated tests. Production SQL remains undecided. |
 | Ticket routing | Manual individual assignment only | Avoids inventing team, regional, or automatic routing semantics. |
 | Ticket catalogues | Configurable tables with no seeded values | CUT categories/priorities are not known; a privileged local UI permits later configuration. |
-| System Administrator ticket access | No ticket-content permission by default | Avoid implicit access escalation when new permission definitions are added. |
+| System Administrator permissions | All currently defined permissions | Ensure the administrative role can access every implemented application area; rerun the role seeder when grants change. |
 | Teams and user-zone scope | Provisional metadata only: generic teams, dated memberships, zone deployments; no ticket access effects | CUT must confirm official structure, date/overlap semantics, delegation, and any future regional scope before operational use. |
 | Reporting | Aggregate-only ticket counts, limited to existing global-triage permission; no record drill-down or export | Audience, metric definitions, timezone, small-cell policy, and export/retention rules require CUT approval. |
 | Audit and notification delivery | Filtered audit view requires `audit.view`; generic ticket notifications use the database channel only | Audit access/retention/integrity and notification recipients, timing, and privacy require CUT review; no external channel is enabled. |
@@ -81,7 +81,7 @@ These controls are a development foundation, not a completed security/privacy re
 
 This is a source/test consistency review, **not institutional approval**:
 
-- **Phase 2 access defaults:** code and feature tests enforce requester ownership, assigned-technician-only access, global Helpdesk Officer triage, and a System Administrator role without ticket-content access. The global triage policy remains provisional for CUT.
+- **Phase 2 access defaults:** code and feature tests enforce requester ownership, assigned-technician-only access, global Helpdesk Officer triage, and full application permissions for System Administrators. The global triage and administrator access policies remain subject to CUT review.
 - **Phase 3 teams and dates:** teams have no zone mapping and are not seeded. Memberships use inclusive calendar dates, allow cross-team overlap, reject same-technician/team overlap and duplicate starts, and permit null ongoing ends. Deployments reference existing zones, validate ordered inclusive dates, and permit overlaps, including exact duplicates.
 - **Phase 3 administration and isolation:** the seeded `teams.manage` grant is System Administrator-only and enforced on routes/requests/controllers. Tests confirm memberships/deployments do not grant ticket access; ticket schema and `TicketPolicy` remain individually scoped. Migrations use restrictive foreign keys and membership uniqueness; a later forward migration removes the deployment exact-period uniqueness constraint without deleting rows. Rolling that migration back will fail safely if duplicate periods have since been recorded; no rows are deleted. Only disposable SQLite data was migrated.
 - **Phase 4 reporting proposal:** the report reuses `tickets.view_all`, returns aggregates only, and adds no ticket-data grants, identities, ticket text, drill-down, export, or storage table. Date range and metric semantics are documented as provisional; tests cover role denial, privacy, grouping, boundaries, and range limits.
