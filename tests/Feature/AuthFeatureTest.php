@@ -92,6 +92,22 @@ class AuthFeatureTest extends TestCase
         $this->get('/admin/zones')->assertRedirect('/login');
     }
 
+    public function test_authenticated_users_can_view_their_account_workspace(): void
+    {
+        $user = User::factory()->create([
+            'name' => 'Account Review User',
+            'email' => 'account@example.test',
+        ]);
+
+        $this->actingAs($user)
+            ->get('/account')
+            ->assertOk()
+            ->assertSee('My account')
+            ->assertSee('Profile details')
+            ->assertSee('Access &amp; preferences', false)
+            ->assertSee($user->email);
+    }
+
     public function test_login_attempts_are_limited_per_email_and_ip(): void
     {
         for ($attempt = 1; $attempt <= 5; $attempt++) {

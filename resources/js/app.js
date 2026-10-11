@@ -181,7 +181,7 @@ const sidebarToggle = document.querySelector('[data-sidebar-toggle]');
 const sidebarClose = document.querySelector('[data-sidebar-close]');
 const themeToggle = document.querySelector('[data-theme-toggle]');
 const ticketSearch = document.querySelector('.workspace-search input');
-const isMobileNavigation = window.matchMedia('(max-width: 680px)');
+const isMobileNavigation = window.matchMedia('(max-width: 760px)');
 
 function applyTheme(theme) {
 	document.body.dataset.theme = theme;

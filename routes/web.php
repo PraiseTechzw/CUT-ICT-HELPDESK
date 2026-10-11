@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\TechnicianDeploymentController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\UserGroupController;
 use App\Http\Controllers\Admin\UserRoleController;
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\TicketAnalyticsController;
@@ -31,6 +32,7 @@ Route::get('/', fn () => auth()->check()
 
 Route::middleware(['auth', 'account.active'])->group(function (): void {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
+    Route::get('/account', [AccountController::class, 'index'])->name('account.index');
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::post('/notifications/{notification}/open', [NotificationController::class, 'open'])->name('notifications.open');
 
