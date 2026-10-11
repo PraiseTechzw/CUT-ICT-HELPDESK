@@ -11,7 +11,7 @@
 
 ## Implemented coverage
 
-The latest full run reported **54 tests passed (363 assertions)**, covering:
+The latest full run reported **71 tests passed (536 assertions)**, covering:
 
 - Login page, valid/invalid credentials, inactive login/session denial, session ID rotation, logout invalidation/CSRF regeneration, guest-route protection, and rate limiting.
 - Requester denial for account/location administration; account creation, normalized email, least-privilege role, password hashing, audit metadata, protected-field mass-assignment resistance, role assignment/revocation, self-change denial, deactivation/reactivation, last-admin safeguards, account search, and bootstrap command.
@@ -34,7 +34,7 @@ The latest full run reported **54 tests passed (363 assertions)**, covering:
 
 ## Actual checks performed
 
-- `composer test` — **54 passed, 363 assertions**; test database is in-memory SQLite.
+- `composer test` — **71 passed, 536 assertions**; test database is in-memory SQLite.
 - `npm run build` — passed; Vite production assets generated.
 - `composer audit --locked` — no security vulnerability advisories found; `npm audit --audit-level=moderate` — zero vulnerabilities found in the latest locked dependency audit.
 - `./vendor/bin/pint --test` — passed for 113 PHP files; `composer validate --no-check-publish` passed.

@@ -1232,3 +1232,19 @@ body[data-theme="dark"] .admin-placeholder-header h1 { color: #e1eaf3; } body[da
 .admin-filter-actions .ticket-primary-button, .admin-filter-actions .ticket-secondary-button { min-height: 31px; }
 @media (max-width: 900px) { .admin-kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .admin-filter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 640px) { .admin-data-header { align-items: flex-start; flex-direction: column; } .admin-data-status { margin-top: -4px; } .admin-kpi-grid { grid-template-columns: 1fr 1fr; gap: 7px; } .admin-kpi-card { padding: 9px; } .admin-kpi-card strong { font-size: 15px; } .admin-data-toolbar { align-items: stretch; flex-direction: column; } .admin-data-search { width: 100%; } .admin-data-toolbar-actions { justify-content: flex-start; } .admin-filter-grid { grid-template-columns: 1fr; } .admin-filter-actions { grid-column: auto; } .admin-data-footer { align-items: flex-start; flex-direction: column; padding: 10px 15px; } .admin-next-step { align-items: flex-start; } .admin-next-step-badge { display: none; } }
+
+/* Disclosure-form refinements ------------------------------------------------- */
+.catalogue-add-menu > summary:focus-visible,
+.catalogue-edit > summary:focus-visible,
+.role-permission-details > summary:focus-visible { outline: 3px solid rgb(38 119 185 / 22%); outline-offset: 2px; }
+.catalogue-add-popover,
+.catalogue-edit-form,
+.role-permission-details > ul { max-height: min(520px, calc(100vh - 96px)); overflow-y: auto; }
+.catalogue-add-popover input:focus,
+.catalogue-edit-form input:focus,
+.user-group-member-search:focus-within { border-color: #83add0; box-shadow: 0 0 0 2px rgb(45 126 187 / 10%); outline: 0; }
+@media (max-width: 640px) {
+    .catalogue-add-popover { position: fixed; top: 72px; right: 16px; left: 16px; width: auto; }
+    .catalogue-edit-form { position: fixed; top: 72px; right: 16px; left: 16px; width: auto; max-height: calc(100vh - 96px); }
+    .catalogue-add-popover .ticket-primary-button, .catalogue-edit-form .ticket-primary-button { width: 100%; justify-self: stretch; }
+}

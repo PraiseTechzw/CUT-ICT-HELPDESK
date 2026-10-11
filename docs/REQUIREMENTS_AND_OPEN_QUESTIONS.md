@@ -8,7 +8,7 @@
 - Laravel **13.35.0**, PHP **8.3.6**, Composer **2.7.1**, Node.js **22.13.0**, npm **10.9.2**, and Vite **8.3.4** were observed in the implementation sandbox.
 - Laravel Fortify provides login/logout. Blade, Tailwind CSS 4, Vite, Laravel Gates, Form Requests, and custom relational role/permission tables are used.
 - Local application database is SQLite. PHPUnit tests use SQLite `:memory:` after the test harness forces `APP_ENV=testing` before Laravel boots. No CUT database, MySQL/MariaDB service, hosting, SSO, mail service, or production environment was verified.
-- Latest full local run: **49 tests passed (326 assertions)**. Pint passed for 107 PHP files; Composer validation and Vite build succeeded. All 17 migrations ran on a fresh disposable SQLite database, which was removed. The latest dependency audits found no Composer advisories and zero npm vulnerabilities. See [Testing Strategy](TESTING_STRATEGY.md).
+- Latest full local run: **71 tests passed (536 assertions)**. Pint passed for 107 PHP files; Composer validation and Vite build succeeded. All 17 migrations ran on a fresh disposable SQLite database, which was removed. The latest dependency audits found no Composer advisories and zero npm vulnerabilities. See [Testing Strategy](TESTING_STRATEGY.md).
 - Phase 1 commit `1878469`, Phase 2 commit `9e7ba09`, and Phase 3 commit `94e5b41` are on GitHub `main`. Phase 4 reporting remains local and uncommitted.
 
 ## User-provided requirements and approved implementation defaults

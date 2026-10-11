@@ -1,0 +1,35 @@
+name: Feature request
+description: Propose an improvement without assuming unapproved CUT policy.
+title: "feature: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Explain the user need and identify any CUT policy, privacy, data, or integration decision that must be confirmed first.
+  - type: textarea
+    id: problem
+    attributes:
+      label: User problem
+      description: Who is affected and what are they trying to accomplish?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: List testable outcomes.
+    validations:
+      required: true
+  - type: textarea
+    id: policy
+    attributes:
+      label: Policy or data decisions
+      description: Note identity, authorization, retention, reporting, or integration assumptions.
