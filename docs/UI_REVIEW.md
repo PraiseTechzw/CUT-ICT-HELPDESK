@@ -8,7 +8,7 @@
 
 | Area | Routes reviewed | Result |
 | --- | --- | --- |
-| Core | `/dashboard`, `/tickets`, `/tickets/create` | Consistent shell, responsive queue, clear ticket intake form |
+| Authentication and core | `/login`, `/dashboard`, `/tickets`, `/tickets/create` | Branded sign-in, consistent shell, responsive queue, clear ticket intake form |
 | Account administration | `/admin/users/create`, `/admin/user-groups`, `/admin/ticket-catalogues/categories` | Forms and disclosure popovers render correctly; validation-ready controls are labeled |
 | Locations | `/admin/campuses` | Directory table, empty state, hierarchy entry point, and action button are consistent |
 | Teams | `/admin/teams` | KPI cards, directory toolbar, empty table state, and next-step panel are consistent |
@@ -21,6 +21,7 @@
 ## Refinements completed during this review
 
 - Replaced generic setup-pending cards with complete admin workspaces.
+- Reworked the login screen into a responsive branded two-panel experience with clear account guidance, benefit context, protected-sign-in messaging, accessible labels, inline validation hooks, and reduced-motion support.
 - Standardized KPI cards, toolbar controls, data tables, empty states, footer metadata, and configuration checklists.
 - Added responsive breakpoints for KPI grids, filter panels, toolbars, tables, and action areas.
 - Reworked Equipment and Departments to use the same workspace system as Teams and Knowledge Base.

@@ -4,6 +4,7 @@ These images are clean viewport captures from the authenticated live preview use
 
 | File | Portal | Route |
 | --- | --- | --- |
+| `login.webp` | Sign in | `/login` |
 | `dashboard.webp` | Dashboard | `/dashboard` |
 | `tickets.webp` | All tickets | `/tickets` |
 | `create-ticket.webp` | Ticket intake | `/tickets/create` |

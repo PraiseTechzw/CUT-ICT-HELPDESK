@@ -42,10 +42,11 @@ The following captures were taken from the authenticated live preview during the
 
 | Portal | Screenshot | Portal | Screenshot |
 | --- | --- | --- | --- |
-| Dashboard | [Open](docs/screenshots/dashboard.webp) | Ticket queue | [Open](docs/screenshots/tickets.webp) |
-| Create ticket | [Open](docs/screenshots/create-ticket.webp) | Add user | [Open](docs/screenshots/create-user.webp) |
-| Locations | [Open](docs/screenshots/campuses.webp) | Teams | [Open](docs/screenshots/teams.webp) |
-| Equipment | [Open](docs/screenshots/equipment.webp) | Knowledge base | [Open](docs/screenshots/knowledge-base.webp) |
+| Sign in | [Open](docs/screenshots/login.webp) | Dashboard | [Open](docs/screenshots/dashboard.webp) |
+| Ticket queue | [Open](docs/screenshots/tickets.webp) | Create ticket | [Open](docs/screenshots/create-ticket.webp) |
+| Add user | [Open](docs/screenshots/create-user.webp) | Locations | [Open](docs/screenshots/campuses.webp) |
+| Teams | [Open](docs/screenshots/teams.webp) | Equipment | [Open](docs/screenshots/equipment.webp) |
+| Knowledge base | [Open](docs/screenshots/knowledge-base.webp) | Ticket categories | [Open](docs/screenshots/ticket-categories.webp) |
 | Ticket categories | [Open](docs/screenshots/ticket-categories.webp) | Reports | [Open](docs/screenshots/reports.webp) |
 | System settings | [Open](docs/screenshots/settings.webp) | Audit logs | [Open](docs/screenshots/audit.webp) |
 
