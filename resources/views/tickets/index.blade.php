@@ -14,13 +14,25 @@
     ];
 @endphp
 <div class="ticket-workspace">
-    <header class="ticket-page-header {{ $scope === 'all' ? 'ticket-all-header' : '' }}">
-        <div>
-            @if ($scope !== 'all')<p class="ticket-page-kicker">SUPPORT OPERATIONS</p>@endif
-            <h1>{{ $scope === 'mine' ? 'My Tickets' : ($scope === 'overdue' ? 'Overdue Tickets' : 'All Tickets') }}</h1>
-            <p>{{ $scope === 'overdue' ? 'Open tickets past their assigned due date.' : ($scope === 'mine' ? 'View and track tickets you requested or are assigned to you.' : 'View and manage all ICT helpdesk tickets.') }}</p>
-        </div>
-        @if ($canCreateTicket && $scope !== 'overdue')<a class="ticket-primary-button" href="{{ route('tickets.create') }}"><svg data-lucide="ticket-plus" aria-hidden="true"></svg>Create Ticket</a>@endif
+    <header class="ticket-page-header {{ $scope === 'all' ? 'ticket-all-header' : '' }} {{ $scope === 'overdue' ? 'ticket-overdue-header' : '' }}">
+        @if ($scope === 'overdue')
+            <div class="ticket-overdue-heading">
+                <span class="ticket-overdue-heading-icon"><svg data-lucide="circle-alert" aria-hidden="true"></svg></span>
+                <div><h1>Overdue Tickets</h1><p>Tickets that are past their due date</p></div>
+            </div>
+            <form class="ticket-overdue-filters" method="GET" action="{{ $listAction }}">
+                <label class="sr-only" for="filter-priority">Priority</label><select id="filter-priority" name="priority"><option value="">All Priorities</option>@foreach ($priorities as $priority)<option value="{{ $priority->id }}" @selected($filters['priority'] === (string) $priority->id)>{{ $priority->name }}</option>@endforeach</select>
+                <label class="sr-only" for="filter-category">Category</label><select id="filter-category" name="category"><option value="">All Categories</option>@foreach ($categories as $category)<option value="{{ $category->id }}" @selected($filters['category'] === (string) $category->id)>{{ $category->name }}</option>@endforeach</select>
+                <button class="sr-only" type="submit">Apply overdue filters</button>
+            </form>
+        @else
+            <div>
+                @if ($scope !== 'all')<p class="ticket-page-kicker">SUPPORT OPERATIONS</p>@endif
+                <h1>{{ $scope === 'mine' ? 'My Tickets' : 'All Tickets' }}</h1>
+                <p>{{ $scope === 'mine' ? 'View and track tickets you requested or are assigned to you.' : 'View and manage all ICT helpdesk tickets.' }}</p>
+            </div>
+            @if ($canCreateTicket)<a class="ticket-primary-button" href="{{ route('tickets.create') }}"><svg data-lucide="ticket-plus" aria-hidden="true"></svg>Create Ticket</a>@endif
+        @endif
     </header>
 
     @if ($scope === 'mine')
@@ -57,28 +69,24 @@
     </section>
     @endif
 
+    @if ($scope === 'overdue')
+        <div class="ticket-overdue-alert" role="status">
+            <svg data-lucide="circle-alert" aria-hidden="true"></svg>
+            <span>You have {{ number_format($summary['overdue']) }} overdue {{ $summary['overdue'] === 1 ? 'ticket that requires' : 'tickets that require' }} attention.</span>
+        </div>
+    @endif
+
     <section class="ticket-page-panel" aria-labelledby="ticket-queue-heading">
         @if ($scope === 'all')<header class="ticket-panel-heading ticket-queue-heading"><div><h2 id="ticket-queue-heading">All Tickets</h2><p>{{ number_format($tickets->total()) }} {{ $tickets->total() === 1 ? 'ticket' : 'tickets' }}</p></div></header>@endif
-        @if ($scope === 'overdue')
-            <div class="ticket-overdue-alert" role="status">
-                <svg data-lucide="circle-alert" aria-hidden="true"></svg>
-                <span>You have {{ number_format($summary['overdue']) }} overdue {{ $summary['overdue'] === 1 ? 'ticket that requires' : 'tickets that require' }} attention.</span>
-            </div>
-        @endif
-        <form class="ticket-filter-bar {{ $scope === 'all' ? 'ticket-filter-bar-all' : '' }} {{ $scope === 'mine' ? 'ticket-filter-bar-mine' : '' }} {{ $scope === 'overdue' ? 'ticket-filter-bar-overdue' : '' }}" method="GET" action="{{ $listAction }}">
+        @if ($scope !== 'overdue')<form class="ticket-filter-bar {{ $scope === 'all' ? 'ticket-filter-bar-all' : '' }} {{ $scope === 'mine' ? 'ticket-filter-bar-mine' : '' }}" method="GET" action="{{ $listAction }}">
             @if ($scope === 'mine')<input type="hidden" name="scope" value="mine">@endif
             @if ($scope !== 'overdue')<label class="ticket-search-field"><svg data-lucide="search" aria-hidden="true"></svg><input type="search" name="search" value="{{ $search }}" placeholder="Search tickets..." aria-label="Search tickets"></label>@endif
-            @if ($scope === 'overdue')
-                <label class="sr-only" for="filter-priority">Priority</label><select id="filter-priority" name="priority"><option value="">All Priorities</option>@foreach ($priorities as $priority)<option value="{{ $priority->id }}" @selected($filters['priority'] === (string) $priority->id)>{{ $priority->name }}</option>@endforeach</select>
-                <label class="sr-only" for="filter-category">Category</label><select id="filter-category" name="category"><option value="">All Categories</option>@foreach ($categories as $category)<option value="{{ $category->id }}" @selected($filters['category'] === (string) $category->id)>{{ $category->name }}</option>@endforeach</select>
-            @else
-                <label class="sr-only" for="filter-category">Category</label><select id="filter-category" name="category"><option value="">All Categories</option>@foreach ($categories as $category)<option value="{{ $category->id }}" @selected($filters['category'] === (string) $category->id)>{{ $category->name }}</option>@endforeach</select>
-                <label class="sr-only" for="filter-priority">Priority</label><select id="filter-priority" name="priority"><option value="">All Priorities</option>@foreach ($priorities as $priority)<option value="{{ $priority->id }}" @selected($filters['priority'] === (string) $priority->id)>{{ $priority->name }}</option>@endforeach</select>
-            @endif
-            @if ($scope !== 'overdue')<label class="sr-only" for="filter-status">Status</label><select id="filter-status" name="status"><option value="">All Statuses</option>@foreach ($statusLabels as $value => $label)<option value="{{ $value }}" @selected($filters['status'] === $value)>{{ $label }}</option>@endforeach</select>@endif
-            <button class="ticket-secondary-button" type="submit"><svg data-lucide="list-filter" aria-hidden="true"></svg><span>{{ $scope === 'overdue' ? 'Filter' : 'Filters' }}</span></button>
+            <label class="sr-only" for="filter-category">Category</label><select id="filter-category" name="category"><option value="">All Categories</option>@foreach ($categories as $category)<option value="{{ $category->id }}" @selected($filters['category'] === (string) $category->id)>{{ $category->name }}</option>@endforeach</select>
+            <label class="sr-only" for="filter-priority">Priority</label><select id="filter-priority" name="priority"><option value="">All Priorities</option>@foreach ($priorities as $priority)<option value="{{ $priority->id }}" @selected($filters['priority'] === (string) $priority->id)>{{ $priority->name }}</option>@endforeach</select>
+            <label class="sr-only" for="filter-status">Status</label><select id="filter-status" name="status"><option value="">All Statuses</option>@foreach ($statusLabels as $value => $label)<option value="{{ $value }}" @selected($filters['status'] === $value)>{{ $label }}</option>@endforeach</select>
+            <button class="ticket-secondary-button" type="submit"><svg data-lucide="list-filter" aria-hidden="true"></svg><span>Filters</span></button>
             @if ($search !== '' || $filters['status'] !== '' || $filters['category'] !== '' || $filters['priority'] !== '')<a class="ticket-clear-filters" href="{{ $listAction }}">Clear</a>@endif
-        </form>
+        </form>@endif
 
         <div class="ticket-table-wrap">
             <table class="ticket-data-table ticket-queue-table {{ $scope === 'all' ? 'ticket-all-table' : '' }} {{ $scope === 'mine' ? 'ticket-my-table' : '' }} {{ $scope === 'overdue' ? 'ticket-overdue-table' : '' }}">

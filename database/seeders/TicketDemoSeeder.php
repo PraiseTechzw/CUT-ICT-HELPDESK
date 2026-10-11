@@ -93,6 +93,7 @@ class TicketDemoSeeder extends Seeder
             ['Software', 'software', 'Applications, installation, and software faults.'],
             ['Account', 'account', 'Email, sign-in, and account access.'],
             ['AV Equipment', 'av-equipment', 'Projectors, displays, and meeting-room equipment.'],
+            ['Others', 'others', 'Other miscellaneous support requests.'],
         ];
         $categories = [];
 
@@ -110,10 +111,11 @@ class TicketDemoSeeder extends Seeder
     private function seedPriorities(): array
     {
         $definitions = [
+            ['Critical', 'critical', '#df4141', 'Urgent service interruption affecting multiple users.'],
+            ['High', 'high', '#ff8a3d', 'Issue significantly interrupts work.'],
+            ['Medium', 'medium', '#f3b638', 'Issue affects work but has a temporary workaround.'],
             ['Low', 'low', '#2f9e69', 'Minor issue with a reasonable workaround.'],
-            ['Medium', 'medium', '#d48a19', 'Issue affects work but has a temporary workaround.'],
-            ['High', 'high', '#d95c55', 'Issue significantly interrupts work.'],
-            ['Critical', 'critical', '#b42332', 'Urgent service interruption affecting multiple users.'],
+            ['Trivial', 'trivial', '#8292a2', 'Very low impact or informational request.'],
         ];
         $priorities = [];
 

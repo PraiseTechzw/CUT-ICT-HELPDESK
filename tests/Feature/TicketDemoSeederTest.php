@@ -30,8 +30,8 @@ class TicketDemoSeederTest extends TestCase
         $this->seed(TicketDemoSeeder::class);
         $this->seed(TicketDemoSeeder::class);
 
-        $this->assertDatabaseCount('ticket_categories', 5);
-        $this->assertDatabaseCount('ticket_priorities', 4);
+        $this->assertDatabaseCount('ticket_categories', 6);
+        $this->assertDatabaseCount('ticket_priorities', 5);
         $this->assertDatabaseCount('tickets', 12);
         $this->assertSame(6, Ticket::query()->distinct()->count('status'));
         $this->assertSame(7, Ticket::query()->whereNotNull('due_at')->where('due_at', '<', now())->whereNotIn('status', [TicketStatus::RESOLVED, TicketStatus::CLOSED])->count());
@@ -45,6 +45,21 @@ class TicketDemoSeederTest extends TestCase
             ->assertOk()
             ->assertSee('Campus Wi-Fi disconnects in lecture rooms')
             ->assertSee('Closed');
+        $administrator = User::factory()->create(['name' => 'Demo Catalogue Administrator']);
+        $administrator->roles()->attach(Role::query()->where('slug', Roles::SYSTEM_ADMINISTRATOR)->firstOrFail());
+        $this->actingAs($administrator)->get(route('admin.ticket-catalogues.categories.index'))
+            ->assertOk()
+            ->assertSee('Category Title')
+            ->assertSee('Total Tickets')
+            ->assertSee('Network')
+            ->assertSee('Others')
+            ->assertSee('Save Category');
+        $this->get(route('admin.ticket-catalogues.priorities.index'))
+            ->assertOk()
+            ->assertSee('Priority Name')
+            ->assertSee('Color')
+            ->assertSee('Critical')
+            ->assertSee('Trivial');
         $this->get(route('tickets.overdue'))
             ->assertOk()
             ->assertSee('You have 7 overdue tickets that require attention.')

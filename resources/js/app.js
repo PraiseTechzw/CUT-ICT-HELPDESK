@@ -31,6 +31,7 @@ import {
 	Paperclip,
 	Pencil,
 	Plus,
+	RefreshCw,
 	Search,
 	Send,
 	ShieldCheck,
@@ -41,6 +42,8 @@ import {
 	Tickets,
 	Tags,
 	UserRoundCog,
+	UserRoundPlus,
+	UserRoundX,
 	UsersRound,
 	createElement,
 } from 'lucide';
@@ -78,6 +81,7 @@ const lucideIcons = {
 	paperclip: Paperclip,
 	pencil: Pencil,
 	plus: Plus,
+	'refresh-cw': RefreshCw,
 	search: Search,
 	send: Send,
 	'shield-check': ShieldCheck,
@@ -88,6 +92,8 @@ const lucideIcons = {
 	tickets: Tickets,
 	tags: Tags,
 	'user-round-cog': UserRoundCog,
+	'user-round-plus': UserRoundPlus,
+	'user-round-x': UserRoundX,
 	'users-round': UsersRound,
 };
 
@@ -100,6 +106,27 @@ document.querySelectorAll('svg[data-lucide]').forEach((placeholder) => {
 		'aria-hidden': placeholder.getAttribute('aria-hidden') ?? 'true',
 		focusable: 'false',
 	}));
+});
+
+document.querySelectorAll('.ticket-overdue-filters select').forEach((filter) => {
+	filter.addEventListener('change', () => filter.form?.requestSubmit());
+});
+
+const technicianSearch = document.querySelector('[data-technician-search]');
+const technicianOptions = [...document.querySelectorAll('.ticket-technician-option[data-technician-name]')];
+const technicianNoResults = document.querySelector('[data-technician-no-results]');
+
+technicianSearch?.addEventListener('input', () => {
+	const searchTerm = technicianSearch.value.trim().toLocaleLowerCase();
+	let visibleCount = 0;
+
+	for (const option of technicianOptions) {
+		const matches = option.dataset.technicianName?.includes(searchTerm) ?? false;
+		option.hidden = !matches;
+		if (matches) visibleCount++;
+	}
+
+	if (technicianNoResults) technicianNoResults.hidden = visibleCount > 0;
 });
 
 const helpdeskShell = document.querySelector('.helpdesk-shell');

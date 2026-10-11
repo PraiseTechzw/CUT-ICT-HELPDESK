@@ -29,6 +29,10 @@ class UserController extends Controller
         Gate::authorize(Permissions::USERS_VIEW);
         $query = $request->query('search', '');
         $search = is_string($query) ? trim($query) : '';
+        $roleFilter = $request->query('role', '');
+        $roleFilter = is_string($roleFilter) ? $roleFilter : '';
+        $statusFilter = $request->query('status', '');
+        $statusFilter = is_string($statusFilter) ? $statusFilter : '';
 
         $users = User::query()
             ->with('roles')
@@ -36,11 +40,27 @@ class UserController extends Controller
                 $query->where('name', 'like', '%'.$search.'%')
                     ->orWhere('email', 'like', '%'.$search.'%');
             }))
+            ->when($roleFilter !== '', fn (Builder $query) => $query->whereHas('roles', fn (Builder $roles) => $roles->where('slug', $roleFilter)))
+            ->when(in_array($statusFilter, ['active', 'inactive'], true), fn (Builder $query) => $query->where('is_active', $statusFilter === 'active'))
             ->orderBy('name')
             ->paginate(15)
             ->withQueryString();
 
-        return view('admin.users.index', compact('users', 'search'));
+        $summary = [
+            'total' => User::query()->count(),
+            'active' => User::query()->where('is_active', true)->count(),
+            'inactive' => User::query()->where('is_active', false)->count(),
+            'new_this_month' => User::query()->where('created_at', '>=', now()->startOfMonth())->count(),
+        ];
+
+        return view('admin.users.index', [
+            'users' => $users,
+            'search' => $search,
+            'roles' => Role::query()->orderBy('name')->get(['id', 'name', 'slug']),
+            'roleFilter' => $roleFilter,
+            'statusFilter' => $statusFilter,
+            'summary' => $summary,
+        ]);
     }
 
     public function create(): View

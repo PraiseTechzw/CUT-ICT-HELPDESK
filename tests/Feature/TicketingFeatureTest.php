@@ -198,6 +198,8 @@ class TicketingFeatureTest extends TestCase
         $this->actingAs($helpdesk)->get(route('tickets.assignment.edit', $ticket))
             ->assertOk()
             ->assertSee('Available Technicians')
+            ->assertSee('Search technicians...')
+            ->assertSee('Active technician')
             ->assertSee('Due date and time');
         $this->patch(route('tickets.assignment.update', $ticket), [
             'technician_id' => $technician->id,
@@ -215,11 +217,49 @@ class TicketingFeatureTest extends TestCase
 
         $this->actingAs($administrator)->get(route('admin.ticket-catalogues.categories.index'))->assertOk()->assertSee('Ticket Categories');
         $this->get(route('admin.ticket-catalogues.priorities.index'))->assertOk()->assertSee('Ticket Priorities');
-        $this->get(route('admin.ticket-catalogues.statuses.index'))->assertOk()->assertSee('Workflow Statuses')->assertSee('Waiting on Requester');
+        $this->get(route('admin.ticket-catalogues.statuses.index'))
+            ->assertOk()
+            ->assertSee('Status Name')
+            ->assertSee('Color')
+            ->assertSee('Waiting on Requester')
+            ->assertSee('System managed');
 
         $this->actingAs($requester)->get(route('admin.ticket-catalogues.categories.index'))->assertForbidden();
         $this->get(route('admin.ticket-catalogues.priorities.index'))->assertForbidden();
         $this->get(route('admin.ticket-catalogues.statuses.index'))->assertForbidden();
+    }
+
+    public function test_catalogue_manager_can_create_and_edit_ticket_priorities_with_colors(): void
+    {
+        $administrator = $this->userWithRole(Roles::SYSTEM_ADMINISTRATOR, 'Priority Catalogue Administrator');
+
+        $this->actingAs($administrator)->post(route('admin.ticket-catalogues.priorities.store'), [
+            'name' => 'Urgent',
+            'description' => 'Urgent example requests.',
+            'color' => '#d84343',
+            'sort_order' => 6,
+            'is_active' => '1',
+        ])->assertRedirect();
+
+        $priority = TicketPriority::query()->where('slug', 'urgent')->firstOrFail();
+        $this->assertSame('#d84343', $priority->color);
+
+        $this->patch(route('admin.ticket-catalogues.priorities.update', $priority), [
+            'name' => 'Urgent response',
+            'description' => 'Requires a prompt response.',
+            'slug' => 'urgent-response',
+            'color' => '#b42332',
+            'sort_order' => 7,
+            'is_active' => '0',
+        ])->assertRedirect();
+
+        $this->assertDatabaseHas('ticket_priorities', [
+            'id' => $priority->id,
+            'name' => 'Urgent response',
+            'slug' => 'urgent-response',
+            'color' => '#b42332',
+            'is_active' => false,
+        ]);
     }
 
     public function test_requester_never_sees_internal_notes_or_technician_identity(): void

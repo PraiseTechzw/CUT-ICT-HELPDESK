@@ -4,22 +4,26 @@
 
 @section('content')
 <div class="ticket-workspace ticket-detail-page">
-    <section class="ticket-page-header">
+    <header class="ticket-page-header ticket-detail-header">
         <div>
-            <p class="ticket-page-kicker">TICKETS / TKT-{{ $ticket->id }}</p>
+            <p class="ticket-page-kicker">TICKET DETAILS · TKT-{{ $ticket->created_at?->format('Y') }}-{{ str_pad((string) $ticket->id, 4, '0', STR_PAD_LEFT) }}</p>
             <h1>{{ $ticket->subject }}</h1>
-            <span class="ticket-status ticket-status-{{ str_replace('_', '-', $ticket->status) }}">{{ $statusLabels[$ticket->status] ?? $ticket->status }}</span>
+            <div class="ticket-detail-heading-meta">
+                <span class="ticket-status ticket-status-{{ str_replace('_', '-', $ticket->status) }}">{{ $statusLabels[$ticket->status] ?? $ticket->status }}</span>
+                @if ($ticket->priority)<span class="ticket-priority-label" @if($ticket->priority->color) style="--priority-color: {{ $ticket->priority->color }}" @endif>{{ $ticket->priority->name }} priority</span>@endif
+                <span class="ticket-detail-created">Created {{ $ticket->created_at?->format('d M Y · H:i') }}</span>
+            </div>
         </div>
         <div class="ticket-header-actions">
             @if ($canAssign)<a class="ticket-secondary-button" href="{{ route('tickets.assignment.edit', $ticket) }}"><svg data-lucide="user-round-cog" aria-hidden="true"></svg>Assign Technician</a>@endif
             <a class="ticket-secondary-button" href="{{ route('tickets.index') }}"><svg data-lucide="arrow-left" aria-hidden="true"></svg>Back to tickets</a>
         </div>
-    </section>
+    </header>
 
     <div class="ticket-detail-grid">
         <div class="ticket-detail-main">
             <section aria-labelledby="ticket-details-heading" class="ticket-page-panel">
-                <header class="ticket-panel-heading"><div><p class="ticket-page-kicker">REQUEST DETAILS</p><h2 id="ticket-details-heading">Issue Description</h2></div></header>
+                <header class="ticket-panel-heading"><div><p class="ticket-page-kicker">REQUEST DETAILS</p><h2 id="ticket-details-heading">Issue Description</h2></div><span class="ticket-count-label">Ticket description</span></header>
                 <div class="ticket-description-body">{{ $ticket->description }}</div>
             </section>
 
@@ -30,7 +34,8 @@
                     <article class="ticket-comment {{ $comment->visibility === 'internal' ? 'is-internal' : '' }}">
                         <div class="ticket-comment-meta">
                             <span class="ticket-comment-avatar" aria-hidden="true">{{ mb_substr($comment->author?->name ?? 'S', 0, 1) }}</span>
-                            <strong>{{ $comment->visibility === 'internal' ? 'Internal note' : 'Reply' }} · {{ $canViewStaffDetails ? ($comment->author?->name ?? 'Unavailable') : ($comment->author_id === auth()->id() ? 'You' : 'Support team') }}</strong>
+                            <strong>{{ $canViewStaffDetails ? ($comment->author?->name ?? 'Unavailable') : ($comment->author_id === auth()->id() ? 'You' : 'Support team') }}</strong>
+                            <span class="ticket-comment-visibility {{ $comment->visibility === 'internal' ? 'is-internal' : 'is-public' }}">{{ $comment->visibility === 'internal' ? 'Internal note' : 'Public reply' }}</span>
                             <time datetime="{{ $comment->created_at?->toIso8601String() }}">{{ $comment->created_at?->format('d M Y · H:i') }}</time>
                         </div>
                         <div class="ticket-comment-body">{{ $comment->body }}</div>
@@ -44,8 +49,8 @@
                     <form class="ticket-reply-form" method="POST" action="{{ route('tickets.comments.store', $ticket) }}">
                         @csrf
                         <input type="hidden" name="visibility" value="public">
-                        <label for="public-body">{{ auth()->id() === $ticket->requester_id ? 'Reply to support' : 'Requester-visible reply' }}</label>
-                        <textarea id="public-body" name="body" rows="4" maxlength="10000" required placeholder="Write a reply..."></textarea>
+                        <label for="public-body">{{ auth()->id() === $ticket->requester_id ? 'Reply to support' : 'Public reply' }}</label>
+                        <textarea id="public-body" name="body" rows="4" maxlength="10000" required placeholder="Write a message visible to the requester..."></textarea>
                         <x-field-error field="body" />
                         <button class="ticket-primary-button" type="submit"><svg data-lucide="send" aria-hidden="true"></svg>Send Reply</button>
                     </form>
@@ -55,8 +60,8 @@
                     <form class="ticket-reply-form is-internal" method="POST" action="{{ route('tickets.comments.store', $ticket) }}">
                         @csrf
                         <input type="hidden" name="visibility" value="internal">
-                        <label for="internal-body">Internal Work Note</label>
-                        <textarea id="internal-body" name="body" rows="4" maxlength="10000" required placeholder="Add a note for support staff..."></textarea>
+                        <label for="internal-body">Internal work note</label>
+                        <textarea id="internal-body" name="body" rows="4" maxlength="10000" required placeholder="Add a note visible only to authorized support staff..."></textarea>
                         <x-field-error field="body" />
                         <button class="ticket-secondary-button" type="submit"><svg data-lucide="notebook-pen" aria-hidden="true"></svg>Add Internal Note</button>
                     </form>
@@ -73,7 +78,8 @@
                     <div><dt>Priority</dt><dd>@if($ticket->priority)<span class="ticket-priority-label" @if($ticket->priority->color) style="--priority-color: {{ $ticket->priority->color }}" @endif>{{ $ticket->priority->name }}</span>@else Not set @endif</dd></div>
                     <div><dt>Location</dt><dd>@if($ticket->room){{ $ticket->room->building?->campus?->name }} · {{ $ticket->room->building?->name }} · {{ $ticket->room->name }}@else Not recorded @endif</dd></div>
                     <div><dt>Created</dt><dd>{{ $ticket->created_at?->format('d M Y · H:i') }}</dd></div>
-                    <div><dt>Due date</dt><dd>{{ $ticket->due_at?->format('d M Y · H:i') ?? 'Not set' }}</dd></div>
+                    <div><dt>Last updated</dt><dd>{{ $ticket->updated_at?->format('d M Y · H:i') }}</dd></div>
+                    <div class="ticket-detail-due {{ $ticket->due_at && $ticket->due_at->isPast() && !in_array($ticket->status, [\App\Support\TicketStatus::RESOLVED, \App\Support\TicketStatus::CLOSED], true) ? 'is-overdue' : '' }}"><dt>Due date</dt><dd>{{ $ticket->due_at?->format('d M Y · H:i') ?? 'Not set' }}@if($ticket->due_at && $ticket->due_at->isPast() && !in_array($ticket->status, [\App\Support\TicketStatus::RESOLVED, \App\Support\TicketStatus::CLOSED], true))<small>Overdue {{ $ticket->due_at->diffForHumans() }}</small>@endif</dd></div>
                     @if ($canViewStaffDetails)<div><dt>Assigned technician</dt><dd>{{ $ticket->assignedTechnician?->name ?? 'Unassigned' }}</dd></div>@endif
                 </dl>
             </section>
@@ -82,7 +88,7 @@
                 <section class="ticket-page-panel" aria-labelledby="workflow-heading">
                     <header class="ticket-panel-heading"><div><p class="ticket-page-kicker">WORKFLOW</p><h2 id="workflow-heading">Update Ticket</h2></div></header>
             @if (count($allowedTransitions) > 0)
-                <form class="ticket-reply-form" method="POST" action="{{ route('tickets.status.update', $ticket) }}">
+                <form class="ticket-reply-form ticket-workflow-form" method="POST" action="{{ route('tickets.status.update', $ticket) }}">
                     @csrf
                     @method('PATCH')
                     <label for="status">Change status</label>
@@ -92,7 +98,7 @@
                         @endforeach
                     </select>
                     <x-field-error field="status" />
-                    <button class="ticket-primary-button" type="submit">Update Status</button>
+                    <button class="ticket-primary-button" type="submit"><svg data-lucide="refresh-cw" aria-hidden="true"></svg>Update Status</button>
                 </form>
             @endif
 
@@ -108,31 +114,33 @@
         </aside>
     </div>
 
-    <section class="ticket-page-panel" aria-labelledby="status-history-heading">
+    <section class="ticket-page-panel ticket-history-panel" aria-labelledby="status-history-heading">
         <header class="ticket-panel-heading"><div><p class="ticket-page-kicker">TICKET TIMELINE</p><h2 id="status-history-heading">Status History</h2></div></header>
-        <ol class="mt-4 space-y-3">
+        <ol class="ticket-history-list">
             @forelse ($statusHistory as $event)
-                <li class="border-l-2 border-slate-300 pl-4 text-sm">
-                    <span class="font-medium">{{ $event->from_status ? ($statusLabels[$event->from_status] ?? $event->from_status) : 'Created' }} → {{ $statusLabels[$event->to_status] ?? $event->to_status }}</span>
-                    <span class="text-slate-600"> · {{ $event->created_at?->format('Y-m-d H:i') }}{{ $canViewStaffDetails ? ' · '.($event->actor?->name ?? 'Unavailable') : '' }}</span>
+                <li>
+                    <span class="ticket-history-marker"><svg data-lucide="refresh-cw" aria-hidden="true"></svg></span>
+                    <span class="ticket-history-event"><strong>{{ $event->from_status ? ($statusLabels[$event->from_status] ?? $event->from_status) : 'Ticket created' }}</strong><span>{{ $event->from_status ? 'moved to' : 'started as' }} <b>{{ $statusLabels[$event->to_status] ?? $event->to_status }}</b></span></span>
+                    <span class="ticket-history-meta"><time datetime="{{ $event->created_at?->toIso8601String() }}">{{ $event->created_at?->format('d M Y · H:i') }}</time>{{ $canViewStaffDetails ? ($event->actor?->name ?? 'Unavailable') : '' }}</span>
                 </li>
             @empty
-                <li class="text-sm text-slate-600">No status changes recorded.</li>
+                <li class="ticket-history-empty">No status changes recorded.</li>
             @endforelse
         </ol>
     </section>
 
     @if ($canViewStaffDetails)
-        <section class="ticket-page-panel" aria-labelledby="assignment-history-heading">
+        <section class="ticket-page-panel ticket-history-panel" aria-labelledby="assignment-history-heading">
             <header class="ticket-panel-heading"><div><p class="ticket-page-kicker">TICKET TIMELINE</p><h2 id="assignment-history-heading">Assignment History</h2></div></header>
-            <ol class="mt-4 space-y-3">
+            <ol class="ticket-history-list">
                 @forelse ($assignmentHistory as $event)
-                    <li class="border-l-2 border-slate-300 pl-4 text-sm">
-                        {{ $event->fromTechnician?->name ?? 'Unassigned' }} → {{ $event->toTechnician?->name ?? 'Unassigned' }}
-                        <span class="text-slate-600"> · {{ $event->created_at?->format('Y-m-d H:i') }} · {{ $event->actor?->name ?? 'Unavailable' }}</span>
+                    <li>
+                        <span class="ticket-history-marker is-assignment"><svg data-lucide="user-round-cog" aria-hidden="true"></svg></span>
+                        <span class="ticket-history-event"><strong>{{ $event->fromTechnician?->name ?? 'Unassigned' }}</strong><span>assigned to <b>{{ $event->toTechnician?->name ?? 'Unassigned' }}</b></span></span>
+                        <span class="ticket-history-meta"><time datetime="{{ $event->created_at?->toIso8601String() }}">{{ $event->created_at?->format('d M Y · H:i') }}</time>{{ $event->actor?->name ?? 'Unavailable' }}</span>
                     </li>
                 @empty
-                    <li class="text-sm text-slate-600">No assignments recorded.</li>
+                    <li class="ticket-history-empty">No assignments recorded.</li>
                 @endforelse
             </ol>
         </section>
