@@ -1398,3 +1398,32 @@ body[data-theme="dark"] .account-note { border-color: #344a64; background: #1d30
 body[data-theme="dark"] .account-support-banner p { color: #a9bbce; }
 @media (max-width: 900px) { .account-content-grid { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 540px) { .account-page-header { align-items: flex-start; flex-direction: column; gap: 9px; } .account-page-header h1 { font-size: 19px; } .account-page-header p:not(.ticket-page-kicker) { font-size: 8px; } .account-page-header .admin-data-status { margin-top: 0; } .account-hero { align-items: flex-start; flex-wrap: wrap; padding: 14px; } .account-avatar { width: 46px; height: 46px; flex-basis: 46px; font-size: 15px; } .account-identity h2 { font-size: 16px; } .account-hero-meta { width: 100%; flex-basis: 100%; align-items: flex-start; justify-items: start; padding-left: 61px; } .account-detail-list { grid-template-columns: minmax(0, 1fr); } .account-detail-list div:nth-last-child(-n+2) { border-bottom: 1px solid #edf1f5; } .account-detail-list div:last-child { border-bottom: 0; } .account-setting-item small { white-space: normal; } .account-support-banner { align-items: flex-start; flex-wrap: wrap; } .account-support-banner .ticket-secondary-button { width: 100%; margin-left: 42px; } }
+
+/* Administrator profile edit workspace -------------------------------------- */
+.user-edit-page { display: grid; min-width: 0; gap: 14px; color: #20344a; }
+.user-edit-header { display: flex; min-width: 0; align-items: flex-end; justify-content: space-between; gap: 18px; }
+.user-edit-header h1 { margin: 4px 0 0; color: #1d334c; font-size: 23px; font-weight: 720; line-height: 1.2; }
+.user-edit-header p:not(.ticket-page-kicker) { margin: 5px 0 0; color: #788a9d; font-size: 11px; }
+.user-edit-identity { display: flex; min-width: 0; align-items: center; gap: 10px; padding: 12px 15px; border: 1px solid #dce7f0; border-radius: 6px; background: linear-gradient(90deg, #f7fbfe 0%, #fff 100%); }
+.user-edit-identity > div { display: grid; min-width: 0; flex: 1; gap: 3px; }
+.user-edit-identity strong { overflow: hidden; color: #304a64; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+.user-edit-identity small { overflow: hidden; color: #8494a5; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+.user-edit-form { overflow: hidden; }
+.user-edit-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; padding: 17px 15px 4px; }
+.user-edit-field { display: grid; min-width: 0; gap: 5px; }
+.user-edit-field > label { color: #4a6178; font-size: 9px; font-weight: 700; }
+.user-edit-input-wrap { display: flex; min-width: 0; height: 38px; align-items: center; gap: 8px; padding: 0 10px; border: 1px solid #d6e1eb; border-radius: 5px; background: #fbfcfe; color: #7190ab; transition: border-color 120ms ease, box-shadow 120ms ease, background-color 120ms ease; }
+.user-edit-input-wrap:focus-within { border-color: #77a8d2; background: #fff; box-shadow: 0 0 0 3px rgb(39 115 180 / 11%); }
+.user-edit-input-wrap:has(input[aria-invalid="true"]) { border-color: #dc8882; }
+.user-edit-input-wrap svg { width: 15px; height: 15px; flex: 0 0 15px; }
+.user-edit-input-wrap input { width: 100%; min-width: 0; border: 0; outline: 0; background: transparent; color: #304a64; font: inherit; font-size: 10px; }
+.user-edit-note { margin-top: 10px; }
+.user-edit-actions { display: flex; justify-content: flex-end; gap: 8px; padding: 0 15px 15px; }
+body[data-theme="dark"] .user-edit-header h1 { color: #e1eaf3; }
+body[data-theme="dark"] .user-edit-header p:not(.ticket-page-kicker), body[data-theme="dark"] .user-edit-field > label { color: #9aabbd; }
+body[data-theme="dark"] .user-edit-identity { border-color: #2c4058; background: #1d3048; }
+body[data-theme="dark"] .user-edit-identity strong { color: #d3dfeb; }
+body[data-theme="dark"] .user-edit-input-wrap { border-color: #344a64; background: #17263a; color: #a9bbce; }
+body[data-theme="dark"] .user-edit-input-wrap:focus-within { background: #1d3048; }
+body[data-theme="dark"] .user-edit-input-wrap input { color: #e0e9f3; }
+@media (max-width: 540px) { .user-edit-header { align-items: flex-start; flex-direction: column; gap: 9px; } .user-edit-header h1 { font-size: 19px; } .user-edit-header p:not(.ticket-page-kicker) { font-size: 8px; } .user-edit-header .admin-data-status { margin-top: 0; } .user-edit-fields { grid-template-columns: minmax(0, 1fr); gap: 11px; padding-top: 13px; } .user-edit-actions { justify-content: stretch; } .user-edit-actions > * { flex: 1; } }
