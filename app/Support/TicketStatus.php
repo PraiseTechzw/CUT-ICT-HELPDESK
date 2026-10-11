@@ -31,6 +31,19 @@ final class TicketStatus
         ];
     }
 
+    /** @return array<string, string> */
+    public static function descriptions(): array
+    {
+        return [
+            self::OPEN => 'Received and waiting for triage.',
+            self::ASSIGNED => 'Assigned to an individual technician.',
+            self::IN_PROGRESS => 'A technician is actively working on the ticket.',
+            self::WAITING_FOR_REQUESTER => 'Support is waiting for information from the requester.',
+            self::RESOLVED => 'A solution has been provided.',
+            self::CLOSED => 'The ticket is complete and closed.',
+        ];
+    }
+
     /** @return list<string> */
     public static function values(): array
     {

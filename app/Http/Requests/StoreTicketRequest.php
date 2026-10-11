@@ -22,6 +22,7 @@ class StoreTicketRequest extends FormRequest
             'description' => ['required', 'string', 'max:20000'],
             'ticket_category_id' => ['nullable', 'integer', Rule::exists('ticket_categories', 'id')->where('is_active', true)],
             'ticket_priority_id' => ['nullable', 'integer', Rule::exists('ticket_priorities', 'id')->where('is_active', true)],
+            'room_id' => ['nullable', 'integer', Rule::exists('rooms', 'id')->where('is_active', true)],
         ];
     }
 }

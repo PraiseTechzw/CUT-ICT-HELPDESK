@@ -29,6 +29,7 @@ class AssignTicketRequest extends FormRequest
     {
         return [
             'technician_id' => ['present', 'nullable', 'integer', Rule::exists('users', 'id')],
+            'due_at' => ['nullable', 'date'],
         ];
     }
 }

@@ -87,6 +87,14 @@ class DashboardController extends Controller
                     'tone' => 'violet',
                     'icon' => 'users',
                 ];
+            } else {
+                $stats[] = [
+                    'label' => 'Unread notifications',
+                    'value' => number_format($user->unreadNotifications()->count()),
+                    'caption' => 'Updates for your account',
+                    'tone' => 'violet',
+                    'icon' => 'bell',
+                ];
             }
 
             $dailyTickets = $scopeTickets(Ticket::query())
@@ -115,10 +123,10 @@ class DashboardController extends Controller
             }
 
             $recentTickets = $scopeTickets(Ticket::query())
-                ->with(['category:id,name', 'priority:id,name'])
+                ->with(['category:id,name', 'priority:id,name', 'room.building.campus'])
                 ->latest('updated_at')
                 ->limit(5)
-                ->get(['id', 'subject', 'status', 'ticket_category_id', 'ticket_priority_id', 'created_at', 'updated_at']);
+                ->get(['id', 'subject', 'status', 'ticket_category_id', 'ticket_priority_id', 'room_id', 'created_at', 'updated_at']);
 
             $recentActivity = TicketStatusHistory::query()
                 ->with('ticket:id')
@@ -145,13 +153,25 @@ class DashboardController extends Controller
         }
 
         $quickActions = collect([
-            ['ability' => 'tickets.create', 'label' => 'Create new ticket', 'detail' => 'Report an issue or request assistance', 'url' => route('tickets.create'), 'icon' => 'plus-ticket', 'tone' => 'blue'],
-            ['ability' => 'tickets.view_own|tickets.view_all|tickets.view_assigned', 'label' => 'My tickets', 'detail' => 'View and track your queue', 'url' => route('tickets.index'), 'icon' => 'list', 'tone' => 'cyan'],
-            ['ability' => 'users.view', 'label' => 'User accounts', 'detail' => 'Manage helpdesk users', 'url' => route('admin.users.index'), 'icon' => 'users', 'tone' => 'violet'],
-            ['ability' => 'audit.view', 'label' => 'Audit log', 'detail' => 'Review recent system activity', 'url' => route('admin.audit.index'), 'icon' => 'activity', 'tone' => 'green'],
-        ])->filter(function (array $action) use ($user): bool {
-            return collect(explode('|', $action['ability']))->contains(fn (string $ability): bool => $user->can($ability));
-        })->values();
+            [
+                'label' => 'Create New Ticket',
+                'detail' => 'Report an issue or request assistance',
+                'url' => $user->can('tickets.create') ? route('tickets.create') : null,
+                'unavailable' => 'Ticket creation is not available to this account',
+                'icon' => 'plus-ticket',
+                'tone' => 'blue',
+            ],
+            [
+                'label' => 'My Tickets',
+                'detail' => 'View and track your requests',
+                'url' => $canViewTickets ? route('tickets.index') : null,
+                'unavailable' => 'Ticket access is not available to this account',
+                'icon' => 'list',
+                'tone' => 'cyan',
+            ],
+            ['label' => 'Knowledge Base', 'detail' => 'Knowledge articles are not published yet', 'url' => null, 'icon' => 'book', 'tone' => 'cyan'],
+            ['label' => 'Contact Helpdesk', 'detail' => 'Support contact is not configured', 'url' => null, 'icon' => 'headset', 'tone' => 'violet'],
+        ]);
 
         $databaseOperational = DB::select('select 1') !== [];
 

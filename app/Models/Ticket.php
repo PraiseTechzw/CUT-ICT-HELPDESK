@@ -13,7 +13,12 @@ class Ticket extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['subject', 'description', 'ticket_category_id', 'ticket_priority_id'];
+    protected $fillable = ['subject', 'description', 'ticket_category_id', 'ticket_priority_id', 'room_id', 'due_at'];
+
+    protected function casts(): array
+    {
+        return ['due_at' => 'immutable_datetime'];
+    }
 
     public function requester(): BelongsTo
     {
@@ -33,6 +38,11 @@ class Ticket extends Model
     public function priority(): BelongsTo
     {
         return $this->belongsTo(TicketPriority::class, 'ticket_priority_id');
+    }
+
+    public function room(): BelongsTo
+    {
+        return $this->belongsTo(Room::class);
     }
 
     public function comments(): HasMany

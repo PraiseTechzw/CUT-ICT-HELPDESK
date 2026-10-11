@@ -13,6 +13,7 @@ use App\Support\Permissions;
 use App\Support\Roles;
 use App\Support\TicketStatus;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -45,14 +46,10 @@ class TicketWorkflow
         return $transitions;
     }
 
-    public function assign(Ticket $ticket, ?int $technicianId, User $actor): void
+    public function assign(Ticket $ticket, ?int $technicianId, User $actor, ?string $dueAt = null): void
     {
-        DB::transaction(function () use ($ticket, $technicianId, $actor): void {
+        DB::transaction(function () use ($ticket, $technicianId, $actor, $dueAt): void {
             $lockedTicket = Ticket::query()->lockForUpdate()->findOrFail($ticket->getKey());
-
-            if (in_array($lockedTicket->status, [TicketStatus::RESOLVED, TicketStatus::CLOSED], true)) {
-                throw ValidationException::withMessages(['technician_id' => 'Reopen the ticket before assigning a technician.']);
-            }
 
             $technician = null;
             if ($technicianId !== null) {
@@ -69,39 +66,60 @@ class TicketWorkflow
 
             $previousId = $lockedTicket->assigned_technician_id;
             $nextId = $technician?->id;
-            if ($previousId === $nextId) {
+            $assignmentChanged = $previousId !== $nextId;
+            $previousDueAt = $lockedTicket->due_at;
+            $nextDueAt = $dueAt === null ? null : Carbon::parse($dueAt);
+            $deadlineChanged = $previousDueAt?->toIso8601String() !== $nextDueAt?->toIso8601String();
+
+            if (! $assignmentChanged && ! $deadlineChanged) {
                 return;
             }
 
-            if ($technician === null && $lockedTicket->status !== TicketStatus::ASSIGNED) {
+            if ($assignmentChanged && in_array($lockedTicket->status, [TicketStatus::RESOLVED, TicketStatus::CLOSED], true)) {
+                throw ValidationException::withMessages(['technician_id' => 'Reopen the ticket before assigning a technician.']);
+            }
+
+            if ($assignmentChanged && $technician === null && $lockedTicket->status !== TicketStatus::ASSIGNED) {
                 throw ValidationException::withMessages(['technician_id' => 'An in-progress ticket must be reassigned rather than left without an owner.']);
             }
 
             $previousStatus = $lockedTicket->status;
-            $lockedTicket->assigned_technician_id = $nextId;
-            if ($technician !== null && $lockedTicket->status === TicketStatus::OPEN) {
-                $lockedTicket->status = TicketStatus::ASSIGNED;
-            } elseif ($technician === null) {
-                $lockedTicket->status = TicketStatus::OPEN;
+            if ($assignmentChanged) {
+                $lockedTicket->assigned_technician_id = $nextId;
+                if ($technician !== null && $lockedTicket->status === TicketStatus::OPEN) {
+                    $lockedTicket->status = TicketStatus::ASSIGNED;
+                } elseif ($technician === null) {
+                    $lockedTicket->status = TicketStatus::OPEN;
+                }
             }
+            $lockedTicket->due_at = $nextDueAt;
             $lockedTicket->save();
 
-            TicketAssignmentHistory::query()->create([
-                'ticket_id' => $lockedTicket->id,
-                'from_technician_id' => $previousId,
-                'to_technician_id' => $nextId,
-                'actor_id' => $actor->id,
-            ]);
+            if ($assignmentChanged) {
+                TicketAssignmentHistory::query()->create([
+                    'ticket_id' => $lockedTicket->id,
+                    'from_technician_id' => $previousId,
+                    'to_technician_id' => $nextId,
+                    'actor_id' => $actor->id,
+                ]);
 
-            if ($previousStatus !== $lockedTicket->status) {
-                $this->recordStatusChange($lockedTicket, $previousStatus, $lockedTicket->status, $actor);
+                if ($previousStatus !== $lockedTicket->status) {
+                    $this->recordStatusChange($lockedTicket, $previousStatus, $lockedTicket->status, $actor);
+                }
+
+                $this->auditLogger->record($actor, 'ticket.assignment_changed', $lockedTicket, [
+                    'from_technician_id' => $previousId,
+                    'to_technician_id' => $nextId,
+                ]);
+                $this->ticketNotifications->assignmentChanged($lockedTicket, $technician, $actor);
             }
 
-            $this->auditLogger->record($actor, 'ticket.assignment_changed', $lockedTicket, [
-                'from_technician_id' => $previousId,
-                'to_technician_id' => $nextId,
-            ]);
-            $this->ticketNotifications->assignmentChanged($lockedTicket, $technician, $actor);
+            if ($deadlineChanged) {
+                $this->auditLogger->record($actor, 'ticket.deadline_updated', $lockedTicket, [
+                    'previous_due_at' => $previousDueAt?->toIso8601String(),
+                    'due_at' => $nextDueAt?->toIso8601String(),
+                ]);
+            }
         });
     }
 

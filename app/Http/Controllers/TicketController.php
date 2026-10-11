@@ -11,6 +11,7 @@ use App\Http\Requests\UpdateTicketStatusRequest;
 use App\Models\Ticket;
 use App\Models\TicketCategory;
 use App\Models\TicketPriority;
+use App\Models\Room;
 use App\Models\User;
 use App\Services\TicketNotificationService;
 use App\Services\TicketWorkflow;
@@ -28,16 +29,64 @@ class TicketController extends Controller
 {
     public function index(Request $request): View
     {
+        return $this->ticketList($request, false);
+    }
+
+    public function mine(Request $request): View
+    {
+        $request->query->set('scope', 'mine');
+
+        return $this->ticketList($request, false);
+    }
+
+    public function overdue(Request $request): View
+    {
+        return $this->ticketList($request, true);
+    }
+
+    private function ticketList(Request $request, bool $overdueOnly): View
+    {
         $user = $request->user();
         $canViewAll = $user->hasPermissionTo(Permissions::TICKETS_VIEW_ALL);
         $canViewOwn = $user->hasPermissionTo(Permissions::TICKETS_VIEW_OWN);
         $canViewAssigned = $user->hasPermissionTo(Permissions::TICKETS_VIEW_ASSIGNED);
         $search = mb_substr(trim((string) $request->query('search', '')), 0, 120);
+        $mineOnly = $request->query('scope') === 'mine';
+        $status = (string) $request->query('status', '');
+        $categoryId = (string) $request->query('category', '');
+        $priorityId = (string) $request->query('priority', '');
 
         abort_unless($canViewAll || $canViewOwn || $canViewAssigned, 403);
+        abort_if($mineOnly && ! ($canViewOwn || $canViewAssigned), 403);
 
-        $tickets = Ticket::query()
-            ->with(['requester', 'assignedTechnician', 'category', 'priority'])
+        $visibleTickets = Ticket::query();
+        if ($mineOnly || ! $canViewAll) {
+            $visibleTickets->where(function (Builder $visible) use ($user, $canViewOwn, $canViewAssigned): void {
+                if ($canViewOwn) {
+                    $visible->where('requester_id', $user->id);
+                }
+                if ($canViewAssigned) {
+                    $method = $canViewOwn ? 'orWhere' : 'where';
+                    $visible->{$method}('assigned_technician_id', $user->id);
+                }
+            });
+        }
+
+        if ($overdueOnly) {
+            $visibleTickets->whereNotNull('due_at')
+                ->where('due_at', '<', now())
+                ->whereNotIn('status', [TicketStatus::RESOLVED, TicketStatus::CLOSED]);
+        }
+
+        $summary = [
+            'total' => (clone $visibleTickets)->count(),
+            'open' => (clone $visibleTickets)->whereIn('status', [TicketStatus::OPEN, TicketStatus::ASSIGNED])->count(),
+            'in_progress' => (clone $visibleTickets)->whereIn('status', [TicketStatus::IN_PROGRESS, TicketStatus::WAITING_FOR_REQUESTER])->count(),
+            'overdue' => (clone $visibleTickets)->whereNotNull('due_at')->where('due_at', '<', now())->whereNotIn('status', [TicketStatus::RESOLVED, TicketStatus::CLOSED])->count(),
+        ];
+
+        $query = (clone $visibleTickets)
+            ->with(['requester', 'assignedTechnician', 'category', 'priority', 'room.building.campus'])
             ->when($search !== '', function (Builder $query) use ($search): void {
                 $query->where(function (Builder $matches) use ($search): void {
                     $matches->where('subject', 'like', "%{$search}%")
@@ -48,22 +97,11 @@ class TicketController extends Controller
                     }
                 });
             })
-            ->when(! $canViewAll, function (Builder $query) use ($user, $canViewOwn, $canViewAssigned): void {
-                $query->where(function (Builder $visible) use ($user, $canViewOwn, $canViewAssigned): void {
-                    $hasCondition = false;
-                    if ($canViewOwn) {
-                        $visible->where('requester_id', $user->id);
-                        $hasCondition = true;
-                    }
-                    if ($canViewAssigned) {
-                        $method = $hasCondition ? 'orWhere' : 'where';
-                        $visible->{$method}('assigned_technician_id', $user->id);
-                    }
-                });
-            })
-            ->orderByDesc('updated_at')
-            ->paginate(20)
-            ->withQueryString();
+            ->when(in_array($status, TicketStatus::values(), true), fn (Builder $tickets): Builder => $tickets->where('status', $status))
+            ->when(ctype_digit($categoryId), fn (Builder $tickets): Builder => $tickets->where('ticket_category_id', (int) $categoryId))
+            ->when(ctype_digit($priorityId), fn (Builder $tickets): Builder => $tickets->where('ticket_priority_id', (int) $priorityId))
+            ->orderByDesc('updated_at');
+        $tickets = $query->paginate(15)->withQueryString();
 
         return view('tickets.index', [
             'tickets' => $tickets,
@@ -71,14 +109,43 @@ class TicketController extends Controller
             'canCreateTicket' => $user->hasPermissionTo(Permissions::TICKETS_CREATE),
             'statusLabels' => TicketStatus::labels(),
             'search' => $search,
+            'scope' => $mineOnly ? 'mine' : ($overdueOnly ? 'overdue' : 'all'),
+            'overdueOnly' => $overdueOnly,
+            'summary' => $summary,
+            'categories' => TicketCategory::query()->where('is_active', true)->orderBy('sort_order')->orderBy('name')->get(['id', 'name']),
+            'priorities' => TicketPriority::query()->where('is_active', true)->orderBy('sort_order')->orderBy('name')->get(['id', 'name']),
+            'filters' => ['status' => $status, 'category' => $categoryId, 'priority' => $priorityId],
         ]);
     }
 
-    public function create(): View
+    public function create(Request $request): View
     {
         return view('tickets.create', [
             'categories' => TicketCategory::query()->where('is_active', true)->orderBy('sort_order')->orderBy('name')->get(),
             'priorities' => TicketPriority::query()->where('is_active', true)->orderBy('sort_order')->orderBy('name')->get(),
+            'rooms' => Room::query()
+                ->with('building.campus')
+                ->where('is_active', true)
+                ->whereHas('building', fn (Builder $buildings) => $buildings->where('is_active', true))
+                ->orderBy('name')
+                ->get(),
+        ]);
+    }
+
+    public function assignmentForm(Request $request, Ticket $ticket): View
+    {
+        abort_unless($request->user()->can('view', $ticket), 404);
+        abort_unless($request->user()->can('assign', $ticket), 403);
+
+        $ticket->load(['requester', 'assignedTechnician', 'category', 'priority', 'room.building.campus']);
+
+        return view('tickets.assign', [
+            'ticket' => $ticket,
+            'technicians' => User::query()
+                ->where('is_active', true)
+                ->whereHas('roles', fn ($query) => $query->where('slug', Roles::TECHNICIAN))
+                ->orderBy('name')
+                ->get(['id', 'name']),
         ]);
     }
 
@@ -102,7 +169,7 @@ class TicketController extends Controller
             ]);
 
             $auditLogger->record($request->user(), 'ticket.created', $ticket, [
-                'fields' => ['subject', 'description', 'ticket_category_id', 'ticket_priority_id'],
+                'fields' => ['subject', 'description', 'ticket_category_id', 'ticket_priority_id', 'room_id'],
             ]);
             $ticketNotifications->ticketCreated($ticket, $request->user());
 
@@ -117,7 +184,7 @@ class TicketController extends Controller
         $user = $request->user();
         abort_unless($user->can('view', $ticket), 404);
 
-        $ticket->load(['requester', 'assignedTechnician', 'category', 'priority']);
+        $ticket->load(['requester', 'assignedTechnician', 'category', 'priority', 'room.building.campus']);
         $canViewStaffDetails = $user->hasPermissionTo(Permissions::TICKETS_VIEW_ALL)
             || ($ticket->assigned_technician_id === $user->id
                 && $user->hasPermissionTo(Permissions::TICKETS_VIEW_ASSIGNED));
@@ -178,10 +245,11 @@ class TicketController extends Controller
 
     public function assign(AssignTicketRequest $request, Ticket $ticket, TicketWorkflow $workflow): RedirectResponse
     {
-        $technicianId = $request->validated()['technician_id'] ?? null;
-        $workflow->assign($ticket, $technicianId === null ? null : (int) $technicianId, $request->user());
+        $validated = $request->validated();
+        $technicianId = $validated['technician_id'] ?? null;
+        $workflow->assign($ticket, $technicianId === null ? null : (int) $technicianId, $request->user(), $validated['due_at'] ?? null);
 
-        return back()->with('status', 'Ticket assignment updated.');
+        return redirect()->route('tickets.show', $ticket)->with('status', 'Ticket assignment updated.');
     }
 
     public function updateStatus(UpdateTicketStatusRequest $request, Ticket $ticket, TicketWorkflow $workflow): RedirectResponse

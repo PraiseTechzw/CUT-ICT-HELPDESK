@@ -35,8 +35,11 @@ Route::middleware(['auth', 'account.active'])->group(function (): void {
         ->name('reports.tickets.index');
 
     Route::get('/tickets', [TicketController::class, 'index'])->name('tickets.index');
+    Route::get('/tickets/mine', [TicketController::class, 'mine'])->name('tickets.mine');
+    Route::get('/tickets/overdue', [TicketController::class, 'overdue'])->name('tickets.overdue');
     Route::get('/tickets/create', [TicketController::class, 'create'])->middleware('can:tickets.create')->name('tickets.create');
     Route::post('/tickets', [TicketController::class, 'store'])->middleware('can:tickets.create')->name('tickets.store');
+    Route::get('/tickets/{ticket}/assign', [TicketController::class, 'assignmentForm'])->name('tickets.assignment.edit');
     Route::get('/tickets/{ticket}', [TicketController::class, 'show'])->name('tickets.show');
     Route::post('/tickets/{ticket}/comments', [TicketController::class, 'storeComment'])->name('tickets.comments.store');
     Route::patch('/tickets/{ticket}/assignment', [TicketController::class, 'assign'])->name('tickets.assignment.update');
@@ -47,6 +50,9 @@ Route::middleware(['auth', 'account.active'])->group(function (): void {
         ->middleware('can:tickets.catalogues.manage')
         ->group(function (): void {
             Route::get('/', [TicketCatalogueController::class, 'index'])->name('index');
+            Route::get('/categories', [TicketCatalogueController::class, 'categories'])->name('categories.index');
+            Route::get('/priorities', [TicketCatalogueController::class, 'priorities'])->name('priorities.index');
+            Route::get('/statuses', [TicketCatalogueController::class, 'statuses'])->name('statuses.index');
             Route::post('/categories', [TicketCatalogueController::class, 'storeCategory'])->name('categories.store');
             Route::patch('/categories/{category}', [TicketCatalogueController::class, 'updateCategory'])->name('categories.update');
             Route::post('/priorities', [TicketCatalogueController::class, 'storePriority'])->name('priorities.store');

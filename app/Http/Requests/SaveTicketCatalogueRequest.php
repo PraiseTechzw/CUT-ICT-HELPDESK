@@ -38,6 +38,8 @@ class SaveTicketCatalogueRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:100'],
             'slug' => ['required', 'string', 'alpha_dash', 'max:100', Rule::unique($table, 'slug')->ignore($record?->id)],
+            'description' => ['nullable', 'string', 'max:500'],
+            'color' => ['nullable', 'regex:/^#[0-9a-fA-F]{6}$/'],
             'sort_order' => ['required', 'integer', 'min:0', 'max:65535'],
             'is_active' => ['required', 'boolean'],
         ];
