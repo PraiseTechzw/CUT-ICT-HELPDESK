@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\AuditEventController;
 use App\Http\Controllers\Admin\BuildingController;
 use App\Http\Controllers\Admin\CampusController;
 use App\Http\Controllers\Admin\DepartmentController;
+use App\Http\Controllers\Admin\AdminPlaceholderController;
 use App\Http\Controllers\Admin\EquipmentController;
 use App\Http\Controllers\Admin\OperationalZoneController;
 use App\Http\Controllers\Admin\RoleController;
@@ -36,6 +37,12 @@ Route::middleware(['auth', 'account.active'])->group(function (): void {
     Route::get('/reports/tickets', TicketAnalyticsController::class)
         ->middleware('can:tickets.view_all')
         ->name('reports.tickets.index');
+    Route::get('/reports/users', [AdminPlaceholderController::class, 'index'])->defaults('page', 'user-reports')->name('reports.users.index');
+    Route::get('/reports/assets', [AdminPlaceholderController::class, 'index'])->defaults('page', 'asset-reports')->name('reports.assets.index');
+    Route::get('/reports/system', [AdminPlaceholderController::class, 'index'])->defaults('page', 'system-reports')->name('reports.system.index');
+    Route::get('/knowledge-base/articles', [AdminPlaceholderController::class, 'index'])->defaults('page', 'articles')->name('knowledge.articles.index');
+    Route::get('/knowledge-base/categories', [AdminPlaceholderController::class, 'index'])->defaults('page', 'knowledge-categories')->name('knowledge.categories.index');
+    Route::get('/knowledge-base/faqs', [AdminPlaceholderController::class, 'index'])->defaults('page', 'faqs')->name('knowledge.faqs.index');
 
     Route::get('/tickets', [TicketController::class, 'index'])->name('tickets.index');
     Route::get('/tickets/mine', [TicketController::class, 'mine'])->name('tickets.mine');
@@ -77,6 +84,10 @@ Route::middleware(['auth', 'account.active'])->group(function (): void {
         Route::resource('rooms', RoomController::class)->except(['show', 'destroy']);
         Route::get('equipment', [EquipmentController::class, 'index'])->name('equipment.index');
         Route::get('departments', [DepartmentController::class, 'index'])->name('departments.index');
+        Route::get('maintenance', [AdminPlaceholderController::class, 'index'])->defaults('page', 'maintenance')->name('maintenance.index');
+        Route::get('asset-categories', [AdminPlaceholderController::class, 'index'])->defaults('page', 'asset-categories')->name('asset-categories.index');
+        Route::get('settings/system', [AdminPlaceholderController::class, 'index'])->defaults('page', 'system-settings')->name('settings.system.index');
+        Route::get('settings/email-templates', [AdminPlaceholderController::class, 'index'])->defaults('page', 'email-templates')->name('settings.email-templates.index');
         Route::get('audit', [AuditEventController::class, 'index'])->name('audit.index');
     });
 

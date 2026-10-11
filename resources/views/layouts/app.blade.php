@@ -122,14 +122,14 @@
                     </details>
 
                 <details class="sidebar-group" open>
-                    <summary class="sidebar-link {{ request()->routeIs('admin.equipment.*') ? 'is-active' : '' }}">
+                        <summary class="sidebar-link {{ request()->routeIs('admin.equipment.*', 'admin.maintenance.*', 'admin.asset-categories.*') ? 'is-active' : '' }}">
                         <svg data-lucide="package" aria-hidden="true"></svg>
                         <span>Assets</span><svg class="sidebar-chevron" data-lucide="chevron-down" aria-hidden="true"></svg>
                     </summary>
                     <div class="sidebar-submenu">
                         <a class="sidebar-sublink {{ request()->routeIs('admin.equipment.*') ? 'is-current' : '' }}" href="{{ route('admin.equipment.index') }}">Equipment</a>
-                        <span class="sidebar-sublink is-unavailable">Maintenance</span>
-                        <span class="sidebar-sublink is-unavailable">Asset Categories</span>
+                        <a class="sidebar-sublink {{ request()->routeIs('admin.maintenance.*') ? 'is-current' : '' }}" href="{{ route('admin.maintenance.index') }}">Maintenance</a>
+                        <a class="sidebar-sublink {{ request()->routeIs('admin.asset-categories.*') ? 'is-current' : '' }}" href="{{ route('admin.asset-categories.index') }}">Asset Categories</a>
                     </div>
                 </details>
 
@@ -140,32 +140,32 @@
                         </summary>
                         <div class="sidebar-submenu">
                             @can('tickets.view_all')<a class="sidebar-sublink {{ request()->routeIs('reports.tickets.*') ? 'is-current' : '' }}" href="{{ route('reports.tickets.index') }}">Ticket Reports</a>@else<span class="sidebar-sublink is-unavailable" aria-disabled="true">Ticket Reports</span>@endcan
-                            <span class="sidebar-sublink is-unavailable" aria-disabled="true">User Reports</span>
-                            <span class="sidebar-sublink is-unavailable" aria-disabled="true">Asset Reports</span>
-                            <span class="sidebar-sublink is-unavailable" aria-disabled="true">System Reports</span>
+                            <a class="sidebar-sublink {{ request()->routeIs('reports.users.*') ? 'is-current' : '' }}" href="{{ route('reports.users.index') }}">User Reports</a>
+                            <a class="sidebar-sublink {{ request()->routeIs('reports.assets.*') ? 'is-current' : '' }}" href="{{ route('reports.assets.index') }}">Asset Reports</a>
+                            <a class="sidebar-sublink {{ request()->routeIs('reports.system.*') ? 'is-current' : '' }}" href="{{ route('reports.system.index') }}">System Reports</a>
                         </div>
                     </details>
 
                 <details class="sidebar-group" open>
-                    <summary class="sidebar-link">
+                    <summary class="sidebar-link {{ request()->routeIs('knowledge.*') ? 'is-active' : '' }}">
                         <svg data-lucide="book-open" aria-hidden="true"></svg>
                         <span>Knowledge Base</span><svg class="sidebar-chevron" data-lucide="chevron-down" aria-hidden="true"></svg>
                     </summary>
                     <div class="sidebar-submenu">
-                        <span class="sidebar-sublink is-unavailable">Articles</span>
-                        <span class="sidebar-sublink is-unavailable">Categories</span>
-                        <span class="sidebar-sublink is-unavailable">FAQs</span>
+                        <a class="sidebar-sublink {{ request()->routeIs('knowledge.articles.*') ? 'is-current' : '' }}" href="{{ route('knowledge.articles.index') }}">Articles</a>
+                        <a class="sidebar-sublink {{ request()->routeIs('knowledge.categories.*') ? 'is-current' : '' }}" href="{{ route('knowledge.categories.index') }}">Categories</a>
+                        <a class="sidebar-sublink {{ request()->routeIs('knowledge.faqs.*') ? 'is-current' : '' }}" href="{{ route('knowledge.faqs.index') }}">FAQs</a>
                     </div>
                 </details>
 
                     <details class="sidebar-group" open>
-                        <summary class="sidebar-link {{ request()->routeIs('admin.ticket-catalogues.*', 'admin.audit.*') ? 'is-active' : '' }}">
+                        <summary class="sidebar-link {{ request()->routeIs('admin.ticket-catalogues.*', 'admin.audit.*', 'admin.settings.*') ? 'is-active' : '' }}">
                             <svg data-lucide="settings" aria-hidden="true"></svg>
                             <span>Settings</span><svg class="sidebar-chevron" data-lucide="chevron-down" aria-hidden="true"></svg>
                         </summary>
                         <div class="sidebar-submenu">
-                            <span class="sidebar-sublink is-unavailable" aria-disabled="true">System Settings</span>
-                            <span class="sidebar-sublink is-unavailable" aria-disabled="true">Email Templates</span>
+                            <a class="sidebar-sublink {{ request()->routeIs('admin.settings.system.*') ? 'is-current' : '' }}" href="{{ route('admin.settings.system.index') }}">System Settings</a>
+                            <a class="sidebar-sublink {{ request()->routeIs('admin.settings.email-templates.*') ? 'is-current' : '' }}" href="{{ route('admin.settings.email-templates.index') }}">Email Templates</a>
                             <a class="sidebar-sublink {{ request()->routeIs('notifications.*') ? 'is-current' : '' }}" href="{{ route('notifications.index') }}">Notifications @if ($unreadNotificationCount > 0)<span class="sidebar-count">{{ $unreadNotificationCount }}</span>@endif</a>
                             @can('audit.view')<a class="sidebar-sublink {{ request()->routeIs('admin.audit.*') ? 'is-current' : '' }}" href="{{ route('admin.audit.index') }}">Audit Logs</a>@else<span class="sidebar-sublink is-unavailable" aria-disabled="true">Audit Logs</span>@endcan
                         </div>
