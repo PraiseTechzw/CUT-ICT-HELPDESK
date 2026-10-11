@@ -32,11 +32,22 @@ class TicketController extends Controller
         $canViewAll = $user->hasPermissionTo(Permissions::TICKETS_VIEW_ALL);
         $canViewOwn = $user->hasPermissionTo(Permissions::TICKETS_VIEW_OWN);
         $canViewAssigned = $user->hasPermissionTo(Permissions::TICKETS_VIEW_ASSIGNED);
+        $search = mb_substr(trim((string) $request->query('search', '')), 0, 120);
 
         abort_unless($canViewAll || $canViewOwn || $canViewAssigned, 403);
 
         $tickets = Ticket::query()
             ->with(['requester', 'assignedTechnician', 'category', 'priority'])
+            ->when($search !== '', function (Builder $query) use ($search): void {
+                $query->where(function (Builder $matches) use ($search): void {
+                    $matches->where('subject', 'like', "%{$search}%")
+                        ->orWhere('description', 'like', "%{$search}%");
+
+                    if (ctype_digit($search)) {
+                        $matches->orWhere('id', (int) $search);
+                    }
+                });
+            })
             ->when(! $canViewAll, function (Builder $query) use ($user, $canViewOwn, $canViewAssigned): void {
                 $query->where(function (Builder $visible) use ($user, $canViewOwn, $canViewAssigned): void {
                     $hasCondition = false;
@@ -59,6 +70,7 @@ class TicketController extends Controller
             'canViewStaffDetails' => $canViewAll || $canViewAssigned,
             'canCreateTicket' => $user->hasPermissionTo(Permissions::TICKETS_CREATE),
             'statusLabels' => TicketStatus::labels(),
+            'search' => $search,
         ]);
     }
 

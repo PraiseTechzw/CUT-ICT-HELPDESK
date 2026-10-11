@@ -16,7 +16,7 @@
 
     <section aria-label="Ticket list" class="overflow-x-auto rounded-xl border border-slate-200 bg-white">
         @if ($tickets->isEmpty())
-            <p class="p-6 text-sm text-slate-600">No tickets are available in your queue.</p>
+            <p class="p-6 text-sm text-slate-600">@if ($search !== '') No tickets match “{{ $search }}”. @else No tickets are available in your queue. @endif</p>
         @else
             <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
                 <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-600">

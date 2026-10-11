@@ -53,6 +53,33 @@ class TicketingFeatureTest extends TestCase
         $this->get(route('tickets.index'))->assertOk()->assertSee('My laptop will not start')->assertDontSee("Other person's confidential issue");
     }
 
+    public function test_ticket_search_matches_subject_description_and_ticket_number_without_widening_visibility(): void
+    {
+        $requester = $this->userWithRole(Roles::REQUESTER, 'Search Requester');
+        $otherRequester = $this->userWithRole(Roles::REQUESTER, 'Other Search Requester');
+        $subjectMatch = $this->ticket($requester, 'Printer offline');
+        $descriptionMatch = $this->ticket($requester, 'Workstation support');
+        $descriptionMatch->update(['description' => 'The docking station disconnects every hour.']);
+        $privateMatch = $this->ticket($otherRequester, 'Private printer outage');
+
+        $this->actingAs($requester)->get(route('tickets.index', ['search' => 'printer']))
+            ->assertOk()
+            ->assertSee('Printer offline')
+            ->assertDontSee('Private printer outage')
+            ->assertSee('value="printer"', false);
+
+        $this->get(route('tickets.index', ['search' => 'docking station']))
+            ->assertOk()
+            ->assertSee('Workstation support')
+            ->assertDontSee('Printer offline');
+
+        $this->get(route('tickets.index', ['search' => (string) $subjectMatch->id]))
+            ->assertOk()
+            ->assertSee('Printer offline')
+            ->assertDontSee('Workstation support');
+        $this->assertDatabaseHas('tickets', ['id' => $privateMatch->id]);
+    }
+
     public function test_requester_never_sees_internal_notes_or_technician_identity(): void
     {
         $requester = $this->userWithRole(Roles::REQUESTER, 'Synthetic Requester');

@@ -36,7 +36,10 @@ class TicketAnalyticsTest extends TestCase
         $this->actingAs($requester)->get(route('reports.tickets.index'))->assertForbidden();
         $this->actingAs($technician)->get(route('reports.tickets.index'))->assertForbidden();
         $this->actingAs($administrator)->get(route('reports.tickets.index'))->assertForbidden();
-        $this->get(route('dashboard'))->assertDontSee('Reports');
+        $this->get(route('dashboard'))
+            ->assertSee('Reports')
+            ->assertSee('aria-disabled="true">Ticket Reports</span>', false)
+            ->assertDontSee(route('reports.tickets.index'));
         $this->actingAs($helpdesk)->get(route('reports.tickets.index'))->assertOk()->assertSee('Ticket analytics');
 
         $this->get(route('dashboard'))->assertSee('Reports');
