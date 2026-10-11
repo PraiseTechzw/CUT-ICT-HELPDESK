@@ -50,6 +50,7 @@
                     <svg class="header-account-chevron" data-lucide="chevron-down" aria-hidden="true"></svg>
                 </summary>
                 <div class="header-account-menu">
+                    <a href="{{ route('account.index') }}">My account</a>
                     <a href="{{ route('notifications.index') }}">Notifications</a>
                     <form method="POST" action="{{ route('logout') }}">@csrf<button type="submit">Sign out</button></form>
                 </div>

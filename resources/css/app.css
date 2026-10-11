@@ -735,6 +735,7 @@ body[data-theme="dark"] .ticket-summary-grid-all .ticket-summary-card em { color
 .dashboard-panel-kicker { margin-bottom: 3px; color: #8294a7; font-size: 8px; }
 .dashboard-panel-heading h2 { margin: 0; color: #263b52; font-size: 14px; font-weight: 700; line-height: 1.25; }
 .system-overall { display: inline-flex; align-items: center; gap: 5px; padding: 4px 6px; border-radius: 3px; background: #eaf7ef; color: #218753; font-size: 9px; font-weight: 650; white-space: nowrap; }
+.system-overall.is-warning { background: #fff4dd; color: #a66e10; }
 .system-overall i, .service-state i { width: 6px; height: 6px; border-radius: 50%; background: #1db875; box-shadow: 0 0 0 3px rgb(29 184 117 / 12%); }
 .system-updated { margin: 5px 0 8px; color: #8494a5; font-size: 9px; }
 .system-service-list { display: grid; margin: 0; padding: 0; list-style: none; }
@@ -1056,7 +1057,7 @@ body[data-theme="dark"] .recent-tickets-table th { border-color: #2c4058; color:
     .recent-tickets-table { min-width: 620px; }
 }
 
-@media (max-width: 680px) {
+@media (max-width: 760px) {
     .helpdesk-sidebar { transition: transform 180ms ease; }
     .workspace-header { gap: 8px; padding-right: 10px; }
     .workspace-brand { width: 184px; flex-basis: 184px; padding-right: 10px; padding-left: 10px; }
@@ -1335,3 +1336,94 @@ body:has(.auth-page) .guest-main { width: 100%; max-width: none; margin: 0; }
 
 /* Keep the intro footer in normal flow so compact laptop viewports never overlap content. */
 .auth-intro-footer { position: static; margin-top: 46px; }
+
+/* Personal account workspace ------------------------------------------------- */
+.account-page { display: grid; min-width: 0; gap: 14px; color: #20344a; }
+.account-page-header { display: flex; min-width: 0; align-items: flex-end; justify-content: space-between; gap: 18px; }
+.account-page-header h1 { margin: 0; color: #1d334c; font-size: 23px; font-weight: 720; line-height: 1.2; }
+.account-page-header p:not(.ticket-page-kicker) { margin: 5px 0 0; color: #788a9d; font-size: 11px; }
+.account-hero { display: flex; min-width: 0; align-items: center; gap: 15px; padding: 17px 18px; overflow: hidden; border: 1px solid #174c7b; border-radius: 7px; background: linear-gradient(120deg, #073f76 0%, #0b5eaa 58%, #1677c8 100%); color: #fff; box-shadow: 0 6px 18px rgb(13 76 132 / 13%); }
+.account-avatar { display: grid; width: 58px; height: 58px; flex: 0 0 58px; place-items: center; border: 2px solid rgb(255 255 255 / 38%); border-radius: 50%; background: rgb(255 255 255 / 16%); color: #fff; font-size: 18px; font-weight: 750; letter-spacing: .03em; }
+.account-identity { min-width: 0; flex: 1; }
+.account-eyebrow { margin: 0 0 4px; color: #acd1ef; font-size: 8px; font-weight: 750; letter-spacing: .1em; }
+.account-identity h2 { margin: 0; color: #fff; font-size: 19px; font-weight: 720; line-height: 1.2; }
+.account-identity > p:not(.account-eyebrow) { margin: 4px 0 8px; overflow: hidden; color: #d5e8f7; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.account-role-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.account-role-list span { display: inline-flex; min-height: 23px; align-items: center; gap: 5px; padding: 0 7px; border: 1px solid rgb(255 255 255 / 20%); border-radius: 12px; background: rgb(255 255 255 / 10%); color: #f4f9fd; font-size: 8px; font-weight: 650; }
+.account-role-list svg { width: 12px; height: 12px; }
+.account-hero-meta { display: grid; flex: 0 0 auto; justify-items: end; gap: 6px; }
+.account-hero-meta small { color: #c9e2f4; font-size: 8px; }
+.account-hero .user-account-state { border: 1px solid rgb(255 255 255 / 23%); background: rgb(255 255 255 / 12%); color: #fff; }
+.account-content-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; align-items: start; }
+.account-panel { overflow: hidden; }
+.account-panel .ticket-panel-heading { align-items: flex-start; }
+.account-panel-icon { display: grid; width: 31px; height: 31px; flex: 0 0 31px; place-items: center; border-radius: 7px; }
+.account-panel-icon svg { width: 16px; height: 16px; }
+.account-panel-icon.is-blue, .account-setting-icon.is-blue { background: #e8f2ff; color: #2873c3; }
+.account-panel-icon.is-green, .account-setting-icon.is-green { background: #e7f5ed; color: #258657; }
+.account-panel-icon.is-violet, .account-setting-icon.is-violet { background: #f1ebff; color: #7854b8; }
+.account-detail-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0; margin: 0; padding: 4px 15px 7px; }
+.account-detail-list div { display: grid; min-width: 0; gap: 4px; padding: 10px 8px 10px 0; border-bottom: 1px solid #edf1f5; }
+.account-detail-list div:nth-last-child(-n+2) { border-bottom: 0; }
+.account-detail-list dt { color: #8494a5; font-size: 8px; font-weight: 650; text-transform: uppercase; letter-spacing: .05em; }
+.account-detail-list dd { margin: 0; overflow-wrap: anywhere; color: #3d556e; font-size: 10px; font-weight: 650; }
+.account-note { display: flex; align-items: flex-start; gap: 7px; margin: 4px 15px 15px; padding: 9px 10px; border: 1px solid #e3ebf2; border-radius: 5px; background: #f8fafc; color: #75889b; font-size: 8px; line-height: 1.45; }
+.account-note.is-blue { border-color: #dbe8f4; background: #f4f9fd; color: #5f82a3; }
+.account-note svg { width: 14px; height: 14px; flex: 0 0 14px; color: #5590c1; }
+.account-setting-list { display: grid; padding: 4px 15px 7px; }
+.account-setting-item { display: flex; min-width: 0; min-height: 58px; align-items: center; gap: 9px; border-bottom: 1px solid #edf1f5; }
+.account-setting-item:last-child { border-bottom: 0; }
+.account-setting-icon { display: grid; width: 29px; height: 29px; flex: 0 0 29px; place-items: center; border-radius: 7px; }
+.account-setting-icon svg { width: 15px; height: 15px; }
+.account-setting-item > span:nth-child(2) { display: grid; min-width: 0; flex: 1; gap: 3px; }
+.account-setting-item strong { overflow: hidden; color: #3b5269; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+.account-setting-item small { overflow: hidden; color: #8797a7; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+.account-setting-link { display: inline-flex; min-height: 27px; align-items: center; gap: 3px; padding: 0 6px; color: #286bb0; font-size: 8px; font-weight: 650; text-decoration: none; }
+.account-setting-link:hover { color: #164b83; text-decoration: underline; text-underline-offset: 2px; }
+.account-setting-link svg { width: 12px; height: 12px; }
+.account-setting-state { color: #6e8498; font-size: 8px; white-space: nowrap; }
+.account-support-banner { display: flex; min-width: 0; align-items: center; gap: 10px; padding: 12px 14px; border: 1px solid #dce8f1; border-radius: 6px; background: linear-gradient(90deg, #f7fbfe 0%, #fff 100%); }
+.account-support-icon { display: grid; width: 32px; height: 32px; flex: 0 0 32px; place-items: center; border-radius: 8px; background: #e8f2ff; color: #2873c3; }
+.account-support-icon svg { width: 16px; height: 16px; }
+.account-support-banner div { min-width: 0; flex: 1; }
+.account-support-banner strong { color: #38536d; font-size: 10px; }
+.account-support-banner p { margin: 3px 0 0; color: #7f91a2; font-size: 8px; }
+.account-support-banner .ticket-secondary-button { min-height: 31px; font-size: 8px; }
+body[data-theme="dark"] .account-page-header h1, body[data-theme="dark"] .account-panel .ticket-panel-heading h2 { color: #e1eaf3; }
+body[data-theme="dark"] .account-page-header p:not(.ticket-page-kicker), body[data-theme="dark"] .account-detail-list dt, body[data-theme="dark"] .account-setting-item small { color: #9aabbd; }
+body[data-theme="dark"] .account-panel, body[data-theme="dark"] .account-support-banner { border-color: #2c4058; background: #17263a; }
+body[data-theme="dark"] .account-detail-list div, body[data-theme="dark"] .account-setting-item { border-color: #2c4058; }
+body[data-theme="dark"] .account-detail-list dd, body[data-theme="dark"] .account-setting-item strong { color: #d3dfeb; }
+body[data-theme="dark"] .account-note { border-color: #344a64; background: #1d3048; color: #a9bbce; }
+body[data-theme="dark"] .account-support-banner p { color: #a9bbce; }
+@media (max-width: 900px) { .account-content-grid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 540px) { .account-page-header { align-items: flex-start; flex-direction: column; gap: 9px; } .account-page-header h1 { font-size: 19px; } .account-page-header p:not(.ticket-page-kicker) { font-size: 8px; } .account-page-header .admin-data-status { margin-top: 0; } .account-hero { align-items: flex-start; flex-wrap: wrap; padding: 14px; } .account-avatar { width: 46px; height: 46px; flex-basis: 46px; font-size: 15px; } .account-identity h2 { font-size: 16px; } .account-hero-meta { width: 100%; flex-basis: 100%; align-items: flex-start; justify-items: start; padding-left: 61px; } .account-detail-list { grid-template-columns: minmax(0, 1fr); } .account-detail-list div:nth-last-child(-n+2) { border-bottom: 1px solid #edf1f5; } .account-detail-list div:last-child { border-bottom: 0; } .account-setting-item small { white-space: normal; } .account-support-banner { align-items: flex-start; flex-wrap: wrap; } .account-support-banner .ticket-secondary-button { width: 100%; margin-left: 42px; } }
+
+/* Administrator profile edit workspace -------------------------------------- */
+.user-edit-page { display: grid; min-width: 0; gap: 14px; color: #20344a; }
+.user-edit-header { display: flex; min-width: 0; align-items: flex-end; justify-content: space-between; gap: 18px; }
+.user-edit-header h1 { margin: 4px 0 0; color: #1d334c; font-size: 23px; font-weight: 720; line-height: 1.2; }
+.user-edit-header p:not(.ticket-page-kicker) { margin: 5px 0 0; color: #788a9d; font-size: 11px; }
+.user-edit-identity { display: flex; min-width: 0; align-items: center; gap: 10px; padding: 12px 15px; border: 1px solid #dce7f0; border-radius: 6px; background: linear-gradient(90deg, #f7fbfe 0%, #fff 100%); }
+.user-edit-identity > div { display: grid; min-width: 0; flex: 1; gap: 3px; }
+.user-edit-identity strong { overflow: hidden; color: #304a64; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+.user-edit-identity small { overflow: hidden; color: #8494a5; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+.user-edit-form { overflow: hidden; }
+.user-edit-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; padding: 17px 15px 4px; }
+.user-edit-field { display: grid; min-width: 0; gap: 5px; }
+.user-edit-field > label { color: #4a6178; font-size: 9px; font-weight: 700; }
+.user-edit-input-wrap { display: flex; min-width: 0; height: 38px; align-items: center; gap: 8px; padding: 0 10px; border: 1px solid #d6e1eb; border-radius: 5px; background: #fbfcfe; color: #7190ab; transition: border-color 120ms ease, box-shadow 120ms ease, background-color 120ms ease; }
+.user-edit-input-wrap:focus-within { border-color: #77a8d2; background: #fff; box-shadow: 0 0 0 3px rgb(39 115 180 / 11%); }
+.user-edit-input-wrap:has(input[aria-invalid="true"]) { border-color: #dc8882; }
+.user-edit-input-wrap svg { width: 15px; height: 15px; flex: 0 0 15px; }
+.user-edit-input-wrap input { width: 100%; min-width: 0; border: 0; outline: 0; background: transparent; color: #304a64; font: inherit; font-size: 10px; }
+.user-edit-note { margin-top: 10px; }
+.user-edit-actions { display: flex; justify-content: flex-end; gap: 8px; padding: 0 15px 15px; }
+body[data-theme="dark"] .user-edit-header h1 { color: #e1eaf3; }
+body[data-theme="dark"] .user-edit-header p:not(.ticket-page-kicker), body[data-theme="dark"] .user-edit-field > label { color: #9aabbd; }
+body[data-theme="dark"] .user-edit-identity { border-color: #2c4058; background: #1d3048; }
+body[data-theme="dark"] .user-edit-identity strong { color: #d3dfeb; }
+body[data-theme="dark"] .user-edit-input-wrap { border-color: #344a64; background: #17263a; color: #a9bbce; }
+body[data-theme="dark"] .user-edit-input-wrap:focus-within { background: #1d3048; }
+body[data-theme="dark"] .user-edit-input-wrap input { color: #e0e9f3; }
+@media (max-width: 540px) { .user-edit-header { align-items: flex-start; flex-direction: column; gap: 9px; } .user-edit-header h1 { font-size: 19px; } .user-edit-header p:not(.ticket-page-kicker) { font-size: 8px; } .user-edit-header .admin-data-status { margin-top: 0; } .user-edit-fields { grid-template-columns: minmax(0, 1fr); gap: 11px; padding-top: 13px; } .user-edit-actions { justify-content: stretch; } .user-edit-actions > * { flex: 1; } }

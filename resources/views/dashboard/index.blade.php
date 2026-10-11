@@ -65,7 +65,8 @@
                         </div>
                         @if (collect($trend)->sum('total') > 0)
                             <div class="trend-chart-wrap">
-                                <svg class="trend-chart" viewBox="0 0 460 170" role="img" aria-label="Ticket totals, resolutions, and open tickets for the last seven days">
+                                <svg class="trend-chart" viewBox="0 0 460 170" role="img" aria-labelledby="ticket-trend-heading ticket-trend-description">
+                                    <title id="ticket-trend-description">Ticket totals, resolutions, and open tickets for the last seven days</title>
                                     <line class="chart-grid" x1="36" y1="26" x2="424" y2="26"/><line class="chart-grid" x1="36" y1="78" x2="424" y2="78"/><line class="chart-grid" x1="36" y1="130" x2="424" y2="130"/>
                                     <polyline class="chart-line chart-line-total" points="{{ $chartSeries('total') }}"/>
                                     <polyline class="chart-line chart-line-resolved" points="{{ $chartSeries('resolved') }}"/>
@@ -76,6 +77,7 @@
                                     @endforeach
                                 </svg>
                                 <div class="trend-day-labels">@foreach ($trend as $point)<span>{{ $point['label'] }}</span>@endforeach</div>
+                                <ul class="sr-only">@foreach ($trend as $point)<li>{{ $point['label'] }}: {{ $point['total'] }} total, {{ $point['resolved'] }} resolved, {{ $point['open'] }} open.</li>@endforeach</ul>
                             </div>
                         @else
                             <div class="dashboard-empty-chart"><span class="empty-chart-icon"><svg data-lucide="chart-no-axes-combined" aria-hidden="true"></svg></span><strong>No ticket trend yet</strong><span>Ticket activity will appear here as requests come in.</span></div>
@@ -141,10 +143,15 @@
             <section class="dashboard-panel dashboard-system-panel" aria-labelledby="system-status-heading">
                 <header class="dashboard-panel-heading">
                     <div><p class="dashboard-panel-kicker">HEALTH</p><h2 id="system-status-heading">Current System Status</h2></div>
-                    <span class="system-overall"><i></i>Portal responding</span>
+                    <span class="system-overall {{ $databaseOperational ? '' : 'is-warning' }}"><i></i>{{ $databaseOperational ? 'Core services online' : 'Needs attention' }}</span>
                 </header>
                 <p class="system-updated">Database {{ $databaseOperational ? 'operational' : 'unavailable' }} · external monitoring not configured</p>
                 <ul class="system-service-list">
+                    <li>
+                        <span class="service-icon service-icon-green"><svg data-lucide="database" aria-hidden="true"></svg></span>
+                        <span class="service-copy"><strong>Helpdesk database</strong><small>Core application data</small></span>
+                        <span class="service-state"><i class="{{ $databaseOperational ? '' : 'is-down' }}"></i>{{ $databaseOperational ? 'Operational' : 'Unavailable' }}</span>
+                    </li>
                     <li>
                         <span class="service-icon service-icon-blue"><svg data-lucide="network" aria-hidden="true"></svg></span>
                         <span class="service-copy"><strong>Network &amp; Internet</strong><small>External connectivity</small></span>
