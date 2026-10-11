@@ -29,6 +29,8 @@ import {
 	Network,
 	Package,
 	Paperclip,
+		LockKeyhole,
+		KeyRound,
 	Pencil,
 	Plus,
 	RefreshCw,

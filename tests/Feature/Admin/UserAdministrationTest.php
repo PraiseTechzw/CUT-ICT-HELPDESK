@@ -39,7 +39,14 @@ class UserAdministrationTest extends TestCase
     {
         $administrator = $this->userWithRole(Roles::SYSTEM_ADMINISTRATOR);
 
-        $response = $this->actingAs($administrator)->post('/admin/users', [
+        $this->actingAs($administrator)->get(route('admin.users.create'))
+            ->assertOk()
+            ->assertSee('User Information')
+            ->assertSee('Initial Access')
+            ->assertSee('Requester')
+            ->assertSee('Initial Password');
+
+        $response = $this->post('/admin/users', [
             'name' => 'Synthetic Requester',
             'email' => '  New.User@Example.Test  ',
             'password' => 'correct horse battery staple',
@@ -179,6 +186,32 @@ class UserAdministrationTest extends TestCase
             ->assertOk()
             ->assertSee('Needle Person')
             ->assertDontSee('Other Person');
+    }
+
+    public function test_administrator_can_filter_users_by_role_and_account_status(): void
+    {
+        $administrator = $this->userWithRole(Roles::SYSTEM_ADMINISTRATOR);
+        $activeRequester = $this->userWithRole(Roles::REQUESTER);
+        $inactiveRequester = $this->userWithRole(Roles::REQUESTER);
+        $inactiveRequester->update(['is_active' => false]);
+        $technician = $this->userWithRole(Roles::TECHNICIAN);
+
+        $this->actingAs($administrator)->get(route('admin.users.index', [
+            'role' => Roles::REQUESTER,
+            'status' => 'active',
+        ]))
+            ->assertOk()
+            ->assertSee('Total Users')
+            ->assertSee('Active')
+            ->assertSee('Inactive')
+            ->assertSee($activeRequester->email)
+            ->assertDontSee($inactiveRequester->email)
+            ->assertDontSee($technician->email);
+
+        $this->get(route('admin.users.index', ['status' => 'inactive']))
+            ->assertOk()
+            ->assertSee($inactiveRequester->email)
+            ->assertDontSee($activeRequester->email);
     }
 
     public function test_administrator_bootstrap_command_is_registered_and_requires_role_catalogue(): void
