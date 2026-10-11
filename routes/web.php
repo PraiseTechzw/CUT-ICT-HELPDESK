@@ -5,6 +5,8 @@ declare(strict_types=1);
 use App\Http\Controllers\Admin\AuditEventController;
 use App\Http\Controllers\Admin\BuildingController;
 use App\Http\Controllers\Admin\CampusController;
+use App\Http\Controllers\Admin\DepartmentController;
+use App\Http\Controllers\Admin\EquipmentController;
 use App\Http\Controllers\Admin\OperationalZoneController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\RoomController;
@@ -73,6 +75,8 @@ Route::middleware(['auth', 'account.active'])->group(function (): void {
         Route::resource('zones', OperationalZoneController::class)->except(['show', 'destroy']);
         Route::resource('buildings', BuildingController::class)->except(['show', 'destroy']);
         Route::resource('rooms', RoomController::class)->except(['show', 'destroy']);
+        Route::get('equipment', [EquipmentController::class, 'index'])->name('equipment.index');
+        Route::get('departments', [DepartmentController::class, 'index'])->name('departments.index');
         Route::get('audit', [AuditEventController::class, 'index'])->name('audit.index');
     });
 
