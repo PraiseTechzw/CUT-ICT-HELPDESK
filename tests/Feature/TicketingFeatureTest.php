@@ -124,6 +124,30 @@ class TicketingFeatureTest extends TestCase
         $this->get(route('tickets.index'))->assertOk()->assertSee('All Tickets');
     }
 
+    public function test_my_ticket_status_filters_group_open_and_in_progress_workflow_states(): void
+    {
+        $requester = $this->userWithRole(Roles::REQUESTER, 'Status Tabs Requester');
+        $this->ticket($requester, 'Open tab ticket', TicketStatus::OPEN);
+        $this->ticket($requester, 'Assigned tab ticket', TicketStatus::ASSIGNED);
+        $this->ticket($requester, 'In progress tab ticket', TicketStatus::IN_PROGRESS);
+        $this->ticket($requester, 'Waiting tab ticket', TicketStatus::WAITING_FOR_REQUESTER);
+        $this->ticket($requester, 'Resolved tab ticket', TicketStatus::RESOLVED);
+
+        $this->actingAs($requester)->get(route('tickets.mine', ['status' => TicketStatus::OPEN]))
+            ->assertOk()
+            ->assertSee('Open tab ticket')
+            ->assertSee('Assigned tab ticket')
+            ->assertDontSee('In progress tab ticket')
+            ->assertDontSee('Waiting tab ticket');
+
+        $this->get(route('tickets.mine', ['status' => TicketStatus::IN_PROGRESS]))
+            ->assertOk()
+            ->assertSee('In progress tab ticket')
+            ->assertSee('Waiting tab ticket')
+            ->assertDontSee('Open tab ticket')
+            ->assertDontSee('Resolved tab ticket');
+    }
+
     public function test_requester_can_select_a_room_and_location_is_shown_on_the_ticket(): void
     {
         $requester = $this->userWithRole(Roles::REQUESTER, 'Location Requester');

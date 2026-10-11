@@ -5,18 +5,40 @@
 @section('content')
 @php
     $listAction = $scope === 'mine' ? route('tickets.mine') : ($scope === 'overdue' ? route('tickets.overdue') : route('tickets.index'));
+    $mineStatusTabs = [
+        '' => 'All',
+        \App\Support\TicketStatus::OPEN => 'Open',
+        \App\Support\TicketStatus::IN_PROGRESS => 'In Progress',
+        \App\Support\TicketStatus::RESOLVED => 'Resolved',
+        \App\Support\TicketStatus::CLOSED => 'Closed',
+    ];
 @endphp
 <div class="ticket-workspace">
     <header class="ticket-page-header {{ $scope === 'all' ? 'ticket-all-header' : '' }}">
         <div>
             @if ($scope !== 'all')<p class="ticket-page-kicker">SUPPORT OPERATIONS</p>@endif
             <h1>{{ $scope === 'mine' ? 'My Tickets' : ($scope === 'overdue' ? 'Overdue Tickets' : 'All Tickets') }}</h1>
-            <p>{{ $scope === 'overdue' ? 'Open tickets past their assigned due date.' : ($scope === 'mine' ? 'Tickets you requested or are assigned to you.' : 'View and manage all ICT helpdesk tickets.') }}</p>
+            <p>{{ $scope === 'overdue' ? 'Open tickets past their assigned due date.' : ($scope === 'mine' ? 'View and track tickets you requested or are assigned to you.' : 'View and manage all ICT helpdesk tickets.') }}</p>
         </div>
         @if ($canCreateTicket)<a class="ticket-primary-button" href="{{ route('tickets.create') }}"><svg data-lucide="ticket-plus" aria-hidden="true"></svg>Create Ticket</a>@endif
     </header>
 
-    @if ($scope !== 'all')<nav class="ticket-page-tabs" aria-label="Ticket queues">
+    @if ($scope === 'mine')
+    <nav class="ticket-page-tabs ticket-status-tabs" aria-label="Filter my tickets by status">
+        @foreach ($mineStatusTabs as $tabStatus => $tabLabel)
+            @php
+                $tabQuery = request()->query();
+                unset($tabQuery['page'], $tabQuery['scope']);
+                if ($tabStatus === '') {
+                    unset($tabQuery['status']);
+                } else {
+                    $tabQuery['status'] = $tabStatus;
+                }
+            @endphp
+            <a class="{{ $filters['status'] === $tabStatus ? 'is-active' : '' }}" @if ($filters['status'] === $tabStatus) aria-current="page" @endif href="{{ route('tickets.mine', $tabQuery) }}">{{ $tabLabel }}</a>
+        @endforeach
+    </nav>
+    @elseif ($scope === 'overdue')<nav class="ticket-page-tabs" aria-label="Ticket queues">
         @if (auth()->user()->can('tickets.view_all'))<a class="{{ $scope === 'all' ? 'is-active' : '' }}" href="{{ route('tickets.index') }}">All Tickets</a>@endif
         @if (auth()->user()->can('tickets.view_own') || auth()->user()->can('tickets.view_assigned'))<a class="{{ $scope === 'mine' ? 'is-active' : '' }}" href="{{ route('tickets.mine') }}">My Tickets</a>@endif
         <a class="{{ $scope === 'overdue' ? 'is-active' : '' }}" href="{{ route('tickets.overdue') }}">Overdue Tickets</a>
@@ -30,7 +52,7 @@
         <article class="ticket-summary-card ticket-summary-resolved"><span class="ticket-summary-icon"><svg data-lucide="circle-check" aria-hidden="true"></svg></span><span><small>Resolved</small><strong>{{ number_format($summary['resolved']) }}</strong><em>Solution provided</em></span></article>
         <article class="ticket-summary-card ticket-summary-closed"><span class="ticket-summary-icon"><svg data-lucide="archive" aria-hidden="true"></svg></span><span><small>Closed</small><strong>{{ number_format($summary['closed']) }}</strong><em>Completed</em></span></article>
     </section>
-    @else
+    @elseif ($scope !== 'mine')
     <section class="ticket-summary-grid" aria-label="Ticket queue summary">
         <article class="ticket-summary-card"><span class="ticket-summary-icon ticket-summary-blue"><svg data-lucide="tickets" aria-hidden="true"></svg></span><span><small>Total tickets</small><strong>{{ number_format($summary['total']) }}</strong></span></article>
         <article class="ticket-summary-card"><span class="ticket-summary-icon ticket-summary-red"><svg data-lucide="circle-alert" aria-hidden="true"></svg></span><span><small>Open / assigned</small><strong>{{ number_format($summary['open']) }}</strong></span></article>
@@ -40,8 +62,8 @@
     @endif
 
     <section class="ticket-page-panel" aria-labelledby="ticket-queue-heading">
-        <header class="ticket-panel-heading ticket-queue-heading"><div><h2 id="ticket-queue-heading">{{ $scope === 'overdue' ? 'Overdue Queue' : ($scope === 'mine' ? 'My Queue' : 'All Tickets') }}</h2><p>{{ number_format($tickets->total()) }} {{ $tickets->total() === 1 ? 'ticket' : 'tickets' }}</p></div></header>
-        <form class="ticket-filter-bar {{ $scope === 'all' ? 'ticket-filter-bar-all' : '' }}" method="GET" action="{{ $listAction }}">
+        @if ($scope !== 'mine')<header class="ticket-panel-heading ticket-queue-heading"><div><h2 id="ticket-queue-heading">{{ $scope === 'overdue' ? 'Overdue Queue' : 'All Tickets' }}</h2><p>{{ number_format($tickets->total()) }} {{ $tickets->total() === 1 ? 'ticket' : 'tickets' }}</p></div></header>@endif
+        <form class="ticket-filter-bar {{ $scope === 'all' ? 'ticket-filter-bar-all' : '' }} {{ $scope === 'mine' ? 'ticket-filter-bar-mine' : '' }}" method="GET" action="{{ $listAction }}">
             @if ($scope === 'mine')<input type="hidden" name="scope" value="mine">@endif
             <label class="ticket-search-field"><svg data-lucide="search" aria-hidden="true"></svg><input type="search" name="search" value="{{ $search }}" placeholder="Search tickets..." aria-label="Search tickets"></label>
             <label class="sr-only" for="filter-category">Category</label><select id="filter-category" name="category"><option value="">All Categories</option>@foreach ($categories as $category)<option value="{{ $category->id }}" @selected($filters['category'] === (string) $category->id)>{{ $category->name }}</option>@endforeach</select>
@@ -52,10 +74,12 @@
         </form>
 
         <div class="ticket-table-wrap">
-            <table class="ticket-data-table ticket-queue-table {{ $scope === 'all' ? 'ticket-all-table' : '' }}">
+            <table class="ticket-data-table ticket-queue-table {{ $scope === 'all' ? 'ticket-all-table' : '' }} {{ $scope === 'mine' ? 'ticket-my-table' : '' }}">
                 <thead><tr>
                     @if ($scope === 'all')
-                        <th scope="col">#</th><th scope="col">Ticket ID</th><th scope="col">Category</th><th scope="col">Priority</th><th scope="col">Status</th><th scope="col">Created</th><th scope="col"><span class="sr-only">Actions</span></th>
+                        <th scope="col">#</th><th scope="col">Ticket ID</th><th scope="col">Category</th><th scope="col">Priority</th><th scope="col">Status</th><th scope="col">Created</th><th scope="col">Actions</th>
+                    @elseif ($scope === 'mine')
+                        <th scope="col">#</th><th scope="col">Ticket ID</th><th scope="col">Category</th><th scope="col">Priority</th><th scope="col">Status</th><th scope="col">Created</th><th scope="col">Actions</th>
                     @else
                         <th scope="col">Ticket</th><th scope="col">Category</th><th scope="col">Priority</th><th scope="col">Status</th><th scope="col">Location</th>
                         @if ($canViewStaffDetails)<th scope="col">Requester</th><th scope="col">Technician</th>@endif
@@ -72,6 +96,14 @@
                             <td>@if($ticket->priority)<span class="ticket-priority-label" @if($ticket->priority->color) style="--priority-color: {{ $ticket->priority->color }}" @endif>{{ $ticket->priority->name }}</span>@else—@endif</td>
                             <td><span class="ticket-status ticket-status-{{ str_replace('_', '-', $ticket->status) }}">{{ $statusLabels[$ticket->status] ?? $ticket->status }}</span></td>
                             <td class="ticket-date-cell"><time datetime="{{ $ticket->created_at?->toIso8601String() }}">{{ $ticket->created_at?->format('d M Y · H:i') }}</time>@if($ticket->due_at && !in_array($ticket->status, [\App\Support\TicketStatus::RESOLVED, \App\Support\TicketStatus::CLOSED], true) && $ticket->due_at->isPast())<small class="ticket-overdue-note">Overdue {{ $ticket->due_at->diffForHumans() }}</small>@endif</td>
+                            <td><a class="ticket-open-link" href="{{ route('tickets.show', $ticket) }}">View</a></td>
+                        @elseif ($scope === 'mine')
+                            <td class="ticket-row-number">{{ ($tickets->firstItem() ?? 1) + $loop->index }}</td>
+                            <td><a class="ticket-list-subject" href="{{ route('tickets.show', $ticket) }}" aria-label="View TKT-{{ $ticket->created_at?->format('Y') }}-{{ str_pad((string) $ticket->id, 4, '0', STR_PAD_LEFT) }}: {{ $ticket->subject }}"><span class="ticket-list-id">TKT-{{ $ticket->created_at?->format('Y') }}-{{ str_pad((string) $ticket->id, 4, '0', STR_PAD_LEFT) }}</span><strong>{{ $ticket->subject }}</strong></a></td>
+                            <td>{{ $ticket->category?->name ?? 'Uncategorized' }}</td>
+                            <td>@if($ticket->priority)<span class="ticket-priority-label" @if($ticket->priority->color) style="--priority-color: {{ $ticket->priority->color }}" @endif>{{ $ticket->priority->name }}</span>@else—@endif</td>
+                            <td><span class="ticket-status ticket-status-{{ str_replace('_', '-', $ticket->status) }}">{{ $statusLabels[$ticket->status] ?? $ticket->status }}</span></td>
+                            <td class="ticket-date-cell"><time datetime="{{ $ticket->created_at?->toIso8601String() }}">{{ $ticket->created_at?->format('d M Y · H:i') }}</time></td>
                             <td><a class="ticket-open-link" href="{{ route('tickets.show', $ticket) }}">View</a></td>
                         @else
                             <td><a class="ticket-list-subject" href="{{ route('tickets.show', $ticket) }}"><span class="ticket-list-id">TKT-{{ $ticket->id }}</span><strong>{{ $ticket->subject }}</strong></a></td>

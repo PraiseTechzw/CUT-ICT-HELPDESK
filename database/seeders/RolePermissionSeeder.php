@@ -61,7 +61,7 @@ class RolePermissionSeeder extends Seeder
                 ]],
                 Roles::REGIONAL_SUPERVISOR => ['Regional Supervisor', 'Proposed role for operational supervisors.', $locationView],
                 Roles::ICT_MANAGER => ['ICT Manager', 'Proposed central oversight role.', [...$locationView, Permissions::USERS_VIEW, Permissions::AUDIT_VIEW]],
-                Roles::SYSTEM_ADMINISTRATOR => ['System Administrator', 'Proposed technical administration role; ticket content requires explicit operational permissions.', $systemAdministratorGrants],
+                Roles::SYSTEM_ADMINISTRATOR => ['System Administrator', 'Full application access across all currently defined permissions.', $systemAdministratorGrants],
                 Roles::AUDITOR => ['Auditor', 'Proposed read-only audit role.', [Permissions::AUDIT_VIEW]],
             ];
 

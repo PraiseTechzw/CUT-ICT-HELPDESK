@@ -72,6 +72,17 @@ The tracked `.env.example` then selects `APP_ENV=local` and SQLite, and `key:gen
 - Category and priority rows are optional and empty until configured. No CUT-specific categories, rankings, locations, teams, or assignments are preloaded.
 - Regional ticket permissions, team-based ticket routing, SLAs, automatic routing, attachments, notifications/email, and production integrations are not implemented.
 
+## Local ticket demo data
+
+To preview ticket queues, status tabs, assignment history, comments, and ticket details with synthetic records, run:
+
+```sh
+php artisan migrate
+php artisan db:seed --class=TicketDemoSeeder
+```
+
+The demo seeder is restricted to `local` and `testing` environments and is safe to rerun. It creates synthetic Requester, Helpdesk Officer, and Technician accounts using `demo.requester.one@example.test`, `demo.requester.two@example.test`, `demo.helpdesk@example.test`, and `demo.technician.one@example.test` / `demo.technician.two@example.test`. The password for these local demo accounts is `DemoTicket123!`. Do not use this seeder or its credentials in production.
+
 ## Phase 3 metadata behavior
 
 - Teams are generic, unseeded records without assumed CUT names or zone mappings. Only the System Administrator permission `teams.manage` can create or update teams, memberships, and deployments.

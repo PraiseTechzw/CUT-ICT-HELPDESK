@@ -105,10 +105,18 @@ class TicketController extends Controller
                     }
                 });
             })
-            ->when(in_array($status, TicketStatus::values(), true), fn (Builder $tickets): Builder => $tickets->where('status', $status))
             ->when(ctype_digit($categoryId), fn (Builder $tickets): Builder => $tickets->where('ticket_category_id', (int) $categoryId))
             ->when(ctype_digit($priorityId), fn (Builder $tickets): Builder => $tickets->where('ticket_priority_id', (int) $priorityId))
             ->orderByDesc('updated_at');
+
+        if ($status === TicketStatus::OPEN) {
+            $query->whereIn('status', [TicketStatus::OPEN, TicketStatus::ASSIGNED]);
+        } elseif ($status === TicketStatus::IN_PROGRESS) {
+            $query->whereIn('status', [TicketStatus::IN_PROGRESS, TicketStatus::WAITING_FOR_REQUESTER]);
+        } elseif (in_array($status, TicketStatus::values(), true)) {
+            $query->where('status', $status);
+        }
+
         $tickets = $query->paginate(15)->withQueryString();
 
         return view('tickets.index', [
