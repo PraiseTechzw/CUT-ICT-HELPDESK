@@ -32,9 +32,7 @@ class UserGroupAdministrationTest extends TestCase
         $this->actingAs($administrator)->get(route('admin.user-groups.index'))
             ->assertOk()
             ->assertSee('User Groups')
-            ->assertSee('Organize users into groups')
-            ->assertSee($requester->email)
-            ->assertSee($technician->email);
+            ->assertSee('Organize users into groups');
 
         $this->post(route('admin.user-groups.store'), [
             'name' => 'Finance',
@@ -43,6 +41,10 @@ class UserGroupAdministrationTest extends TestCase
         ])->assertRedirect(route('admin.user-groups.index'));
 
         $group = UserGroup::query()->where('slug', 'finance')->firstOrFail();
+        $this->get(route('admin.user-groups.index'))
+            ->assertOk()
+            ->assertSee('Group Requester')
+            ->assertSee('Group Technician');
         $this->put(route('admin.user-groups.members.update', $group), [
             'user_ids' => [$requester->id, $technician->id],
         ])->assertRedirect(route('admin.user-groups.index'));
@@ -50,6 +52,11 @@ class UserGroupAdministrationTest extends TestCase
         $this->assertEqualsCanonicalizing([$requester->id, $technician->id], $group->users()->pluck('users.id')->all());
         $this->assertSame([Roles::REQUESTER], $requester->fresh()->roles()->pluck('slug')->all());
         $this->assertSame([Roles::TECHNICIAN], $technician->fresh()->roles()->pluck('slug')->all());
+        $this->get(route('admin.users.show', $requester))
+            ->assertOk()
+            ->assertSee('User Groups')
+            ->assertSee('Finance')
+            ->assertSee('Group membership is organizational only');
         $this->assertTrue($administrator->hasPermissionTo(Permissions::USER_GROUPS_MANAGE));
     }
 

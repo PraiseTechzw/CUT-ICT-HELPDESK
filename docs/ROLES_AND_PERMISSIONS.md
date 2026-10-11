@@ -29,6 +29,7 @@ In addition to `users.*`, location and `audit.view` abilities, `App\Support\Perm
 - `tickets.comment_public`, `tickets.comment_internal`
 - `tickets.catalogues.manage`
 - `teams.manage` (create/update generic teams, technician memberships, and deployments)
+- `user_groups.manage` (create/update organizational user groups and assign account memberships; does not grant ticket access or roles)
 
 The seeder explicitly maps requester/helpdesk/technician permissions and grants System Administrator every permission in the centralized catalogue. Future permissions are included for System Administrators when the role seeder is run.
 

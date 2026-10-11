@@ -93,7 +93,7 @@ class UserController extends Controller
     public function show(User $user): View
     {
         Gate::authorize(Permissions::USERS_VIEW);
-        $user->load('roles');
+        $user->load(['roles', 'userGroups']);
         $roles = Gate::allows(Permissions::USERS_ASSIGN_ROLES)
             ? Role::query()->orderBy('name')->get()
             : collect();
