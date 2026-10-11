@@ -1,0 +1,41 @@
+name: Bug report
+description: Report a reproducible defect in the helpdesk application.
+title: "bug: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please remove credentials, personal data, ticket text, and institutional secrets before submitting.
+  - type: input
+    id: area
+    attributes:
+      label: Area or route
+      placeholder: /admin/campuses or ticket intake
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps
+      description: Include the smallest sequence that reproduces the problem.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: PHP, Laravel, browser, commit

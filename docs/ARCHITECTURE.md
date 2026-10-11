@@ -90,4 +90,4 @@ This is a source/test consistency review, **not institutional approval**:
 
 ## Current state
 
-Laravel **13.35.0** and PHP **8.3.6** were observed in the sandbox. The current full suite reports **54 passing tests (363 assertions)**; Pint passed for 113 PHP files, Composer validation and Vite build passed, and all 18 migrations ran on a fresh disposable SQLite database. The database was removed after verification. Local success does not establish production readiness, institutional approval, or SQL-engine compatibility.
+Laravel **13.35.0** and PHP **8.3.6** were observed in the sandbox. The current full suite reports **71 passing tests (536 assertions)**; Pint passed for 113 PHP files, Composer validation and Vite build passed, and all 18 migrations ran on a fresh disposable SQLite database. The database was removed after verification. Local success does not establish production readiness, institutional approval, or SQL-engine compatibility.

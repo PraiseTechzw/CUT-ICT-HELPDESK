@@ -106,7 +106,7 @@ composer audit --locked
 npm audit --audit-level=moderate
 ```
 
-The current full suite reports **49 passed tests (326 assertions)**. The test harness sets `APP_ENV=testing`, a test-only application key, array-backed session/cache, synchronous queue, and SQLite `:memory:` **before application bootstrap**. It fails closed unless Laravel reports the `testing` environment and SQLite memory database. Thus an inherited shell variable such as `APP_ENV=PROD` cannot redirect the suite to a configured institutional database. Never weaken this guard or point tests at shared data.
+The current full suite reports **71 passed tests (536 assertions)**. The test harness sets `APP_ENV=testing`, a test-only application key, array-backed session/cache, synchronous queue, and SQLite `:memory:` **before application bootstrap**. It fails closed unless Laravel reports the `testing` environment and SQLite memory database. Thus an inherited shell variable such as `APP_ENV=PROD` cannot redirect the suite to a configured institutional database. Never weaken this guard or point tests at shared data.
 
 ## Authentication and account operation notes
 
