@@ -1,6 +1,7 @@
 import {
 	Activity,
 	AlarmClock,
+	Archive,
 	ArrowLeft,
 	Bell,
 	BookOpen,
@@ -45,6 +46,7 @@ import {
 const lucideIcons = {
 	activity: Activity,
 	'alarm-clock': AlarmClock,
+	archive: Archive,
 	'arrow-left': ArrowLeft,
 	bell: Bell,
 	'book-open': BookOpen,

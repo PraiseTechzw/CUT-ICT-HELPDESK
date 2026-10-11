@@ -16,7 +16,7 @@ The application implements login/logout and active-account enforcement; protecte
 
 The user approved a conservative ticketing MVP for Phase 2. It includes requester-owned ticket intake and view/reply, a global Helpdesk Officer triage queue, manual assignment to one active individual Technician, assigned-only Technician ticket access, public replies separated from internal notes, explicit state transitions and reopen, status/assignment history, and configurable category/priority catalogues with no invented initial values.
 
-The UI uses responsive Blade layouts, labeled forms, and reusable field-error presentation. Requesters cannot see internal notes, technician identities, or other requesters' ticket data. The seeded System Administrator can configure catalogues and Phase 3 metadata but has no ticket-content permission or report access by default.
+The UI uses responsive Blade layouts, labeled forms, and reusable field-error presentation. Requesters cannot see internal notes, technician identities, or other requesters' ticket data. The seeded System Administrator receives all currently defined permissions, including ticket-content and report access.
 
 ## Phase 3 implementation scope
 

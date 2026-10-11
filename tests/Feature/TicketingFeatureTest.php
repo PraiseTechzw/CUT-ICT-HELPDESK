@@ -5,13 +5,17 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Models\AuditEvent;
+use App\Models\Building;
+use App\Models\Campus;
 use App\Models\Permission;
 use App\Models\Role;
+use App\Models\Room;
 use App\Models\Ticket;
 use App\Models\TicketCategory;
 use App\Models\TicketPriority;
 use App\Models\User;
 use App\Support\Roles;
+use App\Support\Permissions;
 use App\Support\TicketStatus;
 use Database\Seeders\RolePermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -78,6 +82,118 @@ class TicketingFeatureTest extends TestCase
             ->assertSee('Printer offline')
             ->assertDontSee('Workstation support');
         $this->assertDatabaseHas('tickets', ['id' => $privateMatch->id]);
+    }
+
+    public function test_all_tickets_page_shows_status_totals_and_compact_queue_columns(): void
+    {
+        $helpdesk = $this->userWithRole(Roles::HELPDESK_OFFICER, 'All Tickets Officer');
+        $this->ticket($helpdesk, 'Open network issue', TicketStatus::OPEN);
+        $this->ticket($helpdesk, 'Assigned device issue', TicketStatus::ASSIGNED);
+        $this->ticket($helpdesk, 'In progress software issue', TicketStatus::IN_PROGRESS);
+        $this->ticket($helpdesk, 'Resolved access issue', TicketStatus::RESOLVED);
+        $this->ticket($helpdesk, 'Closed account issue', TicketStatus::CLOSED);
+
+        $this->actingAs($helpdesk)->get(route('tickets.index'))
+            ->assertOk()
+            ->assertSee('Total Tickets')
+            ->assertSee('In Progress')
+            ->assertSee('Ticket ID')
+            ->assertSee('Open network issue')
+            ->assertSee('Assigned device issue')
+            ->assertSee('Resolved access issue')
+            ->assertSee('Closed account issue')
+            ->assertSee('>5<', false)
+            ->assertSee('>2<', false);
+    }
+
+    public function test_my_tickets_page_is_limited_to_the_requester_or_assignee(): void
+    {
+        $requester = $this->userWithRole(Roles::REQUESTER, 'My Queue Requester');
+        $otherRequester = $this->userWithRole(Roles::REQUESTER, 'Other Queue Requester');
+        $this->ticket($requester, 'My private queue ticket');
+        $this->ticket($otherRequester, 'Another requester ticket');
+
+        $this->actingAs($requester)->get(route('tickets.mine'))
+            ->assertOk()
+            ->assertSee('My Tickets')
+            ->assertSee('My private queue ticket')
+            ->assertDontSee('Another requester ticket');
+
+        $administrator = $this->userWithRole(Roles::SYSTEM_ADMINISTRATOR, 'Full Access Administrator');
+        $this->actingAs($administrator)->get(route('tickets.mine'))->assertOk()->assertSee('My Tickets');
+        $this->get(route('tickets.index'))->assertOk()->assertSee('All Tickets');
+    }
+
+    public function test_requester_can_select_a_room_and_location_is_shown_on_the_ticket(): void
+    {
+        $requester = $this->userWithRole(Roles::REQUESTER, 'Location Requester');
+        $campus = Campus::query()->create(['name' => 'Main Campus', 'code' => 'MAIN']);
+        $building = Building::query()->create(['campus_id' => $campus->id, 'name' => 'Library', 'code' => 'LIB']);
+        $room = Room::query()->create(['building_id' => $building->id, 'name' => 'Helpdesk Lab', 'code' => 'LAB-1']);
+
+        $this->actingAs($requester)->get(route('tickets.create'))->assertOk()->assertSee('Additional Information')->assertSee('Helpdesk Lab');
+        $this->post(route('tickets.store'), [
+            'subject' => 'Campus workstation issue',
+            'description' => 'The workstation cannot connect to the campus network.',
+            'room_id' => $room->id,
+        ])->assertRedirect();
+
+        $ticket = Ticket::query()->where('requester_id', $requester->id)->firstOrFail();
+        $this->assertSame($room->id, $ticket->room_id);
+        $this->get(route('tickets.show', $ticket))->assertOk()->assertSee('Main Campus')->assertSee('Library')->assertSee('Helpdesk Lab');
+    }
+
+    public function test_overdue_queue_uses_assigned_deadlines_and_excludes_completed_tickets(): void
+    {
+        $helpdesk = $this->userWithRole(Roles::HELPDESK_OFFICER, 'Overdue Queue Officer');
+        $requester = $this->userWithRole(Roles::REQUESTER, 'Overdue Queue Requester');
+        $overdue = $this->ticket($requester, 'Past due support request');
+        $overdue->update(['due_at' => now()->subDay()]);
+        $completed = $this->ticket($requester, 'Completed past due request', TicketStatus::RESOLVED);
+        $completed->update(['due_at' => now()->subDay()]);
+        $future = $this->ticket($requester, 'Future due request');
+        $future->update(['due_at' => now()->addDay()]);
+
+        $this->actingAs($helpdesk)->get(route('tickets.overdue'))
+            ->assertOk()
+            ->assertSee('Past due support request')
+            ->assertDontSee('Completed past due request')
+            ->assertDontSee('Future due request');
+    }
+
+    public function test_authorized_assignment_screen_sets_due_date_and_writes_deadline_audit_event(): void
+    {
+        $helpdesk = $this->userWithRole(Roles::HELPDESK_OFFICER, 'Deadline Officer');
+        $requester = $this->userWithRole(Roles::REQUESTER, 'Deadline Requester');
+        $technician = $this->userWithRole(Roles::TECHNICIAN, 'Deadline Technician');
+        $ticket = $this->ticket($requester, 'Deadline assignment ticket');
+        $deadline = now()->addDay()->startOfMinute();
+
+        $this->actingAs($helpdesk)->get(route('tickets.assignment.edit', $ticket))
+            ->assertOk()
+            ->assertSee('Available Technicians')
+            ->assertSee('Due date and time');
+        $this->patch(route('tickets.assignment.update', $ticket), [
+            'technician_id' => $technician->id,
+            'due_at' => $deadline->format('Y-m-d H:i:s'),
+        ])->assertRedirect(route('tickets.show', $ticket));
+
+        $this->assertSame($deadline->timestamp, $ticket->fresh()->due_at?->timestamp);
+        $this->assertDatabaseHas('audit_events', ['action' => 'ticket.deadline_updated', 'subject_id' => $ticket->id]);
+    }
+
+    public function test_category_priority_and_status_screens_require_catalogue_management(): void
+    {
+        $administrator = $this->userWithRole(Roles::SYSTEM_ADMINISTRATOR, 'Catalogue Screen Administrator');
+        $requester = $this->userWithRole(Roles::REQUESTER, 'Catalogue Screen Requester');
+
+        $this->actingAs($administrator)->get(route('admin.ticket-catalogues.categories.index'))->assertOk()->assertSee('Ticket Categories');
+        $this->get(route('admin.ticket-catalogues.priorities.index'))->assertOk()->assertSee('Ticket Priorities');
+        $this->get(route('admin.ticket-catalogues.statuses.index'))->assertOk()->assertSee('Workflow Statuses')->assertSee('Waiting on Requester');
+
+        $this->actingAs($requester)->get(route('admin.ticket-catalogues.categories.index'))->assertForbidden();
+        $this->get(route('admin.ticket-catalogues.priorities.index'))->assertForbidden();
+        $this->get(route('admin.ticket-catalogues.statuses.index'))->assertForbidden();
     }
 
     public function test_requester_never_sees_internal_notes_or_technician_identity(): void
@@ -197,14 +313,14 @@ class TicketingFeatureTest extends TestCase
         ]);
     }
 
-    public function test_category_and_priority_catalogues_are_empty_until_configured_and_system_admin_cannot_read_ticket_content(): void
+    public function test_system_administrator_has_full_ticket_access_and_can_manage_empty_catalogues(): void
     {
         $administrator = $this->userWithRole(Roles::SYSTEM_ADMINISTRATOR, 'System Administrator');
         $this->assertDatabaseCount('ticket_categories', 0);
         $this->assertDatabaseCount('ticket_priorities', 0);
 
         $this->actingAs($administrator)->get(route('admin.ticket-catalogues.index'))->assertOk()->assertSee('No categories configured.');
-        $this->get(route('tickets.index'))->assertForbidden();
+        $this->get(route('tickets.index'))->assertOk()->assertSee('All Tickets');
         $this->post(route('admin.ticket-catalogues.categories.store'), [
             'name' => 'Approved Example Category', 'sort_order' => 10, 'is_active' => '1',
         ])->assertRedirect();
@@ -224,6 +340,16 @@ class TicketingFeatureTest extends TestCase
         ]);
 
         $this->actingAs($requester)->get(route('admin.ticket-catalogues.index'))->assertForbidden();
+    }
+
+    public function test_system_administrator_receives_every_defined_permission(): void
+    {
+        $administrator = $this->userWithRole(Roles::SYSTEM_ADMINISTRATOR, 'Full Permission Administrator');
+
+        $this->assertEqualsCanonicalizing(
+            array_keys(Permissions::definitions()),
+            $administrator->getAllPermissions()->pluck('slug')->all(),
+        );
     }
 
     public function test_global_ticket_view_permission_alone_does_not_reveal_internal_notes(): void

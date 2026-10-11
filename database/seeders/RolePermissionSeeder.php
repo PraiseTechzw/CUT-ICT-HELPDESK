@@ -32,24 +32,7 @@ class RolePermissionSeeder extends Seeder
                 Permissions::ROOMS_VIEW,
             ];
 
-            $systemAdministratorGrants = [
-                Permissions::USERS_VIEW,
-                Permissions::USERS_CREATE,
-                Permissions::USERS_EDIT,
-                Permissions::USERS_DEACTIVATE,
-                Permissions::USERS_ASSIGN_ROLES,
-                Permissions::CAMPUSES_VIEW,
-                Permissions::CAMPUSES_MANAGE,
-                Permissions::ZONES_VIEW,
-                Permissions::ZONES_MANAGE,
-                Permissions::BUILDINGS_VIEW,
-                Permissions::BUILDINGS_MANAGE,
-                Permissions::ROOMS_VIEW,
-                Permissions::ROOMS_MANAGE,
-                Permissions::AUDIT_VIEW,
-                Permissions::TICKETS_CATALOGUES_MANAGE,
-                Permissions::TEAMS_MANAGE,
-            ];
+            $systemAdministratorGrants = array_keys(Permissions::definitions());
 
             $roleDefinitions = [
                 Roles::REQUESTER => ['Requester', 'Proposed role for service requesters.', [

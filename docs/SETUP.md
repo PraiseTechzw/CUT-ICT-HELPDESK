@@ -54,7 +54,7 @@ The tracked `.env.example` then selects `APP_ENV=local` and SQLite, and `key:gen
 
    The command asks for a name, email, and password (minimum 12 characters plus confirmation). It hashes the password, assigns the proposed System Administrator role, and does not print or log the password. It refuses to run outside `local`/`testing` unless the explicit `--force` override is supplied. That override is **not** an approved production bootstrap procedure; do not use it in production without a separately reviewed operational plan.
 
-   In the seeded MVP, System Administrator can configure categories/priorities and Phase 3 metadata but cannot view ticket content or reports. New accounts receive only the proposed Requester role. To exercise Helpdesk Officer/Technician workflows locally, create synthetic users and assign those proposed roles through the authorized account administration page; do not use real staff/student data in this sandbox.
+   In the seeded MVP, System Administrator receives all currently defined permissions, including ticket content, reports, categories/priorities, and Phase 3 metadata. New accounts receive only the proposed Requester role. To exercise Helpdesk Officer/Technician workflows locally, create synthetic users and assign those proposed roles through the authorized account administration page; do not use real staff/student data in this sandbox.
 
 5. Start the local web server:
 
@@ -81,7 +81,7 @@ The tracked `.env.example` then selects `APP_ENV=local` and SQLite, and `key:gen
 
 ## Phase 4 reporting behavior
 
-- The `/reports/tickets` page reuses the existing `tickets.view_all` permission; no new role grant is seeded. System Administrators, ICT Managers, Technicians, and Requesters do not receive report access by default.
+- The `/reports/tickets` page reuses the existing `tickets.view_all` permission. Helpdesk Officers and System Administrators receive report access by default.
 - Reports include aggregate counts for tickets created within an inclusive date range: daily volume and current status/category/priority counts. The default is the last 30 calendar days; the maximum is 366 days. The configured application timezone supplies calendar-date interpretation.
 - Status is a snapshot at report time; category/priority use their current catalogue labels. No ticket identifiers, requester/technician identities, subject/description text, record drill-down, or export is included. The metrics and audience are provisional; this is not an SLA, workload, or performance report.
 

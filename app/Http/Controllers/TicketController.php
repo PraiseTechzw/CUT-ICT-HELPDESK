@@ -78,10 +78,18 @@ class TicketController extends Controller
                 ->whereNotIn('status', [TicketStatus::RESOLVED, TicketStatus::CLOSED]);
         }
 
+        $statusCounts = (clone $visibleTickets)
+            ->selectRaw('status, COUNT(*) as aggregate')
+            ->groupBy('status')
+            ->pluck('aggregate', 'status')
+            ->map(fn ($count): int => (int) $count);
+        $countStatus = fn (string $ticketStatus): int => $statusCounts->get($ticketStatus, 0);
         $summary = [
-            'total' => (clone $visibleTickets)->count(),
-            'open' => (clone $visibleTickets)->whereIn('status', [TicketStatus::OPEN, TicketStatus::ASSIGNED])->count(),
-            'in_progress' => (clone $visibleTickets)->whereIn('status', [TicketStatus::IN_PROGRESS, TicketStatus::WAITING_FOR_REQUESTER])->count(),
+            'total' => $statusCounts->sum(),
+            'open' => $countStatus(TicketStatus::OPEN) + $countStatus(TicketStatus::ASSIGNED),
+            'in_progress' => $countStatus(TicketStatus::IN_PROGRESS) + $countStatus(TicketStatus::WAITING_FOR_REQUESTER),
+            'resolved' => $countStatus(TicketStatus::RESOLVED),
+            'closed' => $countStatus(TicketStatus::CLOSED),
             'overdue' => (clone $visibleTickets)->whereNotNull('due_at')->where('due_at', '<', now())->whereNotIn('status', [TicketStatus::RESOLVED, TicketStatus::CLOSED])->count(),
         ];
 

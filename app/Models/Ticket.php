@@ -59,4 +59,9 @@ class Ticket extends Model
     {
         return $this->hasMany(TicketAssignmentHistory::class);
     }
+
+    public function attachments(): HasMany
+    {
+        return $this->hasMany(TicketAttachment::class);
+    }
 }

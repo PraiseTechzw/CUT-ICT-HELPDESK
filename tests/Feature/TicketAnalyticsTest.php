@@ -26,7 +26,7 @@ class TicketAnalyticsTest extends TestCase
         $this->seed(RolePermissionSeeder::class);
     }
 
-    public function test_only_users_with_global_triage_permission_can_view_aggregate_reports(): void
+    public function test_helpdesk_and_system_administrators_can_view_aggregate_reports(): void
     {
         $helpdesk = $this->userWithRole(Roles::HELPDESK_OFFICER, 'Synthetic Helpdesk Officer');
         $requester = $this->userWithRole(Roles::REQUESTER, 'Synthetic Requester');
@@ -35,11 +35,11 @@ class TicketAnalyticsTest extends TestCase
 
         $this->actingAs($requester)->get(route('reports.tickets.index'))->assertForbidden();
         $this->actingAs($technician)->get(route('reports.tickets.index'))->assertForbidden();
-        $this->actingAs($administrator)->get(route('reports.tickets.index'))->assertForbidden();
+        $this->actingAs($administrator)->get(route('reports.tickets.index'))->assertOk()->assertSee('Ticket analytics');
         $this->get(route('dashboard'))
             ->assertSee('Reports')
-            ->assertSee('aria-disabled="true">Ticket Reports</span>', false)
-            ->assertDontSee(route('reports.tickets.index'));
+            ->assertSee(route('reports.tickets.index'))
+            ->assertSee('Ticket Reports');
         $this->actingAs($helpdesk)->get(route('reports.tickets.index'))->assertOk()->assertSee('Ticket analytics');
 
         $this->get(route('dashboard'))->assertSee('Reports');

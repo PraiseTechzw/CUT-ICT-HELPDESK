@@ -21,7 +21,7 @@ The latest full run reported **54 tests passed (363 assertions)**, covering:
 - Helpdesk can view all tickets, manually assign only an active Technician, and advance status; assignment/status history rows are created.
 - Technicians see and update only individually assigned tickets, may add internal work notes, cannot assign others, and cannot close tickets.
 - Requesters can explicitly reopen only their own resolved/closed ticket; reopening clears current assignment and records assignment/status history.
-- Category/priority catalogues start empty; System Administrator can configure categories, but has no ticket-content access; requester ticket intake supports optional configured category/priority.
+- Category/priority catalogues start empty; System Administrator can configure categories and has full ticket-content access; requester ticket intake supports optional configured category/priority.
 - Ticket descriptions and comment bodies do not appear in audit metadata.
 - Ticket intake, assignment/status/comment notification recipients are selected from active accounts and existing permissions/ownership/assignment; notification records use only the database channel and their payloads omit ticket/comment text.
 - Notification inbox data is scoped to the signed-in user; opening another user's notification returns not found, and opening an authorized ticket notification marks only the owner's notice read.
@@ -29,7 +29,7 @@ The latest full run reported **54 tests passed (363 assertions)**, covering:
 - Phase 3 team administration is System Administrator-only; no teams/memberships/deployments are seeded; generic teams have no zone mapping.
 - Membership dates are inclusive, nullable end dates mean ongoing, same-team overlap/duplicate periods are rejected, and overlapping periods across different teams are allowed. Database uniqueness and restrictive foreign keys are exercised.
 - Deployments validate technician/zone relationships and date order, permit overlapping and exact duplicate periods, and preserve references. Memberships/deployments do not grant ticket access; assigned-only technician authorization remains intact.
-- Reports are denied to Requesters, Technicians, and System Administrators; authorized Helpdesk Officers receive only aggregate date-range counts. Tests cover inclusive date boundaries, current-status/category/priority groupings, no ticket/requester text, empty reports, paired and ordered dates, 366-day limits, and malformed query values.
+- Reports are denied to Requesters and Technicians; Helpdesk Officers and System Administrators receive only aggregate date-range counts. Tests cover inclusive date boundaries, current-status/category/priority groupings, no ticket/requester text, empty reports, paired and ordered dates, 366-day limits, and malformed query values.
 - Guest root redirection and the framework health endpoint.
 
 ## Actual checks performed
