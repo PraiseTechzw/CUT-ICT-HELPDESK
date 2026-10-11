@@ -41,16 +41,16 @@ class TicketDemoSeeder extends Seeder
 
             $examples = [
                 ['Campus Wi-Fi disconnects in lecture rooms', 'Network', 'High', TicketStatus::OPEN, 0, null, -3],
-                ['Laptop battery no longer charges', 'Hardware', 'Medium', TicketStatus::ASSIGNED, 1, 0, 2],
-                ['Unable to open shared department drive', 'Network', 'High', TicketStatus::IN_PROGRESS, 0, 1, 1],
+                ['Laptop battery no longer charges', 'Hardware', 'Medium', TicketStatus::ASSIGNED, 1, 0, -2],
+                ['Unable to open shared department drive', 'Network', 'High', TicketStatus::IN_PROGRESS, 0, 1, -1],
                 ['Email account keeps requesting sign-in', 'Account', 'Low', TicketStatus::WAITING_FOR_REQUESTER, 1, 0, 4],
-                ['Projector displays a blue screen', 'AV Equipment', 'Medium', TicketStatus::OPEN, 0, null, null],
+                ['Projector displays a blue screen', 'AV Equipment', 'Medium', TicketStatus::OPEN, 0, null, -2],
                 ['Install approved statistical software', 'Software', 'Low', TicketStatus::RESOLVED, 1, 1, null],
-                ['Student portal access needs restoring', 'Account', 'High', TicketStatus::IN_PROGRESS, 0, 0, 3],
+                ['Student portal access needs restoring', 'Account', 'High', TicketStatus::IN_PROGRESS, 0, 0, -5],
                 ['Printer queue is stuck on pending', 'Hardware', 'Medium', TicketStatus::CLOSED, 1, 1, null],
                 ['Conference room display has no signal', 'AV Equipment', 'Critical', TicketStatus::ASSIGNED, 0, 0, -1],
                 ['New staff mailbox setup request', 'Account', 'Low', TicketStatus::RESOLVED, 0, 1, null],
-                ['Network port activation for lab desk', 'Network', 'Medium', TicketStatus::WAITING_FOR_REQUESTER, 1, 0, 2],
+                ['Network port activation for lab desk', 'Network', 'Medium', TicketStatus::WAITING_FOR_REQUESTER, 1, 0, -2],
                 ['Keyboard keys intermittently stop responding', 'Hardware', 'Low', TicketStatus::CLOSED, 0, 1, null],
             ];
 

@@ -202,6 +202,22 @@ a.sidebar-sublink:hover::after, .sidebar-sublink.is-current::after { border-colo
 .ticket-all-table .ticket-status, .ticket-all-table .ticket-priority-label { font-size: 9px; }
 .ticket-all-table .ticket-open-link { display: inline-flex; min-height: 28px; align-items: center; justify-content: center; padding: 0 10px; border-radius: 4px; background: #1269bd; color: #fff; font-size: 9px; font-weight: 650; text-decoration: none; }
 .ticket-all-table .ticket-open-link:hover { background: #0e5eab; }
+.ticket-overdue-alert { display: flex; min-height: 42px; align-items: center; gap: 9px; margin: 0 13px 12px; padding: 8px 11px; border: 1px solid #f3d0ce; border-radius: 5px; background: #fff2f1; color: #a33e3b; font-size: 10px; font-weight: 600; }
+.ticket-overdue-alert svg { width: 17px; height: 17px; flex: 0 0 17px; color: #d74d44; }
+.ticket-filter-bar-overdue { justify-content: flex-end; padding-bottom: 12px; }
+.ticket-filter-bar-overdue select { min-width: 135px; }
+.ticket-overdue-table { min-width: 650px; }
+.ticket-overdue-table th, .ticket-overdue-table td { padding-top: 10px; padding-bottom: 10px; }
+.ticket-overdue-table .ticket-row-number { width: 42px; color: #8293a5; }
+.ticket-overdue-table .ticket-list-id { color: #47749f; font-size: 9px; }
+.ticket-overdue-table .ticket-list-subject strong { font-size: 9px; }
+.ticket-overdue-table .ticket-priority-label { padding: 4px 8px; border-radius: 10px; background: color-mix(in srgb, var(--priority-color, #8798a9) 13%, white); color: #52677b; font-size: 9px; }
+.ticket-overdue-table .ticket-priority-label::before { display: none; }
+.ticket-days-overdue { min-width: 92px; text-align: center !important; }
+.ticket-days-overdue strong { display: block; color: #cb4b42; font-size: 12px; font-weight: 700; }
+.ticket-days-overdue small { color: #9b7773; font-size: 8px; }
+.ticket-overdue-table .ticket-open-link { display: inline-flex; min-height: 27px; align-items: center; justify-content: center; padding: 0 10px; border-radius: 4px; background: #1269bd; color: #fff; font-size: 9px; font-weight: 650; text-decoration: none; }
+.ticket-overdue-table .ticket-open-link:hover { background: #0e5eab; }
 .ticket-status-tabs { gap: 22px; }
 .ticket-status-tabs a { min-height: 39px; padding: 0 4px; font-size: 10px; }
 .ticket-my-table { min-width: 680px; }
@@ -341,6 +357,8 @@ body[data-theme="dark"] .ticket-comment.is-internal, body[data-theme="dark"] .ti
 body[data-theme="dark"] .ticket-status-tabs { border-color: #344a64; }
 body[data-theme="dark"] .ticket-status-tabs a { color: #a7b7c8; }
 body[data-theme="dark"] .ticket-status-tabs a.is-active { border-color: #4b9ce0; color: #8ec5f1; }
+body[data-theme="dark"] .ticket-overdue-alert { border-color: #653d3d; background: #382627; color: #f0b3ad; }
+body[data-theme="dark"] .ticket-overdue-alert svg, body[data-theme="dark"] .ticket-days-overdue strong { color: #f2786d; }
 body[data-theme="dark"] .ticket-create-grid .ticket-field-required { background: #422a2b; color: #f0a49e; }
 body[data-theme="dark"] .ticket-create-grid .ticket-field-optional { background: #263b52; color: #a8b8c8; }
 body[data-theme="dark"] .ticket-create-actions { border-color: #2c4058; }
@@ -530,6 +548,24 @@ body[data-theme="dark"] .recent-tickets-table th { border-color: #2c4058; color:
 }
 
 @media (max-width: 540px) {
+    .ticket-filter-bar-overdue { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+    .ticket-filter-bar-overdue select { min-width: 0; width: 100%; padding-right: 16px; font-size: 8px; }
+    .ticket-filter-bar-overdue .ticket-secondary-button { min-height: 30px; font-size: 8px; }
+    .ticket-overdue-alert { min-height: 38px; margin-right: 9px; margin-left: 9px; padding: 7px 8px; font-size: 8px; }
+    .ticket-overdue-alert svg { width: 15px; height: 15px; flex-basis: 15px; }
+    .ticket-overdue-table { min-width: 0; table-layout: fixed; }
+    .ticket-overdue-table th, .ticket-overdue-table td { padding: 8px 3px; font-size: 7px; }
+    .ticket-overdue-table th:nth-child(1), .ticket-overdue-table td:nth-child(1) { width: 6%; }
+    .ticket-overdue-table th:nth-child(2), .ticket-overdue-table td:nth-child(2) { width: 29%; }
+    .ticket-overdue-table th:nth-child(3), .ticket-overdue-table td:nth-child(3) { width: 15%; }
+    .ticket-overdue-table th:nth-child(4), .ticket-overdue-table td:nth-child(4) { width: 15%; }
+    .ticket-overdue-table th:nth-child(5), .ticket-overdue-table td:nth-child(5) { width: 19%; }
+    .ticket-overdue-table th:nth-child(6), .ticket-overdue-table td:nth-child(6) { width: 16%; }
+    .ticket-overdue-table .ticket-list-id, .ticket-overdue-table .ticket-list-subject strong { font-size: 7px; overflow-wrap: anywhere; }
+    .ticket-overdue-table .ticket-priority-label { max-width: 100%; overflow: hidden; padding: 3px 4px; font-size: 7px; text-overflow: ellipsis; }
+    .ticket-overdue-table .ticket-open-link { min-height: 23px; padding: 0 4px; font-size: 7px; }
+    .ticket-days-overdue { min-width: 0; }
+    .ticket-days-overdue strong { font-size: 10px; }
     .ticket-status-tabs { gap: 15px; }
     .ticket-status-tabs a { min-height: 36px; font-size: 9px; }
     .ticket-filter-bar-mine { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }

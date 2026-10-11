@@ -181,6 +181,8 @@ class TicketingFeatureTest extends TestCase
         $this->actingAs($helpdesk)->get(route('tickets.overdue'))
             ->assertOk()
             ->assertSee('Past due support request')
+            ->assertSee('You have 1 overdue ticket that requires attention.')
+            ->assertSee('Days Overdue')
             ->assertDontSee('Completed past due request')
             ->assertDontSee('Future due request');
     }
