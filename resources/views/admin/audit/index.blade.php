@@ -1,59 +1,13 @@
 @extends('layouts.app')
-
 @section('title', 'System audit events')
-
 @section('content')
-<div class="space-y-6">
-    <div>
-        <h1 class="text-2xl font-semibold">System audit events</h1>
-        <p class="mt-1 text-sm text-slate-600">Read-only event history for account, location, ticket, catalogue, team, and deployment actions. Passwords, ticket descriptions, and comment bodies are not recorded. This application view does not make the underlying database tamper-proof.</p>
-    </div>
-
-    <form method="GET" action="{{ route('admin.audit.index') }}" class="grid gap-4 rounded-xl border border-slate-200 bg-white p-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div>
-            <label for="action" class="block text-sm font-medium">Action contains</label>
-            <input id="action" name="action" type="text" maxlength="120" value="{{ $filters['action'] ?? '' }}" class="mt-1 w-full rounded-md border-slate-300">
-        </div>
-        <div>
-            <label for="actor" class="block text-sm font-medium">Actor name contains</label>
-            <input id="actor" name="actor" type="text" maxlength="120" value="{{ $filters['actor'] ?? '' }}" class="mt-1 w-full rounded-md border-slate-300">
-        </div>
-        <div>
-            <label for="from" class="block text-sm font-medium">From (inclusive)</label>
-            <input id="from" name="from" type="date" value="{{ $filters['from'] ?? '' }}" class="mt-1 w-full rounded-md border-slate-300">
-            @error('from')<p class="mt-1 text-sm text-red-700">{{ $message }}</p>@enderror
-        </div>
-        <div>
-            <label for="through" class="block text-sm font-medium">Through (inclusive)</label>
-            <input id="through" name="through" type="date" value="{{ $filters['through'] ?? '' }}" class="mt-1 w-full rounded-md border-slate-300">
-            @error('through')<p class="mt-1 text-sm text-red-700">{{ $message }}</p>@enderror
-        </div>
-        <div class="flex items-center gap-3 sm:col-span-2 lg:col-span-4">
-            <button type="submit" class="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700">Filter events</button>
-            <a href="{{ route('admin.audit.index') }}" class="text-sm underline">Clear filters</a>
-            <span class="text-sm text-slate-600">Date filters require both dates and allow up to 366 inclusive calendar days.</span>
-        </div>
-    </form>
-
-    <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white">
-        <table class="min-w-full divide-y divide-slate-200 text-sm">
-            <thead class="bg-slate-50 text-left"><tr><th scope="col" class="px-4 py-3">Time</th><th scope="col" class="px-4 py-3">Actor</th><th scope="col" class="px-4 py-3">Action</th><th scope="col" class="px-4 py-3">Record</th><th scope="col" class="px-4 py-3">Safe metadata</th></tr></thead>
-            <tbody class="divide-y divide-slate-100">
-                @forelse ($events as $event)
-                    <tr>
-                        <td class="whitespace-nowrap px-4 py-3">{{ $event->created_at?->timezone(config('app.timezone'))->toDayDateTimeString() }}</td>
-                        <td class="px-4 py-3">{{ $event->actor?->name ?? 'System / removed actor' }}</td>
-                        <td class="px-4 py-3"><code>{{ $event->action }}</code></td>
-                        <td class="px-4 py-3">{{ class_basename($event->subject_type ?? '') }} #{{ $event->subject_id ?? '—' }}</td>
-                        <td class="max-w-xl break-words px-4 py-3"><code>{{ json_encode($event->metadata, JSON_UNESCAPED_SLASHES) }}</code></td>
-                    </tr>
-                @empty
-                    <tr><td colspan="5" class="px-4 py-6 text-center text-slate-600">No audit events match these filters.</td></tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-
-    {{ $events->links() }}
+<div class="admin-data-page">
+    <header class="admin-data-header"><div><p class="ticket-page-kicker">GOVERNANCE & SECURITY</p><h1>Audit logs</h1><p>Review a read-only history of account, location, ticket, catalogue, team, and deployment actions.</p></div><span class="admin-data-status is-secure"><span></span>Read-only record</span></header>
+    <section class="admin-kpi-grid" aria-label="Audit summary"><article class="admin-kpi-card"><span class="admin-kpi-icon is-blue"><svg data-lucide="activity" aria-hidden="true"></svg></span><span><small>Events in view</small><strong>{{ $events->total() }}</strong></span></article><article class="admin-kpi-card"><span class="admin-kpi-icon is-green"><svg data-lucide="shield-check" aria-hidden="true"></svg></span><span><small>Protected fields</small><strong>On</strong></span></article><article class="admin-kpi-card"><span class="admin-kpi-icon is-amber"><svg data-lucide="calendar-days" aria-hidden="true"></svg></span><span><small>Filter window</small><strong>{{ ($filters['from'] ?? null) && ($filters['through'] ?? null) ? 'Custom' : 'All time' }}</strong></span></article><article class="admin-kpi-card"><span class="admin-kpi-icon is-purple"><svg data-lucide="user-round" aria-hidden="true"></svg></span><span><small>Actor filter</small><strong>{{ ($filters['actor'] ?? null) ? 'Active' : 'All' }}</strong></span></article></section>
+    <section class="ticket-page-panel admin-filter-panel" aria-labelledby="audit-filters-heading"><header class="admin-data-panel-heading"><div><p class="ticket-page-kicker">AUDIT SEARCH</p><h2 id="audit-filters-heading">Filter events</h2><p>Use one or more filters to narrow the event history.</p></div><span class="admin-data-panel-icon"><svg data-lucide="filter" aria-hidden="true"></svg></span></header><form method="GET" action="{{ route('admin.audit.index') }}" class="admin-filter-grid"><div class="admin-filter-field"><label for="action">Action contains</label><input id="action" name="action" type="text" maxlength="120" value="{{ $filters['action'] ?? '' }}" placeholder="e.g. user.created"></div><div class="admin-filter-field"><label for="actor">Actor name contains</label><input id="actor" name="actor" type="text" maxlength="120" value="{{ $filters['actor'] ?? '' }}" placeholder="Search by actor"></div><div class="admin-filter-field"><label for="from">From</label><input id="from" name="from" type="date" value="{{ $filters['from'] ?? '' }}">@error('from')<small class="admin-filter-error">{{ $message }}</small>@enderror</div><div class="admin-filter-field"><label for="through">Through</label><input id="through" name="through" type="date" value="{{ $filters['through'] ?? '' }}">@error('through')<small class="admin-filter-error">{{ $message }}</small>@enderror</div><div class="admin-filter-actions"><button type="submit" class="ticket-primary-button"><svg data-lucide="search" aria-hidden="true"></svg>Apply filters</button><a href="{{ route('admin.audit.index') }}" class="ticket-secondary-button">Clear</a><span>Date ranges may cover up to 366 inclusive days.</span></div></form></section>
+    <section class="ticket-page-panel admin-data-panel" aria-labelledby="audit-events-heading"><header class="admin-data-panel-heading"><div><p class="ticket-page-kicker">EVENT HISTORY</p><h2 id="audit-events-heading">Recent audit events</h2><p>Passwords, ticket descriptions, and comment bodies are never recorded here.</p></div><span class="admin-data-panel-icon"><svg data-lucide="scroll-text" aria-hidden="true"></svg></span></header><div class="admin-data-table-wrap"><table class="admin-data-table admin-audit-table"><thead><tr><th>Time</th><th>Actor</th><th>Action</th><th>Record</th><th>Safe metadata</th></tr></thead><tbody>
+    @forelse ($events as $event)<tr><td>{{ $event->created_at?->timezone(config('app.timezone'))->format('d M Y, H:i') }}</td><td><strong>{{ $event->actor?->name ?? 'System / removed actor' }}</strong></td><td><code class="admin-code">{{ $event->action }}</code></td><td>{{ class_basename($event->subject_type ?? '') }} #{{ $event->subject_id ?? '—' }}</td><td><code class="admin-metadata">{{ json_encode($event->metadata, JSON_UNESCAPED_SLASHES) }}</code></td></tr>@empty
+    <tr><td colspan="5"><div class="admin-data-empty"><span class="admin-data-empty-icon"><svg data-lucide="scroll-text" aria-hidden="true"></svg></span><h3>No audit events match these filters</h3><p>Try clearing a filter or return after an administrative action has been recorded.</p></div></td></tr>@endforelse
+    </tbody></table></div><footer class="admin-data-footer"><span>Showing {{ $events->firstItem() ?? 0 }}–{{ $events->lastItem() ?? 0 }} of {{ $events->total() }}</span>{{ $events->links() }}</footer></section>
 </div>
 @endsection

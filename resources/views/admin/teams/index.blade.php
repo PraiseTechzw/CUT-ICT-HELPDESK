@@ -1,33 +1,28 @@
 @extends('layouts.app')
 @section('title', 'Teams')
 @section('content')
-<div class="space-y-6">
-    <div class="flex flex-wrap items-end justify-between gap-4">
-        <div><h1 class="text-2xl font-semibold">Teams</h1><p class="mt-1 max-w-3xl text-sm text-slate-600">Generic, locally configured team records. No team names or zone mappings are preloaded. Memberships do not grant ticket access or change routing.</p></div>
-        <a class="rounded-md bg-slate-900 px-4 py-2 font-semibold text-white" href="{{ route('admin.teams.create') }}">Add team</a>
-    </div>
-    <div class="flex flex-wrap gap-4 text-sm">
-        <a class="underline" href="{{ route('admin.team-memberships.index') }}">Technician memberships</a>
-        <a class="underline" href="{{ route('admin.technician-deployments.index') }}">Temporary deployments</a>
-    </div>
-    <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white">
-        <table class="min-w-full divide-y divide-slate-200 text-sm">
-            <thead class="bg-slate-50 text-left"><tr><th class="px-4 py-3">Team</th><th class="px-4 py-3">Slug</th><th class="px-4 py-3">Membership records</th><th class="px-4 py-3">Status</th><th class="px-4 py-3"><span class="sr-only">Actions</span></th></tr></thead>
-            <tbody class="divide-y divide-slate-100">
-            @forelse($teams as $team)
-                <tr>
-                    <td class="px-4 py-3"><span class="font-medium">{{ $team->name }}</span>@if($team->description)<p class="mt-1 text-xs text-slate-600">{{ $team->description }}</p>@endif</td>
-                    <td class="px-4 py-3"><code>{{ $team->slug }}</code></td>
-                    <td class="px-4 py-3">{{ $team->memberships_count }}</td>
-                    <td class="px-4 py-3">{{ $team->is_active ? 'Active' : 'Inactive' }}</td>
-                    <td class="space-x-3 px-4 py-3 text-right"><a class="underline" href="{{ route('admin.team-memberships.index', ['team_id' => $team->id]) }}">Memberships</a><a class="underline" href="{{ route('admin.teams.edit', $team) }}">Edit</a></td>
-                </tr>
-            @empty
-                <tr><td colspan="5" class="px-4 py-6 text-center text-slate-600">No teams configured. No sample teams are seeded.</td></tr>
-            @endforelse
-            </tbody>
-        </table>
-    </div>
-    {{ $teams->links() }}
+<div class="admin-data-page">
+    <header class="admin-data-header">
+        <div><p class="ticket-page-kicker">TEAM OPERATIONS</p><h1>Teams</h1><p>Organize technicians into clear operational groups without changing ticket permissions or routing.</p></div>
+        <a class="ticket-primary-button" href="{{ route('admin.teams.create') }}"><svg data-lucide="plus" aria-hidden="true"></svg>Add team</a>
+    </header>
+    <section class="admin-kpi-grid" aria-label="Team summary">
+        <article class="admin-kpi-card"><span class="admin-kpi-icon is-blue"><svg data-lucide="users-round" aria-hidden="true"></svg></span><span><small>Total teams</small><strong>{{ $teams->total() }}</strong></span></article>
+        <article class="admin-kpi-card"><span class="admin-kpi-icon is-green"><svg data-lucide="check-circle-2" aria-hidden="true"></svg></span><span><small>Active teams</small><strong>{{ $teams->getCollection()->where('is_active', true)->count() }}</strong></span></article>
+        <article class="admin-kpi-card"><span class="admin-kpi-icon is-amber"><svg data-lucide="user-round-check" aria-hidden="true"></svg></span><span><small>Membership records</small><strong>{{ $teams->sum('memberships_count') }}</strong></span></article>
+        <article class="admin-kpi-card"><span class="admin-kpi-icon is-purple"><svg data-lucide="calendar-range" aria-hidden="true"></svg></span><span><small>Deployments</small><strong>—</strong></span></article>
+    </section>
+    <section class="ticket-page-panel admin-data-panel" aria-labelledby="teams-heading">
+        <header class="admin-data-panel-heading"><div><p class="ticket-page-kicker">TEAM OPERATIONS</p><h2 id="teams-heading">Team directory</h2><p>Review team ownership, membership coverage, and current status.</p></div><span class="admin-data-panel-icon"><svg data-lucide="users-round" aria-hidden="true"></svg></span></header>
+        <div class="admin-data-toolbar"><label class="admin-data-search"><svg data-lucide="search" aria-hidden="true"></svg><span class="sr-only">Search teams</span><input type="search" placeholder="Search team name or slug..." disabled></label><div class="admin-data-toolbar-actions"><a class="admin-toolbar-link" href="{{ route('admin.team-memberships.index') }}"><svg data-lucide="user-round-check" aria-hidden="true"></svg>Memberships</a><a class="admin-toolbar-link" href="{{ route('admin.technician-deployments.index') }}"><svg data-lucide="calendar-range" aria-hidden="true"></svg>Deployments</a></div></div>
+        <div class="admin-data-table-wrap"><table class="admin-data-table"><thead><tr><th scope="col">Team</th><th scope="col">Slug</th><th scope="col">Memberships</th><th scope="col">Status</th><th scope="col">Actions</th></tr></thead><tbody>
+        @forelse($teams as $team)
+            <tr><td><strong>{{ $team->name }}</strong><small>{{ $team->description ?: 'Operational team' }}</small></td><td><code class="admin-code">{{ $team->slug }}</code></td><td>{{ $team->memberships_count }}</td><td><span class="ticket-state-pill {{ $team->is_active ? 'is-active' : 'is-inactive' }}">{{ $team->is_active ? 'Active' : 'Inactive' }}</span></td><td><span class="admin-row-actions"><a href="{{ route('admin.team-memberships.index', ['team_id' => $team->id]) }}">View members</a><a href="{{ route('admin.teams.edit', $team) }}">Edit</a></span></td></tr>
+        @empty
+            <tr><td colspan="5"><div class="admin-data-empty"><span class="admin-data-empty-icon"><svg data-lucide="users-round" aria-hidden="true"></svg></span><h3>No teams configured yet</h3><p>Create the first team to start organizing technicians and ownership.</p><a class="ticket-secondary-button" href="{{ route('admin.teams.create') }}"><svg data-lucide="plus" aria-hidden="true"></svg>Create first team</a></div></td></tr>
+        @endforelse
+        </tbody></table></div>
+        <footer class="admin-data-footer"><span>Showing {{ $teams->firstItem() ?? 0 }}–{{ $teams->lastItem() ?? 0 }} of {{ $teams->total() }}</span>{{ $teams->links() }}</footer>
+    </section>
 </div>
 @endsection
