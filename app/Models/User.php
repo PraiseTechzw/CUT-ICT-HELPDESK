@@ -38,6 +38,11 @@ class User extends Authenticatable
         return $this->belongsToMany(Role::class)->withTimestamps();
     }
 
+    public function userGroups(): BelongsToMany
+    {
+        return $this->belongsToMany(UserGroup::class, 'user_group_user')->withTimestamps();
+    }
+
     public function teamMemberships(): HasMany
     {
         return $this->hasMany(TechnicianTeamMembership::class, 'technician_id');

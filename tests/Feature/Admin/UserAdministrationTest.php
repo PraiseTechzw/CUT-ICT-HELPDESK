@@ -214,6 +214,22 @@ class UserAdministrationTest extends TestCase
             ->assertDontSee($activeRequester->email);
     }
 
+    public function test_administrator_can_review_roles_and_the_permission_catalogue(): void
+    {
+        $administrator = $this->userWithRole(Roles::SYSTEM_ADMINISTRATOR);
+        $this->userWithRole(Roles::REQUESTER);
+
+        $this->actingAs($administrator)->get(route('admin.roles.index'))
+            ->assertOk()
+            ->assertSee('Roles & Permissions')
+            ->assertSee('Role Assignments')
+            ->assertSee('System Administrator')
+            ->assertSee('Requester')
+            ->assertSee('Granted To')
+            ->assertSee('tickets.view_all')
+            ->assertSee('Role definitions and grants are maintained centrally');
+    }
+
     public function test_administrator_bootstrap_command_is_registered_and_requires_role_catalogue(): void
     {
         $this->assertTrue(class_exists(CreateAdministrator::class));

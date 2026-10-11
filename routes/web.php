@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\TeamController;
 use App\Http\Controllers\Admin\TeamMembershipController;
 use App\Http\Controllers\Admin\TechnicianDeploymentController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\UserGroupController;
 use App\Http\Controllers\Admin\UserRoleController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NotificationController;
@@ -64,6 +65,10 @@ Route::middleware(['auth', 'account.active'])->group(function (): void {
         Route::put('users/{user}/roles', [UserRoleController::class, 'update'])->name('users.roles.update');
         Route::patch('users/{user}/status', [UserController::class, 'updateStatus'])->name('users.status');
         Route::get('roles', [RoleController::class, 'index'])->name('roles.index');
+        Route::get('user-groups', [UserGroupController::class, 'index'])->name('user-groups.index');
+        Route::post('user-groups', [UserGroupController::class, 'store'])->name('user-groups.store');
+        Route::patch('user-groups/{user_group}', [UserGroupController::class, 'update'])->name('user-groups.update');
+        Route::put('user-groups/{user_group}/members', [UserGroupController::class, 'updateMembers'])->name('user-groups.members.update');
         Route::resource('campuses', CampusController::class)->except(['show', 'destroy']);
         Route::resource('zones', OperationalZoneController::class)->except(['show', 'destroy']);
         Route::resource('buildings', BuildingController::class)->except(['show', 'destroy']);

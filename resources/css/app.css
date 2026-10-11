@@ -523,6 +523,78 @@ a.sidebar-sublink:hover::after, .sidebar-sublink.is-current::after { border-colo
 .user-create-actions { display: flex; justify-content: flex-end; gap: 7px; padding: 11px 13px; border: 1px solid #dfe7ef; border-radius: 6px; background: #fff; }
 .user-create-actions .ticket-primary-button { min-height: 35px; }
 .user-create-actions .ticket-primary-button svg { width: 14px; height: 14px; }
+.role-catalogue-page { gap: 13px; }
+.role-summary-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.role-summary-grid article { display: flex; min-width: 0; min-height: 66px; align-items: center; gap: 9px; padding: 10px; border: 1px solid #e1e9f0; border-radius: 6px; background: #fff; }
+.role-summary-icon { display: grid; width: 30px; height: 30px; flex: 0 0 30px; place-items: center; border-radius: 6px; }
+.role-summary-icon svg { width: 15px; height: 15px; }
+.role-summary-icon.is-blue { background: #e8f2ff; color: #2873c3; }
+.role-summary-icon.is-green { background: #e7f5ed; color: #258657; }
+.role-summary-icon.is-amber { background: #fff4df; color: #c88416; }
+.role-summary-grid article > span:last-child { display: grid; gap: 3px; }
+.role-summary-grid small { color: #8091a3; font-size: 8px; }
+.role-summary-grid strong { color: #233b54; font-size: 18px; font-weight: 750; line-height: 1; }
+.role-catalogue-panel { overflow: visible; }
+.role-catalogue-tabs { display: flex; gap: 18px; padding: 0 14px; border-bottom: 1px solid #dce5ee; }
+.role-catalogue-tabs button { display: inline-flex; min-height: 36px; align-items: center; padding: 0 5px; border: 0; border-bottom: 2px solid transparent; background: transparent; color: #71849a; cursor: pointer; font: inherit; font-size: 9px; font-weight: 650; }
+.role-catalogue-tabs button[aria-selected="true"] { border-bottom-color: #1772c8; color: #155f9f; }
+.role-catalogue-tabs button:focus-visible { outline: 2px solid #4387c6; outline-offset: 2px; }
+.role-catalogue-view[hidden] { display: none; }
+.role-catalogue-table, .permission-catalogue-table { min-width: 780px; }
+.role-catalogue-table th, .role-catalogue-table td, .permission-catalogue-table th, .permission-catalogue-table td { padding: 9px 8px; }
+.role-catalogue-table th:nth-child(2), .role-catalogue-table td:nth-child(2) { width: 20%; }
+.role-catalogue-table th:nth-child(3), .role-catalogue-table td:nth-child(3) { width: 37%; }
+.role-catalogue-table th:nth-child(4), .role-catalogue-table td:nth-child(4) { width: 8%; }
+.role-catalogue-table th:nth-child(5), .role-catalogue-table td:nth-child(5) { width: 12%; }
+.role-catalogue-table th:nth-child(6), .role-catalogue-table td:nth-child(6) { width: 17%; }
+.role-catalogue-table td strong, .permission-catalogue-table td strong { color: #304a64; font-size: 9px; }
+.role-catalogue-table td small, .permission-catalogue-table td small { display: block; margin-top: 2px; color: #91a0ae; font-size: 8px; }
+.role-permission-details { position: relative; }
+.role-permission-details > summary { display: inline-flex; min-height: 25px; align-items: center; padding: 0 7px; border: 1px solid #d2e2f0; border-radius: 4px; color: #276ba8; cursor: pointer; font-size: 8px; font-weight: 650; list-style: none; white-space: nowrap; }
+.role-permission-details > summary::-webkit-details-marker { display: none; }
+.role-permission-details > ul { position: absolute; top: 28px; right: 0; z-index: 12; display: grid; width: min(330px, calc(100vw - 32px)); max-height: 320px; gap: 7px; overflow: auto; margin: 0; padding: 11px; border: 1px solid #dce5ed; border-radius: 5px; background: #fff; box-shadow: 0 8px 24px rgb(24 48 73 / 14%); list-style: none; }
+.role-permission-details li { display: grid; gap: 2px; color: #566d83; font-size: 8px; }
+.role-permission-details code { color: #315f8e; font-size: 8px; }
+.role-permission-details li span { color: #8292a2; }
+.permission-catalogue-table th:nth-child(2), .permission-catalogue-table td:nth-child(2) { width: 26%; }
+.permission-catalogue-table th:nth-child(3), .permission-catalogue-table td:nth-child(3) { width: 34%; }
+.permission-catalogue-table th:nth-child(4), .permission-catalogue-table td:nth-child(4) { width: 34%; }
+.role-catalogue-note { display: flex; align-items: flex-start; gap: 7px; margin: 0; padding: 10px 14px; border-top: 1px solid #edf1f5; color: #798b9d; font-size: 8px; line-height: 1.45; }
+.role-catalogue-note svg { width: 13px; height: 13px; flex: 0 0 13px; color: #4a82b4; }
+.user-groups-table { min-width: 900px; }
+.user-groups-table th:nth-child(2), .user-groups-table td:nth-child(2) { width: 19%; }
+.user-groups-table th:nth-child(3), .user-groups-table td:nth-child(3) { width: 37%; }
+.user-groups-table th:nth-child(4), .user-groups-table td:nth-child(4) { width: 10%; }
+.user-groups-table th:nth-child(5), .user-groups-table td:nth-child(5) { width: 12%; }
+.user-groups-table th:nth-child(6), .user-groups-table td:nth-child(6) { width: 18%; }
+.user-group-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; }
+.user-group-members-form { width: min(340px, calc(100vw - 32px)); }
+.user-group-members-form > strong { color: #304a64; font-size: 10px; }
+.user-group-member-search { display: flex; min-height: 31px; align-items: center; gap: 6px; padding: 0 7px; border: 1px solid #dce5ed; border-radius: 4px; color: #8293a4; }
+.user-group-member-search svg { width: 13px; height: 13px; flex: 0 0 13px; }
+.user-group-member-search input { width: 100%; min-width: 0; border: 0; outline: 0; font: inherit; font-size: 9px; }
+.user-group-member-list { display: grid; max-height: 225px; gap: 3px; overflow: auto; }
+.user-group-member-option { display: flex; min-width: 0; align-items: center; gap: 7px; padding: 6px; border-radius: 4px; cursor: pointer; }
+.user-group-member-option:hover { background: #f3f7fb; }
+.user-group-member-option > span { display: grid; min-width: 0; gap: 2px; }
+.user-group-member-option strong { overflow: hidden; color: #3c536a; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+.user-group-member-option small { overflow: hidden; color: #8292a2; font-size: 7px; text-overflow: ellipsis; white-space: nowrap; }
+.user-group-member-empty { margin: 0; padding: 8px; color: #8191a1; font-size: 8px; text-align: center; }
+body[data-theme="dark"] .user-group-members-form > strong { color: #e1eaf3; }
+body[data-theme="dark"] .user-group-member-search { border-color: #344a64; }
+body[data-theme="dark"] .user-group-member-search input { background: transparent; color: #e1eaf3; }
+body[data-theme="dark"] .user-group-member-option:hover { background: #233b55; }
+body[data-theme="dark"] .user-group-member-option strong { color: #d1deea; }
+body[data-theme="dark"] .role-summary-grid article { border-color: #2c4058; background: #17263a; }
+body[data-theme="dark"] .role-summary-grid strong { color: #e1eaf3; }
+body[data-theme="dark"] .role-catalogue-tabs { border-color: #344a64; }
+body[data-theme="dark"] .role-catalogue-tabs button { color: #a7b7c8; }
+body[data-theme="dark"] .role-catalogue-tabs button[aria-selected="true"] { border-color: #4b9ce0; color: #8ec5f1; }
+body[data-theme="dark"] .role-catalogue-table td strong, body[data-theme="dark"] .permission-catalogue-table td strong { color: #d3dfeb; }
+body[data-theme="dark"] .role-permission-details > summary { border-color: #344a64; color: #9cc7ec; }
+body[data-theme="dark"] .role-permission-details > ul { border-color: #344a64; background: #17263a; }
+body[data-theme="dark"] .role-permission-details code { color: #a9cbed; }
+body[data-theme="dark"] .role-catalogue-note { border-color: #2c4058; }
 body[data-theme="dark"] .user-create-header h1 { color: #e1eaf3; }
 body[data-theme="dark"] .user-create-panel, body[data-theme="dark"] .user-create-actions { border-color: #2c4058; background: #17263a; }
 body[data-theme="dark"] .user-create-panel-heading { border-color: #2c4058; }
@@ -770,6 +842,15 @@ body[data-theme="dark"] .recent-tickets-table th { border-color: #2c4058; color:
 }
 
 @media (max-width: 540px) {
+    .user-groups-table { min-width: 900px; }
+    .user-group-actions { gap: 3px; }
+    .user-group-actions .catalogue-edit > summary { min-width: 43px; }
+    .role-summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+    .role-summary-grid article { min-height: 58px; gap: 6px; padding: 7px; }
+    .role-summary-icon { width: 26px; height: 26px; flex-basis: 26px; }
+    .role-summary-grid strong { font-size: 15px; }
+    .role-catalogue-tabs { gap: 13px; }
+    .role-catalogue-tabs button { min-height: 34px; font-size: 8px; }
     .user-admin-header h1 { font-size: 19px; }
     .user-admin-header p:not(.ticket-page-kicker) { font-size: 8px; }
     .user-admin-header .ticket-primary-button { min-height: 31px; padding: 0 8px; font-size: 8px; }

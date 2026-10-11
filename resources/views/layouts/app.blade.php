@@ -90,7 +90,7 @@
                             @can('users.view')<a class="sidebar-sublink {{ request()->routeIs('admin.users.*') ? 'is-current' : '' }}" href="{{ route('admin.users.index') }}">All Users</a>@else<span class="sidebar-sublink is-unavailable" aria-disabled="true">All Users</span>@endcan
                             @can('users.create')<a class="sidebar-sublink {{ request()->routeIs('admin.users.create') ? 'is-current' : '' }}" href="{{ route('admin.users.create') }}">Add User</a>@else<span class="sidebar-sublink is-unavailable" aria-disabled="true">Add User</span>@endcan
                             @can('users.assign_roles')<a class="sidebar-sublink {{ request()->routeIs('admin.roles.*') ? 'is-current' : '' }}" href="{{ route('admin.roles.index') }}">Roles &amp; Permissions</a>@else<span class="sidebar-sublink is-unavailable" aria-disabled="true">Roles &amp; Permissions</span>@endcan
-                            <span class="sidebar-sublink is-unavailable" aria-disabled="true">User Groups</span>
+                            @can('user_groups.manage')<a class="sidebar-sublink {{ request()->routeIs('admin.user-groups.*') ? 'is-current' : '' }}" href="{{ route('admin.user-groups.index') }}">User Groups</a>@else<span class="sidebar-sublink is-unavailable" aria-disabled="true">User Groups</span>@endcan
                         </div>
                     </details>
 

@@ -16,6 +16,7 @@ import {
 	CircleAlert,
 	Clock3,
 	FileText,
+	Info,
 	Database,
 	Headset,
 	LayoutDashboard,
@@ -68,6 +69,7 @@ const lucideIcons = {
 	'circle-alert': CircleAlert,
 	'clock-3': Clock3,
 	'file-text': FileText,
+	info: Info,
 	database: Database,
 	headset: Headset,
 	'layout-dashboard': LayoutDashboard,
@@ -129,6 +131,45 @@ technicianSearch?.addEventListener('input', () => {
 	}
 
 	if (technicianNoResults) technicianNoResults.hidden = visibleCount > 0;
+});
+
+const roleTabs = [...document.querySelectorAll('[data-role-tab]')];
+
+function selectRoleTab(selectedTab) {
+	for (const tab of roleTabs) {
+		const selected = tab === selectedTab;
+		tab.setAttribute('aria-selected', String(selected));
+		tab.tabIndex = selected ? 0 : -1;
+		const panel = document.querySelector(`[data-role-panel="${tab.dataset.roleTab}"]`);
+		if (panel) panel.hidden = !selected;
+	}
+}
+
+for (const [index, tab] of roleTabs.entries()) {
+	tab.addEventListener('click', () => selectRoleTab(tab));
+	tab.addEventListener('keydown', (event) => {
+		if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+		event.preventDefault();
+		const nextIndex = event.key === 'Home' ? 0 : event.key === 'End' ? roleTabs.length - 1 : (index + (event.key === 'ArrowRight' ? 1 : roleTabs.length - 1)) % roleTabs.length;
+		roleTabs[nextIndex]?.focus();
+		selectRoleTab(roleTabs[nextIndex]);
+	});
+}
+
+document.querySelectorAll('.user-group-member-search input').forEach((search) => {
+	const form = search.closest('form');
+	const options = [...(form?.querySelectorAll('.user-group-member-option') ?? [])];
+	const emptyMessage = form?.querySelector('.user-group-member-empty');
+	search.addEventListener('input', () => {
+		const term = search.value.trim().toLocaleLowerCase();
+		let visibleCount = 0;
+		for (const option of options) {
+			const matches = `${option.dataset.userName ?? ''} ${option.dataset.userEmail ?? ''}`.includes(term);
+			option.hidden = !matches;
+			if (matches) visibleCount++;
+		}
+		if (emptyMessage) emptyMessage.hidden = visibleCount > 0;
+	});
 });
 
 const helpdeskShell = document.querySelector('.helpdesk-shell');
