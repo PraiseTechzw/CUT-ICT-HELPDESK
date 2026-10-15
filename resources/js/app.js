@@ -18,6 +18,8 @@ import {
 	FileText,
 	Info,
 	Database,
+	Eye,
+	EyeOff,
 	Headset,
 	LayoutDashboard,
 	List,
@@ -73,6 +75,8 @@ const lucideIcons = {
 	'file-text': FileText,
 	info: Info,
 	database: Database,
+	eye: Eye,
+	'eye-off': EyeOff,
 	headset: Headset,
 	'layout-dashboard': LayoutDashboard,
 	list: List,
@@ -114,6 +118,22 @@ document.querySelectorAll('svg[data-lucide]').forEach((placeholder) => {
 		'aria-hidden': placeholder.getAttribute('aria-hidden') ?? 'true',
 		focusable: 'false',
 	}));
+});
+
+document.querySelectorAll('[data-password-toggle]').forEach((toggle) => {
+	toggle.addEventListener('click', () => {
+		const password = document.getElementById(toggle.getAttribute('aria-controls'));
+		if (!(password instanceof HTMLInputElement)) return;
+
+		const isVisible = password.type === 'text';
+		password.type = isVisible ? 'password' : 'text';
+		toggle.setAttribute('aria-label', isVisible ? 'Show password' : 'Hide password');
+		toggle.setAttribute('title', isVisible ? 'Show password' : 'Hide password');
+		toggle.replaceChildren(createElement(isVisible ? Eye : EyeOff, {
+			'aria-hidden': 'true',
+			focusable: 'false',
+		}));
+	});
 });
 
 document.querySelectorAll('.ticket-overdue-filters select').forEach((filter) => {

@@ -1275,8 +1275,10 @@ body:has(.auth-page) .guest-main { width: 100%; max-width: none; margin: 0; }
 .auth-benefit small { margin-top: 3px; color: #b7d6ed; font-size: 11px; }
 .auth-intro-footer { position: absolute; bottom: 44px; margin: 0; color: #d4e8f6; font-size: 11px; font-weight: 650; line-height: 1.55; }
 .auth-intro-footer span { color: #8cb7d7; font-size: 10px; font-weight: 500; }
-.auth-card-wrap { display: flex; min-height: 100vh; align-items: center; justify-content: center; padding: 92px clamp(24px, 6vw, 96px) 40px; background: #f7fafc; }
+.auth-card-wrap { position: relative; display: flex; min-height: 100vh; overflow: hidden; align-items: center; justify-content: center; padding: 92px clamp(24px, 6vw, 96px) 40px; background: #f7fafc; }
+.auth-card-wrap::before { position: absolute; right: -26%; bottom: -29%; width: 76%; height: 66%; border: 1px solid rgb(41 112 180 / 4%); border-radius: 50%; box-shadow: 0 0 0 28px rgb(41 112 180 / 2%), 0 0 0 56px rgb(41 112 180 / 2%); content: ''; transform: rotate(-24deg); }
 .auth-card { width: min(100%, 460px); padding: 40px clamp(25px, 4vw, 46px) 27px; border: 1px solid #dce6ef; border-radius: 13px; background: #fff; box-shadow: 0 22px 60px rgb(27 59 91 / 12%); }
+.auth-card { position: relative; z-index: 1; }
 .auth-card-heading { text-align: center; }
 .auth-card-mark { display: inline-grid; width: 44px; height: 44px; place-items: center; margin-bottom: 17px; border-radius: 12px; background: #e9f3fb; color: #1269bd; }
 .auth-card-mark svg { width: 22px; height: 22px; }
@@ -1366,14 +1368,23 @@ body:has(.auth-page) .guest-main { min-height: 100vh; }
 .auth-form { gap: 15px; margin-top: 26px; }
 .auth-divider { display: flex; align-items: center; gap: 18px; margin: 8px 0 9px; color: #7891b2; font-size: 10px; font-weight: 700; letter-spacing: .1em; white-space: nowrap; }
 .auth-divider::before, .auth-divider::after { height: 1px; flex: 1; background: #dce7f2; content: ''; }
+.auth-provider-actions { display: grid; gap: 11px; margin-top: 23px; }
+.auth-provider-button { display: flex; min-height: 42px; align-items: center; gap: 15px; padding: 0 15px; border: 1px solid #bcd3ed; border-radius: 7px; background: #fff; color: #102d63; font: inherit; font-size: 12px; font-weight: 700; text-align: left; }
+.auth-provider-button:disabled { cursor: not-allowed; }
+.auth-provider-logo { width: 20px; height: 20px; flex: 0 0 20px; }
+.auth-provider-logo-microsoft { width: 21px; height: 21px; flex-basis: 21px; }
 .auth-field { gap: 0; }
 .auth-input-wrap { min-height: 52px; gap: 14px; padding: 0 16px; border-color: #d4e0ed; border-radius: 8px; background: #fff; }
 .auth-input-wrap > svg { color: #778eaa; }
 .auth-input-wrap input { font-size: 13px; }
 .auth-input-wrap input::placeholder { color: #8497b0; }
+.auth-password-toggle { display: inline-grid; width: 28px; height: 32px; flex: 0 0 28px; place-items: center; padding: 0; border: 0; background: transparent; color: #778eaa; cursor: pointer; }
+.auth-password-toggle svg { width: 17px; height: 17px; }
+.auth-password-toggle:focus-visible { outline: 2px solid #4c91ca; outline-offset: 2px; border-radius: 4px; }
 .auth-form-options { margin-top: 0; }
 .auth-remember { color: #6981a0; font-size: 12px; }
 .auth-remember input { width: 18px; height: 18px; }
+.auth-forgot { color: #0872d5; font-size: 11px; cursor: not-allowed; }
 .auth-secure-note { display: none; }
 .auth-submit { min-height: 54px; margin-top: 1px; border-radius: 8px; background: linear-gradient(100deg, #0768c5, #087fe0); font-size: 14px; }
 .auth-card-footer { align-items: center; justify-content: center; gap: 10px; margin-top: 27px; padding-top: 19px; color: #7188a4; }

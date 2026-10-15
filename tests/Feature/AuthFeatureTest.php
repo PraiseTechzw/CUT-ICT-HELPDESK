@@ -13,13 +13,17 @@ class AuthFeatureTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_login_screen_renders_without_public_registration_or_password_reset(): void
+    public function test_login_screen_renders_with_unavailable_options_marked_and_no_public_registration(): void
     {
         $this->get('/login')
             ->assertOk()
             ->assertSee('Sign in')
             ->assertDontSee('Register')
-            ->assertDontSee('Forgot password');
+            ->assertSee('Continue with Google')
+            ->assertSee('Continue with Microsoft')
+            ->assertSee('Forgot password?')
+            ->assertSee('aria-disabled="true"', false)
+            ->assertSee('disabled', false);
     }
 
     public function test_valid_credentials_authenticate_and_rotate_the_session_id(): void
