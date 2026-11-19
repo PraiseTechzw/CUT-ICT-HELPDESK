@@ -33,6 +33,7 @@ Route::get('/', fn () => auth()->check()
 Route::middleware(['auth', 'account.active'])->group(function (): void {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
     Route::get('/account', [AccountController::class, 'index'])->name('account.index');
+    Route::patch('/account/password', [AccountController::class, 'updatePassword'])->name('account.password.update');
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::post('/notifications/{notification}/open', [NotificationController::class, 'open'])->name('notifications.open');
 

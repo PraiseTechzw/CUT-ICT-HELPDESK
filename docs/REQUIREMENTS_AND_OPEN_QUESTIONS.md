@@ -8,7 +8,7 @@
 - Laravel **13.35.0**, PHP **8.3.6**, Composer **2.7.1**, Node.js **22.13.0**, npm **10.9.2**, and Vite **8.3.4** were observed in the implementation sandbox.
 - Laravel Fortify provides login/logout. Blade, Tailwind CSS 4, Vite, Laravel Gates, Form Requests, and custom relational role/permission tables are used.
 - Local application database is SQLite. PHPUnit tests use SQLite `:memory:` after the test harness forces `APP_ENV=testing` before Laravel boots. No CUT database, MySQL/MariaDB service, hosting, SSO, mail service, or production environment was verified.
-- Latest full local run (2026-11-19): **85 tests passed (591 assertions)**, Pint clean for 133 PHP files, Vite build clean, all 22 migrations run on a disposable SQLite database, and both dependency audits clean **after** the lockfile update. See the [current verification record](TESTING_STRATEGY.md#current-verification-single-source-of-truth). Eleven Composer advisories were identified and patched during the 2026-11-19 audit; earlier statements of "no advisories" described an earlier lockfile.
+- Latest full local run (2026-11-19): **92 tests passed (620 assertions)**, Pint clean for 137 PHP files, Vite build clean, all 23 migrations run on a disposable SQLite database, and both dependency audits clean **after** the lockfile update. See the [current verification record](TESTING_STRATEGY.md#current-verification-single-source-of-truth). Eleven Composer advisories were identified and patched during the 2026-11-19 audit; earlier statements of "no advisories" described an earlier lockfile.
 - Phase 1 commit `1878469`, Phase 2 commit `9e7ba09`, and Phase 3 commit `94e5b41` are on GitHub `main`. Phase 4 reporting remains local and uncommitted.
 
 ## User-provided requirements and approved implementation defaults
@@ -36,6 +36,8 @@ On 2026-10-10, the user directed Phase 4 to reporting and analytics. The provisi
 ## Implemented baseline and Phase 2/3 boundary
 
 Authentication and admin workflows exist locally; roles/permissions are centrally seeded; locations form a campus → zone/building → room hierarchy with validation and database constraints; administrative audit events omit secrets and changed text values. No default administrator or fictitious institutional geography is seeded.
+
+Self-service password change and administrator-initiated password reset are implemented as local authentication controls (not CUT identity policy). Authentication outcomes (login, failed login, lockout, logout, password change/reset) are appended to the audit trail with request IP and a truncated user agent; the privacy basis, retention and access policy for that source metadata remain a CUT decision (Q15).
 
 Phase 2 adds ticket/requester, category, priority, comment, status-history, and assignment-history records; requester/Helpdesk Officer/Technician permissions; manual assignment; controlled state transitions; public/internal comments; configurable empty catalogues; and safe audit events. Requester ownership and assigned-technician scopes are enforced in query and record policies. Internal-note reading uses an explicit ability separate from note creation and ticket visibility. System Administrators receive all permissions currently defined by the application, including ticket-content access.
 

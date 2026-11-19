@@ -10,6 +10,8 @@
 
 **Can I create roles in the UI?** No. The role/permission catalogue is seeded code/config, with assignment/revocation available in administration. Ticket categories and priorities are separate and configurable.
 
+**Can I change my password?** Yes. Open **My account → Change password** and confirm your current password. A System Administrator can also set a new password for another account from the user edit screen to remediate a compromised credential. Email-based reset links are not implemented pending an approved mail provider (Requirements Q3/Q4).
+
 **How do I test officer/technician workflows?** Seed synthetic users via `TicketDemoSeeder` (local/testing only) and assign the proposed roles through account administration. Use synthetic data only.
 
 **Why do my tests fail against a shared database?** Inherited environment variables. Clear them as shown in [Setup](SETUP.md); the harness itself fails closed on non-testing environments.

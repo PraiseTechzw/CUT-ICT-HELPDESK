@@ -110,19 +110,19 @@ composer audit --locked
 npm audit --audit-level=moderate
 ```
 
-The [current verification record](TESTING_STRATEGY.md#current-verification-single-source-of-truth) reports **85 passed tests (591 assertions)**. The test harness sets `APP_ENV=testing`, a test-only application key, array-backed session/cache, synchronous queue, and SQLite `:memory:` **before application bootstrap**. It fails closed unless Laravel reports the `testing` environment and SQLite memory database. Thus an inherited shell variable such as `APP_ENV=PROD` cannot redirect the suite to a configured institutional database. Never weaken this guard or point tests at shared data.
+The [current verification record](TESTING_STRATEGY.md#current-verification-single-source-of-truth) reports **92 passed tests (620 assertions)**. The test harness sets `APP_ENV=testing`, a test-only application key, array-backed session/cache, synchronous queue, and SQLite `:memory:` **before application bootstrap**. It fails closed unless Laravel reports the `testing` environment and SQLite memory database. Thus an inherited shell variable such as `APP_ENV=PROD` cannot redirect the suite to a configured institutional database. Never weaken this guard or point tests at shared data.
 
 ## Authentication and account operation notes
 
 - Login is served by Fortify. Login attempts are rate-limited; inactive accounts cannot authenticate and are logged out of protected routes if deactivated after login.
 - Public registration, profile self-service, and password-reset/email flows are disabled. SSO, LDAP, and Active Directory are not configured.
 - Create accounts through the authorized account-management screens. New accounts receive only the proposed Requester role.
-- There is not yet an in-app password-reset workflow for existing accounts. Agree an account recovery process and mail/identity ownership with CUT ICT before operational use.
+- **Passwords can be remediated in-app.** Any active account can change its own password at `/account` after confirming the current password (minimum 12 characters). A System Administrator can set a new password for another account from the user edit screen; this immediately invalidates the previous password and is recorded in the audit trail. Email/SMS password-reset links are not implemented because they require an approved mail provider and identity policy (Requirements Q3/Q4). Agree that process with CUT ICT before operational use.
 - Role definitions and grants are seeded. The application supports assignment/revocation, but not web-based creation/editing of role or permission catalogues. Ticket category/priority lists are separate and configurable through the System Administrator-only page.
 
 ## Database and migration safeguards
 
-The local `.env.example` selects SQLite for the least-setup development path. The tests use an isolated in-memory database, independently of `.env`; they also fake Vite so no prebuilt assets are required. All 22 current migrations were run and checked on a fresh temporary SQLite database, which was deleted afterward. Production SQL engine/version, backup/restore, session/caching topology, connection credentials, and migration rollout remain unverified. Choose these with CUT ICT before deployment. Do not use `migrate:fresh`, database wiping, or local sample data on an institutional/shared database. Run reviewed forward migrations only against a purpose-built environment.
+The local `.env.example` selects SQLite for the least-setup development path. The tests use an isolated in-memory database, independently of `.env`; they also fake Vite so no prebuilt assets are required. All 23 current migrations were run and checked on a fresh temporary SQLite database, which was deleted afterward. Production SQL engine/version, backup/restore, session/caching topology, connection credentials, and migration rollout remain unverified. Choose these with CUT ICT before deployment. Do not use `migrate:fresh`, database wiping, or local sample data on an institutional/shared database. Run reviewed forward migrations only against a purpose-built environment.
 
 ## Configuration and production boundary
 

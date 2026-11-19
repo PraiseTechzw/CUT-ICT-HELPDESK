@@ -65,6 +65,34 @@
         </section>
     </div>
 
+    <section class="ticket-page-panel account-panel" aria-labelledby="password-heading">
+        <header class="ticket-panel-heading">
+            <div><p class="ticket-page-kicker">SECURITY</p><h2 id="password-heading">Change password</h2><p>Confirm your current password, then choose a new one of at least 12 characters.</p></div>
+            <span class="account-panel-icon is-violet"><svg data-lucide="lock-keyhole" aria-hidden="true"></svg></span>
+        </header>
+        <form method="POST" action="{{ route('account.password.update') }}" class="user-edit-fields">
+            @csrf
+            @method('PATCH')
+            <div class="user-edit-field">
+                <label for="current_password">Current password</label>
+                <div class="user-edit-input-wrap"><svg data-lucide="shield-check" aria-hidden="true"></svg><input id="current_password" name="current_password" type="password" required autocomplete="current-password" aria-invalid="{{ $errors->has('current_password') ? 'true' : 'false' }}"></div>
+                <x-field-error field="current_password" />
+            </div>
+            <div class="user-edit-field">
+                <label for="password">New password</label>
+                <div class="user-edit-input-wrap"><svg data-lucide="lock-keyhole" aria-hidden="true"></svg><input id="password" name="password" type="password" required minlength="12" autocomplete="new-password" aria-invalid="{{ $errors->has('password') ? 'true' : 'false' }}"></div>
+                <x-field-error field="password" />
+            </div>
+            <div class="user-edit-field">
+                <label for="password_confirmation">Confirm new password</label>
+                <div class="user-edit-input-wrap"><svg data-lucide="lock-keyhole" aria-hidden="true"></svg><input id="password_confirmation" name="password_confirmation" type="password" required minlength="12" autocomplete="new-password"></div>
+            </div>
+            <footer class="user-edit-actions">
+                <button class="ticket-primary-button" type="submit"><svg data-lucide="shield-check" aria-hidden="true"></svg>Update password</button>
+            </footer>
+        </form>
+    </section>
+
     <section class="account-support-banner" aria-label="Account support">
         <span class="account-support-icon"><svg data-lucide="headset" aria-hidden="true"></svg></span>
         <div><strong>Need help with your account?</strong><p>Contact the ICT Helpdesk administrator if your details, permissions, or notifications need attention.</p></div>
