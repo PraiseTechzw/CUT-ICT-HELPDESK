@@ -12,7 +12,7 @@ class AuditEvent extends Model
 {
     public const UPDATED_AT = null;
 
-    protected $fillable = ['actor_id', 'action', 'subject_type', 'subject_id', 'metadata'];
+    protected $fillable = ['actor_id', 'action', 'subject_type', 'subject_id', 'metadata', 'ip_address', 'user_agent'];
 
     protected static function booted(): void
     {

@@ -21,6 +21,8 @@
 
 </div>
 
+> **Documentation:** [Published documentation site](https://praisetechzw.github.io/CUT-ICT-HELPDESK/) · [GitHub Wiki](https://github.com/PraiseTechzw/CUT-ICT-HELPDESK/wiki) · [Documentation index](docs/index.md)
+
 > **Important:** This is a locally verified development foundation, not an approved production deployment. CUT ICT still needs to confirm identity, roles, privacy, retention, branding, hosting, database, email, accessibility, and operational policy before live use.
 
 ## What is inside

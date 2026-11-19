@@ -34,6 +34,8 @@
 
 Application and web-server logs, `audit_events`, queue/job records, database snapshots, relevant configuration and the exact deployed commit. Store encrypted with restricted access and a defined retention period.
 
+The audit trail now records authentication outcomes (`auth.login`, `auth.login.failed`, `auth.login.lockout`, `auth.logout`) and password changes/resets, with request IP and a truncated user agent for web requests. Credentials, submitted email addresses and new passwords are never written to audit metadata. Retention, lawful basis and access to this source metadata still require CUT ICT approval.
+
 ## Current limitations
 
 No alerting, no on-call rota, no approved notification thresholds, no tested restore and no immutability guarantee for audit events (they are guarded at the application level only). These are Phase 9 items.

@@ -1,6 +1,6 @@
 # Database Schema Reference
 
-**Status:** Reference generated from the 22 migration files in `database/migrations/`. Only SQLite has been exercised. "Schema-only" means the table/column exists but has no user-facing workflow wired up yet.
+**Status:** Reference generated from the 23 migration files in `database/migrations/`. Only SQLite has been exercised. "Schema-only" means the table/column exists but has no user-facing workflow wired up yet.
 
 ## Entity overview
 
@@ -43,7 +43,7 @@ erDiagram
 | `ticket_status_histories`, `ticket_assignment_histories` | Workflow history | Transactional records; omit text payloads |
 | `ticket_attachments` | Attachment metadata | **Schema-only** — validation exists in `StoreTicketRequest`, no persistence call found |
 | `notifications` | Database-only in-app notifications | Generic payloads (ticket ID, event code, generic text) |
-| `audit_events` | Administrative audit trail | Application-level update/delete guards; omits secrets and changed text |
+| `audit_events` | Administrative, authentication and password-change audit trail | Application-level update/delete guards; omits secrets and changed text. Adds nullable `ip_address` and `user_agent` (web requests only) in migration `...000001`; retention/privacy policy pending CUT approval. |
 | `teams`, `technician_team_memberships`, `technician_deployments` | Phase 3 metadata | Inclusive dates; overlaps governed by migration constraints |
 | `cache`, `jobs` | Laravel framework store | Session/cache default to `database` in `.env.example` |
 
@@ -71,6 +71,7 @@ erDiagram
 | 20 | `...000002_add_descriptions_and_priority_color_to_ticket_catalogues` | Catalogue metadata |
 | 21 | `...000003_create_ticket_attachments_table` | Attachment metadata (schema-only) |
 | 22 | `...000004_create_user_groups_tables` | User groups |
+| 23 | `2026_11_19_000001_add_source_metadata_to_audit_events_table` | Audit source metadata (`ip_address`, `user_agent`) |
 
 ## Constraints and caveats
 

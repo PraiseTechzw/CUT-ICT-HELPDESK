@@ -116,9 +116,15 @@ class UserController extends Controller
     {
         $data = $request->validated();
         $data['email'] = Str::lower(trim($data['email']));
+        $newPassword = $data['password'] ?? null;
+        unset($data['password']);
 
-        DB::transaction(function () use ($user, $data, $request, $auditLogger): void {
+        DB::transaction(function () use ($user, $data, $newPassword, $request, $auditLogger): void {
             $user->update($data);
+            if (is_string($newPassword) && $newPassword !== '') {
+                $user->update(['password' => $newPassword]);
+                $auditLogger->record($request->user(), 'user.password_reset_by_admin', $user);
+            }
             $auditLogger->record($request->user(), 'user.profile_updated', $user, [
                 'fields' => array_keys($data),
             ]);

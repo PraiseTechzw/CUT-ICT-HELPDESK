@@ -40,8 +40,14 @@
                 <div class="user-edit-input-wrap"><svg data-lucide="mail" aria-hidden="true"></svg><input id="email" name="email" type="email" value="{{ old('email', $user->email) }}" required maxlength="255" autocomplete="email" inputmode="email" aria-invalid="{{ $errors->has('email') ? 'true' : 'false' }}"></div>
                 <x-field-error field="email" />
             </div>
+            <div class="user-edit-field">
+                <label for="password">New password (optional)</label>
+                <div class="user-edit-input-wrap"><svg data-lucide="shield-check" aria-hidden="true"></svg><input id="password" name="password" type="password" minlength="12" autocomplete="new-password" aria-invalid="{{ $errors->has('password') ? 'true' : 'false' }}"></div>
+                <x-field-error field="password" />
+                <small>Leave blank to keep the current password. Use this to remediate a compromised account (minimum 12 characters).</small>
+            </div>
         </div>
-        <div class="account-note is-blue user-edit-note"><svg data-lucide="lock-keyhole" aria-hidden="true"></svg><span>Passwords, account status, roles, and permissions are managed through separate authorized workflows.</span></div>
+        <div class="account-note is-blue user-edit-note"><svg data-lucide="lock-keyhole" aria-hidden="true"></svg><span>Setting a new password here immediately invalidates the previous one. Account status and roles remain separate authorized workflows.</span></div>
         <footer class="user-edit-actions">
             <a class="ticket-secondary-button" href="{{ route('admin.users.show', $user) }}">Cancel</a>
             <button class="ticket-primary-button" type="submit"><svg data-lucide="save" aria-hidden="true"></svg>Save profile</button>
