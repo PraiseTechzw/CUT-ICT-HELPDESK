@@ -18,7 +18,7 @@
     <div class="dashboard-layout-grid">
         <main class="dashboard-primary-column">
             <section class="dashboard-hero" aria-labelledby="dashboard-welcome">
-                <img src="{{ asset('banner-image.png') }}" alt="Chinhoyi University of Technology campus" class="dashboard-hero-image">
+                <img src="{{ asset('banner-image.png') }}" width="1983" height="793" alt="Chinhoyi University of Technology campus" class="dashboard-hero-image">
                 <div class="dashboard-hero-shade"></div>
                 <div class="dashboard-hero-content">
                     <p class="dashboard-eyebrow">ICT HELPDESK · OPERATIONS</p>
@@ -194,7 +194,7 @@
             </section>
 
             <section class="dashboard-brand-panel" aria-label="Chinhoyi University of Technology">
-                <div class="dashboard-brand-logo-wrap"><img src="{{ asset('logo.png') }}" alt="Chinhoyi University of Technology"></div>
+                <div class="dashboard-brand-logo-wrap"><img src="{{ asset('logo.png') }}" width="2172" height="724" alt="Chinhoyi University of Technology"></div>
                 <p class="dashboard-brand-quote">“Empowering innovation<br>through technology.”</p>
                 <span class="dashboard-brand-accent" aria-hidden="true"></span>
             </section>

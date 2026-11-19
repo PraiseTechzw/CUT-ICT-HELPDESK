@@ -22,7 +22,7 @@ class AuthFeatureTest extends TestCase
             ->assertSee('Continue with Google')
             ->assertSee('Continue with Microsoft')
             ->assertSee('Forgot password?')
-            ->assertSee('aria-disabled="true"', false)
+            ->assertSee('Reset is not enabled yet')
             ->assertSee('disabled', false);
     }
 
