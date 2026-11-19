@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Support\Roles;
 use App\Support\TicketStatus;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use RuntimeException;
@@ -61,7 +62,7 @@ class TicketDemoSeeder extends Seeder
                 $ticket = Ticket::query()
                     ->where('requester_id', $requester->id)
                     ->where('subject', $subject)
-                    ->first() ?? new Ticket();
+                    ->first() ?? new Ticket;
                 $ticket->requester()->associate($requester);
                 $ticket->assignedTechnician()->associate($technician);
                 $ticket->category()->associate($categories[$category]);
@@ -141,7 +142,7 @@ class TicketDemoSeeder extends Seeder
         return $user;
     }
 
-    private function seedStatusHistory(Ticket $ticket, string $finalStatus, User $helpdesk, ?User $technician, \Illuminate\Support\Carbon $createdAt): void
+    private function seedStatusHistory(Ticket $ticket, string $finalStatus, User $helpdesk, ?User $technician, Carbon $createdAt): void
     {
         $progression = [
             TicketStatus::OPEN => [TicketStatus::OPEN],

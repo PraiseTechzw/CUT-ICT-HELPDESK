@@ -18,7 +18,7 @@
     <div class="dashboard-layout-grid">
         <main class="dashboard-primary-column">
             <section class="dashboard-hero" aria-labelledby="dashboard-welcome">
-                <img src="{{ asset('banner-image.png') }}" width="1983" height="793" alt="Chinhoyi University of Technology campus" class="dashboard-hero-image">
+                <img src="{{ Vite::asset('resources/images/banner-image.png') }}" width="1983" height="793" alt="Chinhoyi University of Technology campus" class="dashboard-hero-image">
                 <div class="dashboard-hero-shade"></div>
                 <div class="dashboard-hero-content">
                     <p class="dashboard-eyebrow">ICT HELPDESK · OPERATIONS</p>

@@ -1280,7 +1280,7 @@ body:has(.auth-page) .guest-brand { display: none; }
 body:has(.auth-page) .guest-main { width: 100%; max-width: none; margin: 0; }
 .auth-page { display: grid; min-height: 100vh; grid-template-columns: minmax(0, 1.12fr) minmax(420px, .88fr); }
 .auth-intro { position: relative; display: flex; min-height: 100vh; overflow: hidden; align-items: center; padding: 92px clamp(32px, 7vw, 112px) 44px; background: linear-gradient(145deg, #082c58 0%, #074783 55%, #0d6eb7 100%); color: #fff; }
-.auth-intro-backdrop { position: absolute; inset: 0; background: linear-gradient(120deg, rgb(4 25 55 / 20%), rgb(5 92 155 / 8%)), url('/banner-image.png') center / cover; opacity: .24; }
+.auth-intro-backdrop { position: absolute; inset: 0; background: linear-gradient(120deg, rgb(4 25 55 / 20%), rgb(5 92 155 / 8%)), url('../images/banner-image.png') center / cover; opacity: .24; }
 .auth-intro::after { position: absolute; right: -18%; bottom: -18%; width: 74%; height: 52%; border: 1px solid rgb(255 255 255 / 16%); border-radius: 50%; box-shadow: 0 0 0 22px rgb(255 255 255 / 4%), 0 0 0 44px rgb(255 255 255 / 3%); content: ''; transform: rotate(-14deg); }
 .auth-intro-content { position: relative; z-index: 1; width: min(100%, 600px); }
 .auth-brand-lockup { display: inline-flex; max-width: 310px; padding: 12px 16px; border: 1px solid rgb(255 255 255 / 72%); border-radius: 9px; background: rgb(255 255 255 / 94%); box-shadow: 0 14px 32px rgb(1 24 52 / 22%); }
@@ -1364,7 +1364,7 @@ body:has(.auth-page) { overflow-x: hidden; background: #f5f9fd; }
 body:has(.auth-page) .guest-main { min-height: 100vh; }
 .auth-page { min-height: 100vh; grid-template-columns: minmax(0, 51.4%) minmax(0, 48.6%); }
 .auth-intro { min-height: 100vh; align-items: stretch; padding: 64px clamp(42px, 5.8vw, 92px) 34px; background: #063f80; }
-.auth-intro-backdrop { background: linear-gradient(90deg, rgb(0 37 88 / 91%) 0%, rgb(0 51 111 / 78%) 42%, rgb(0 61 125 / 48%) 100%), url('/banner-image.png') center / cover; opacity: 1; }
+.auth-intro-backdrop { background: linear-gradient(90deg, rgb(0 37 88 / 91%) 0%, rgb(0 51 111 / 78%) 42%, rgb(0 61 125 / 48%) 100%), url('../images/banner-image.png') center / cover; opacity: 1; }
 .auth-intro::after { right: -15%; bottom: -31%; width: 88%; height: 48%; border: 1px solid rgb(255 255 255 / 12%); box-shadow: 0 0 0 20px rgb(255 255 255 / 3%), 0 0 0 42px rgb(255 255 255 / 2%); }
 .auth-intro-content { display: flex; width: min(100%, 600px); flex-direction: column; align-items: flex-start; }
 .auth-brand-lockup { width: min(100%, 380px); max-width: 380px; padding: 12px 18px; border-radius: 9px; }

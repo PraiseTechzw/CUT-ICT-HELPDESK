@@ -1,0 +1,54 @@
+site_name: CUT ICT Helpdesk Documentation
+site_description: Role-aware ICT support portal prototype for Chinhoyi University of Technology
+site_url: https://praisetechzw.github.io/CUT-ICT-HELPDESK/
+repo_url: https://github.com/PraiseTechzw/CUT-ICT-HELPDESK
+repo_name: PraiseTechzw/CUT-ICT-HELPDESK
+edit_uri: edit/main/docs/
+
+docs_dir: docs
+site_dir: site
+
+theme:
+  name: readthedocs
+  highlightjs: true
+  collapse_navigation: false
+  navigation_depth: 3
+
+markdown_extensions:
+  - admonition
+  - tables
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Setup and operations:
+      - Setup and bootstrap: SETUP.md
+      - Deployment: DEPLOYMENT.md
+      - Operations runbook: OPERATIONS_RUNBOOK.md
+      - Troubleshooting: TROUBLESHOOTING.md
+      - FAQ: FAQ.md
+  - Architecture and domain:
+      - Architecture: ARCHITECTURE.md
+      - Domain model: DOMAIN_MODEL.md
+      - Database schema: DATABASE_SCHEMA.md
+      - Route reference: ROUTE_REFERENCE.md
+      - Roles and permissions: ROLES_AND_PERMISSIONS.md
+      - Glossary: GLOSSARY.md
+  - Quality and governance:
+      - Testing strategy: TESTING_STRATEGY.md
+      - CI/CD: CI_CD.md
+      - Dependency policy: DEPENDENCY_POLICY.md
+      - Security incident response: SECURITY_INCIDENT_RESPONSE.md
+      - Accessibility: ACCESSIBILITY.md
+      - Development guidelines: DEVELOPMENT_GUIDELINES.md
+  - Project background:
+      - Project scope: PROJECT_SCOPE.md
+      - Requirements and open questions: REQUIREMENTS_AND_OPEN_QUESTIONS.md
+      - Feature roadmap: FEATURE_ROADMAP.md
+      - UI review evidence: UI_REVIEW.md
+      - Screenshot provenance: SCREENSHOTS.md
+  - Archive:
+      - Phase 0 brief: PHASE0_BRIEF.md
+      - Phase 1 brief: PHASE1_BRIEF.md
+      - Phase 1 implementation sources: PHASE1_IMPLEMENTATION_SOURCES.md
