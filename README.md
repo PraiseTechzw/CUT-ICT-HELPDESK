@@ -46,9 +46,9 @@ The following captures were taken from the authenticated live preview during the
 | Ticket queue | [Open](docs/screenshots/tickets.webp) | Create ticket | [Open](docs/screenshots/create-ticket.webp) |
 | Add user | [Open](docs/screenshots/create-user.webp) | Locations | [Open](docs/screenshots/campuses.webp) |
 | Teams | [Open](docs/screenshots/teams.webp) | Equipment | [Open](docs/screenshots/equipment.webp) |
-| Knowledge base | [Open](docs/screenshots/knowledge-base.webp) | Ticket categories | [Open](docs/screenshots/ticket-categories.webp) |
-| Ticket categories | [Open](docs/screenshots/ticket-categories.webp) | Reports | [Open](docs/screenshots/reports.webp) |
-| System settings | [Open](docs/screenshots/settings.webp) | Audit logs | [Open](docs/screenshots/audit.webp) |
+| Knowledge base | [Open](docs/screenshots/knowledge-base.webp) | Ticket catalogue | [Open](docs/screenshots/ticket-categories.webp) |
+| Analytics | [Open](docs/screenshots/reports.webp) | System settings | [Open](docs/screenshots/settings.webp) |
+| Audit logs | [Open](docs/screenshots/audit.webp) |  |  |
 
 See the full [UI review evidence log](docs/UI_REVIEW.md) for routes, review notes, and known refinements.
 
@@ -109,20 +109,34 @@ Latest UI-review run:
 
 ## Documentation map
 
+The [documentation index](docs/index.md) is the entry point for the [GitHub Pages site](https://praisetechzw.github.io/CUT-ICT-HELPDESK/) and the [GitHub Wiki](https://github.com/PraiseTechzw/CUT-ICT-HELPDESK/wiki).
+
+**Start here**
+
 - [Setup and administrator bootstrap](docs/SETUP.md)
+- [Troubleshooting](docs/TROUBLESHOOTING.md) · [FAQ](docs/FAQ.md)
 - [Architecture and security boundaries](docs/ARCHITECTURE.md)
-- [Domain model](docs/DOMAIN_MODEL.md)
-- [Roles and permissions](docs/ROLES_AND_PERMISSIONS.md)
-- [Feature roadmap](docs/FEATURE_ROADMAP.md)
+- [Domain model](docs/DOMAIN_MODEL.md) · [Database schema](docs/DATABASE_SCHEMA.md) · [Route reference](docs/ROUTE_REFERENCE.md)
+- [Roles and permissions](docs/ROLES_AND_PERMISSIONS.md) · [Glossary](docs/GLOSSARY.md)
+- [Testing strategy](docs/TESTING_STRATEGY.md) · [CI/CD](docs/CI_CD.md)
+
+**Operating and deploying**
+
+- [Deployment](docs/DEPLOYMENT.md) · [Operations runbook](docs/OPERATIONS_RUNBOOK.md)
+- [Dependency policy](docs/DEPENDENCY_POLICY.md) · [Security incident response](docs/SECURITY_INCIDENT_RESPONSE.md)
+- [Accessibility](docs/ACCESSIBILITY.md)
+
+**Project background**
+
+- [Project scope](docs/PROJECT_SCOPE.md) · [Feature roadmap](docs/FEATURE_ROADMAP.md)
 - [Requirements and open questions](docs/REQUIREMENTS_AND_OPEN_QUESTIONS.md)
 - [Development guidelines](docs/DEVELOPMENT_GUIDELINES.md)
-- [Testing strategy](docs/TESTING_STRATEGY.md)
-- [UI review evidence](docs/UI_REVIEW.md)
-- [Screenshot provenance](docs/SCREENSHOTS.md)
-- [Contributing](CONTRIBUTING.md)
-- [Security policy](SECURITY.md)
-- [Code of conduct](CODE_OF_CONDUCT.md)
-- [Changelog](CHANGELOG.md)
+- [UI review evidence](docs/UI_REVIEW.md) · [Screenshot provenance](docs/SCREENSHOTS.md)
+- Original briefs: [Phase 0](docs/PHASE0_BRIEF.md) · [Phase 1](docs/PHASE1_BRIEF.md) · [Phase 1 sources](docs/PHASE1_IMPLEMENTATION_SOURCES.md)
+
+**Repository policies**
+
+- [Contributing](CONTRIBUTING.md) · [Security policy](SECURITY.md) · [Code of conduct](CODE_OF_CONDUCT.md) · [Changelog](CHANGELOG.md)
 
 ## Project boundary
 
