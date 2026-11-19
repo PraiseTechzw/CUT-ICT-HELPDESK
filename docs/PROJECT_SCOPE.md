@@ -1,6 +1,6 @@
 # Project Scope
 
-**Status:** Phases 1–4 are implemented locally from the supplied briefs and user-approved/user-directed provisional defaults. Institutional workflows, role policy, geography, hosting, reporting policy, and visual identity remain unverified; see [Requirements and Open Questions](REQUIREMENTS_AND_OPEN_QUESTIONS.md).
+**Status:** Phases 1–5 are implemented locally from the supplied briefs and user-approved/user-directed provisional defaults. Institutional workflows, role policy, geography, hosting, reporting policy, and visual identity remain unverified; see [Requirements and Open Questions](REQUIREMENTS_AND_OPEN_QUESTIONS.md).
 
 ## Problem and long-term objective
 

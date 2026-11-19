@@ -1,10 +1,10 @@
 # Setup and Bootstrap
 
-**Status:** A Laravel application with Phase 1–4 foundations is present. Phase 3 team/membership/deployment records and Phase 4 analytics are provisional. This procedure is for isolated local development only; it is not a production deployment guide.
+**Status:** A Laravel application with Phase 1–5 foundations is present. Phase 3 team/membership/deployment records, Phase 4 analytics and Phase 5 notification/audit behavior are provisional. This procedure is for isolated local development only; it is not a production deployment guide.
 
 ## Verified implementation environment
 
-The sandbox implementation was checked with PHP 8.3.6, Composer 2.7.1, Laravel 13.35.0, Node.js 22.13.0, npm 10.9.2, and Vite 8.3.4. The application and tests were exercised with SQLite; no CUT-hosted runtime, production database, MySQL/MariaDB service, institutional identity provider, or mail service was verified. Confirm CUT's supported versions and hosting requirements before deployment.
+The verified implementation environment (recorded 2026-11-19) is PHP 8.3, Composer 2, Laravel 13, Node.js 24 and Vite 8. The application and tests were exercised with SQLite; no CUT-hosted runtime, production database, MySQL/MariaDB service, institutional identity provider, or mail service was verified. Confirm CUT's supported versions and hosting requirements before deployment. Earlier notes pinned specific patch versions (PHP 8.3.6 / Laravel 13.35.0 / Vite 8.3.4); these are historical, not requirements.
 
 Laravel 13 requires PHP 8.3 or later; the official compatibility and authentication references are recorded in [Phase 1 implementation sources](PHASE1_IMPLEMENTATION_SOURCES.md). Install Composer, Node.js/npm, and the PHP extensions required by the locked dependencies, including PDO SQLite for local testing.
 
@@ -70,7 +70,7 @@ The tracked `.env.example` then selects `APP_ENV=local` and SQLite, and `key:gen
 - Helpdesk Officers can view all tickets globally, triage them, and manually assign an active Technician. Technicians see/work only their individually assigned tickets.
 - Public replies are visible to requesters; internal notes and technician identities are not. Internal-note reading and writing use separate permissions. Status/assignment history and audit metadata omit ticket/comment text.
 - Category and priority rows are optional and empty until configured. No CUT-specific categories, rankings, locations, teams, or assignments are preloaded.
-- Regional ticket permissions, team-based ticket routing, SLAs, automatic routing, attachments, notifications/email, and production integrations are not implemented.
+- Regional ticket permissions, team-based ticket routing, SLAs, automatic routing, attachments and external email/SMS delivery are not implemented. Database-only in-app notifications exist (Phase 5); see the [Feature roadmap](FEATURE_ROADMAP.md).
 
 ## Local ticket demo data
 
@@ -96,6 +96,10 @@ The demo seeder is restricted to `local` and `testing` environments and is safe 
 - Reports include aggregate counts for tickets created within an inclusive date range: daily volume and current status/category/priority counts. The default is the last 30 calendar days; the maximum is 366 days. The configured application timezone supplies calendar-date interpretation.
 - Status is a snapshot at report time; category/priority use their current catalogue labels. No ticket identifiers, requester/technician identities, subject/description text, record drill-down, or export is included. The metrics and audience are provisional; this is not an SLA, workload, or performance report.
 
+## User groups
+
+System Administrators can create and rename generic user groups and assign account memberships from `admin/user-groups`. Group membership is administrative metadata only: it grants no roles, ticket access or routing. Values are empty by default and must not be populated with invented CUT structures.
+
 ## Tests and quality checks
 
 ```sh
@@ -106,7 +110,7 @@ composer audit --locked
 npm audit --audit-level=moderate
 ```
 
-The current full suite reports **71 passed tests (536 assertions)**. The test harness sets `APP_ENV=testing`, a test-only application key, array-backed session/cache, synchronous queue, and SQLite `:memory:` **before application bootstrap**. It fails closed unless Laravel reports the `testing` environment and SQLite memory database. Thus an inherited shell variable such as `APP_ENV=PROD` cannot redirect the suite to a configured institutional database. Never weaken this guard or point tests at shared data.
+The [current verification record](TESTING_STRATEGY.md#current-verification-single-source-of-truth) reports **85 passed tests (591 assertions)**. The test harness sets `APP_ENV=testing`, a test-only application key, array-backed session/cache, synchronous queue, and SQLite `:memory:` **before application bootstrap**. It fails closed unless Laravel reports the `testing` environment and SQLite memory database. Thus an inherited shell variable such as `APP_ENV=PROD` cannot redirect the suite to a configured institutional database. Never weaken this guard or point tests at shared data.
 
 ## Authentication and account operation notes
 
@@ -118,7 +122,7 @@ The current full suite reports **71 passed tests (536 assertions)**. The test ha
 
 ## Database and migration safeguards
 
-The local `.env.example` selects SQLite for the least-setup development path. The tests use an isolated in-memory database, independently of `.env`. All 17 current migrations were also run and checked on a fresh temporary SQLite database, which was deleted afterward. Production SQL engine/version, backup/restore, session/caching topology, connection credentials, and migration rollout remain unverified. Choose these with CUT ICT before deployment. Do not use `migrate:fresh`, database wiping, or local sample data on an institutional/shared database. Run reviewed forward migrations only against a purpose-built environment.
+The local `.env.example` selects SQLite for the least-setup development path. The tests use an isolated in-memory database, independently of `.env`; they also fake Vite so no prebuilt assets are required. All 22 current migrations were run and checked on a fresh temporary SQLite database, which was deleted afterward. Production SQL engine/version, backup/restore, session/caching topology, connection credentials, and migration rollout remain unverified. Choose these with CUT ICT before deployment. Do not use `migrate:fresh`, database wiping, or local sample data on an institutional/shared database. Run reviewed forward migrations only against a purpose-built environment.
 
 ## Configuration and production boundary
 

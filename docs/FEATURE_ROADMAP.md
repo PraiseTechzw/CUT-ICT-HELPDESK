@@ -1,6 +1,6 @@
 # Feature Roadmap
 
-**Status:** Phase 0 documentation and Phases 1–5 implementation are complete locally. Phases 3–5 contain provisional metadata, reporting, audit, and notification designs pending CUT ICT review and validation against institutional technical/privacy requirements.
+**Status:** Phase 0 documentation and Phases 1–5 implementation are complete locally. Phases 3–5 contain provisional metadata, reporting, audit, and notification designs pending CUT ICT review and validation against institutional technical/privacy requirements. Verification counts below are historical per-phase records; the [current verification record](TESTING_STRATEGY.md#current-verification-single-source-of-truth) is authoritative.
 
 ## Phase 0 — Foundation (complete)
 
@@ -10,7 +10,7 @@
 
 **Delivered:** Laravel 13 bootstrap; Fortify login/logout; active-account checks and rate limiting; proposed role/permission catalogue; account administration; guarded campus/zone/building/room configuration; safe administrative audit events; Blade screens, isolated PHPUnit tests, and setup/security documentation.
 
-**Observed checks at Phase 1 completion:** 27 PHPUnit tests passed (144 assertions), Vite build succeeded, Pint passed, and dependency audits reported no advisories at the time. See [Testing Strategy](TESTING_STRATEGY.md). This does not establish production readiness, CUT approval, SQL compatibility, or security/UAT acceptance.
+**Observed checks at Phase 1 completion (historical):** 27 PHPUnit tests passed (144 assertions), Vite build succeeded, Pint passed, and dependency audits reported no advisories at the time. The lockfile later accumulated advisories that were patched on 2026-11-19. See [Testing Strategy](TESTING_STRATEGY.md). This does not establish production readiness, CUT approval, SQL compatibility, or security/UAT acceptance.
 
 ## Phase 2 — Ticket intake and individual technician workflow (implemented locally)
 

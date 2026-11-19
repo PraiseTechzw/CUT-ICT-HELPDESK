@@ -4,7 +4,7 @@
 
 ## Current state (observed 2026-11-19)
 
-`composer audit --locked` reports **11 advisories affecting 7 packages**, including Symfony serializer/http-foundation/routing/http-kernel/mime issues and a low-severity Laravel framework advisory. `npm audit --audit-level=moderate` reports **0 vulnerabilities**. A read-only `composer update --dry-run --with-all-dependencies` shows patched versions are available (e.g. Symfony 7.4.23, Laravel 13.43.0). Older statements claiming "no advisories" in other docs are stale and must be corrected.
+On 2026-11-19 the audit found **11 advisories affecting 7 packages** (Symfony serializer/http-foundation/routing/http-kernel/mime and Laravel framework). A reviewed `composer update --with-all-dependencies` moved the lockfile to patched versions (Symfony 7.4.23, Laravel 13.43.0), and `composer audit --locked` now reports **no advisories**. `npm audit --audit-level=moderate` reports **0 vulnerabilities**. The advisory state is re-checked by CI on every pull request; if new advisories appear, this section must be updated with the date, affected packages and disposition.
 
 ## Update cadence
 

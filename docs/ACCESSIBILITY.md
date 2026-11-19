@@ -15,21 +15,21 @@ WCAG 2.2 Level AA is proposed as the conformance target, pending CUT ICT approva
 - Some tables use `scope="col"`.
 - Manual visual review recorded in [UI review](UI_REVIEW.md) — labelled a *review*, not an audit.
 
-## Known limitations (from the 2026-11-19 static audit)
+## Findings from the 2026-11-19 static audit — remediated
 
-| Area | Impact |
+All findings below were fixed in PR #40 and their issues closed:
+
+| Area | Fix |
 | --- | --- |
-| Skip-to-content link missing | Keyboard/screen-reader users traverse full navigation on every page (WCAG 2.4.1) |
-| Dark mode on summary/catalogue/notification views | Near-white text on white cards (WCAG 1.4.3) |
-| Theme applied after paint; toggle label starts wrong | Flash of incorrect theme; inaccurate accessible name (WCAG 1.4.3 / 4.1.2) |
-| Validation errors not programmatically tied to most fields | Screen readers cannot identify failed inputs (WCAG 3.3.1 / 1.3.1) |
-| Live search filters have no `aria-live` region | Result changes are silent (WCAG 4.1.3) |
-| Several tables missing `scope` and captions | Header association relies on heuristics (WCAG 1.3.1) |
-| Some images lack intrinsic dimensions | Layout shift (not a WCAG AA failure) |
-| "Forgot password?" is a non-focusable span | Link-like control is unreachable (WCAG 2.1.1) |
-| `lang="en"` hardcoded on authenticated pages | Wrong pronunciation if locale changes (WCAG 3.1.1) |
-
-These are tracked as individual issues in the Audit Remediation project, milestone *Audit — UI/UX & Accessibility*.
+| Skip-to-content link missing | Added a skip link and `id="main-content"` on both `<main>` elements (WCAG 2.4.1) |
+| Dark mode on summary/catalogue/notification views | Tailwind `dark:` variant now follows `body[data-theme]`; dark backgrounds/borders/text added (WCAG 1.4.3) |
+| Theme applied after paint; toggle label starts wrong | Inline pre-paint theme script, `color-scheme`, `theme-color` meta and a theme-agnostic initial label (WCAG 1.4.3 / 4.1.2) |
+| Validation errors not programmatically tied to most fields | `aria-invalid` / `aria-describedby` applied generically and first invalid control focused (WCAG 3.3.1) |
+| Live search filters have no `aria-live` region | Polite live region announces match counts (WCAG 4.1.3) |
+| Several tables missing `scope` and captions | Added `scope="col"` and screen-reader captions (WCAG 1.3.1) |
+| Images lack intrinsic dimensions | `width`/`height` added to all images |
+| "Forgot password?" is a non-focusable span | Replaced with a disabled button plus a visible explanation (WCAG 2.1.1) |
+| `lang="en"` hardcoded on authenticated pages | Now follows the application locale (WCAG 3.1.1) |
 
 ## Not yet verified
 

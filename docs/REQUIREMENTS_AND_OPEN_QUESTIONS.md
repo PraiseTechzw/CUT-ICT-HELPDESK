@@ -1,6 +1,6 @@
 # Requirements and Open Questions
 
-**Purpose:** Distinguish user-provided requirements, implemented facts, engineering proposals, and institutional decisions not yet verified. As of 2026-10-10, Phases 1–4 are implemented locally; Phase 3 metadata and Phase 4 reporting remain provisional designs, not CUT ICT approval.
+**Purpose:** Distinguish user-provided requirements, implemented facts, engineering proposals, and institutional decisions not yet verified. As of 2026-11-19, Phases 1–5 are implemented locally; Phase 3 metadata, Phase 4 reporting and Phase 5 notification/audit behavior remain provisional designs, not CUT ICT approval.
 
 ## Verified repository and sandbox facts
 
@@ -8,7 +8,7 @@
 - Laravel **13.35.0**, PHP **8.3.6**, Composer **2.7.1**, Node.js **22.13.0**, npm **10.9.2**, and Vite **8.3.4** were observed in the implementation sandbox.
 - Laravel Fortify provides login/logout. Blade, Tailwind CSS 4, Vite, Laravel Gates, Form Requests, and custom relational role/permission tables are used.
 - Local application database is SQLite. PHPUnit tests use SQLite `:memory:` after the test harness forces `APP_ENV=testing` before Laravel boots. No CUT database, MySQL/MariaDB service, hosting, SSO, mail service, or production environment was verified.
-- Latest full local run: **71 tests passed (536 assertions)**. Pint passed for 107 PHP files; Composer validation and Vite build succeeded. All 17 migrations ran on a fresh disposable SQLite database, which was removed. The latest dependency audits found no Composer advisories and zero npm vulnerabilities. See [Testing Strategy](TESTING_STRATEGY.md).
+- Latest full local run (2026-11-19): **85 tests passed (591 assertions)**, Pint clean for 133 PHP files, Vite build clean, all 22 migrations run on a disposable SQLite database, and both dependency audits clean **after** the lockfile update. See the [current verification record](TESTING_STRATEGY.md#current-verification-single-source-of-truth). Eleven Composer advisories were identified and patched during the 2026-11-19 audit; earlier statements of "no advisories" described an earlier lockfile.
 - Phase 1 commit `1878469`, Phase 2 commit `9e7ba09`, and Phase 3 commit `94e5b41` are on GitHub `main`. Phase 4 reporting remains local and uncommitted.
 
 ## User-provided requirements and approved implementation defaults
