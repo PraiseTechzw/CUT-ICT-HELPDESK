@@ -38,6 +38,10 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
 
+        // Feature tests render Blade layouts. Fake Vite so the suite is independent
+        // of a production asset build (and can run before `npm run build` in CI).
+        $this->withoutVite();
+
         if (! app()->environment('testing')) {
             throw new LogicException('Tests must run with APP_ENV=testing.');
         }
