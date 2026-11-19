@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\AccountController;
+use App\Http\Controllers\Admin\AdminPlaceholderController;
 use App\Http\Controllers\Admin\AuditEventController;
 use App\Http\Controllers\Admin\BuildingController;
 use App\Http\Controllers\Admin\CampusController;
 use App\Http\Controllers\Admin\DepartmentController;
-use App\Http\Controllers\Admin\AdminPlaceholderController;
 use App\Http\Controllers\Admin\EquipmentController;
 use App\Http\Controllers\Admin\OperationalZoneController;
 use App\Http\Controllers\Admin\RoleController;
@@ -17,7 +18,6 @@ use App\Http\Controllers\Admin\TechnicianDeploymentController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\UserGroupController;
 use App\Http\Controllers\Admin\UserRoleController;
-use App\Http\Controllers\AccountController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\TicketAnalyticsController;
