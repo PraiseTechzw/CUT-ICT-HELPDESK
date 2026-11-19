@@ -90,6 +90,7 @@
 
         <div class="ticket-table-wrap">
             <table class="ticket-data-table ticket-queue-table {{ $scope === 'all' ? 'ticket-all-table' : '' }} {{ $scope === 'mine' ? 'ticket-my-table' : '' }} {{ $scope === 'overdue' ? 'ticket-overdue-table' : '' }}">
+                <caption class="sr-only">Tickets in the {{ $scope }} queue</caption>
                 <thead><tr>
                     @if ($scope === 'all')
                         <th scope="col">#</th><th scope="col">Ticket ID</th><th scope="col">Category</th><th scope="col">Priority</th><th scope="col">Status</th><th scope="col">Created</th><th scope="col">Actions</th>

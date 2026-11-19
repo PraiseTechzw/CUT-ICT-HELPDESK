@@ -1,6 +1,7 @@
 import {
 	Activity,
 	AlarmClock,
+	ArrowRight,
 	Archive,
 	ArrowLeft,
 	Bell,
@@ -21,6 +22,7 @@ import {
 	Eye,
 	EyeOff,
 	Headset,
+	LockKeyhole,
 	LayoutDashboard,
 	List,
 	ListFilter,
@@ -32,8 +34,6 @@ import {
 	Network,
 	Package,
 	Paperclip,
-		LockKeyhole,
-		KeyRound,
 	Pencil,
 	Plus,
 	RefreshCw,
@@ -44,6 +44,7 @@ import {
 	Settings,
 	Sun,
 	Ticket,
+	TicketCheck,
 	TicketPlus,
 	Tickets,
 	Tags,
@@ -60,6 +61,7 @@ const lucideIcons = {
 	'alarm-clock': AlarmClock,
 	archive: Archive,
 	'arrow-left': ArrowLeft,
+	'arrow-right': ArrowRight,
 	bell: Bell,
 	'book-open': BookOpen,
 	'building-2': Building2,
@@ -78,6 +80,7 @@ const lucideIcons = {
 	eye: Eye,
 	'eye-off': EyeOff,
 	headset: Headset,
+	'lock-keyhole': LockKeyhole,
 	'layout-dashboard': LayoutDashboard,
 	list: List,
 	'list-filter': ListFilter,
@@ -99,6 +102,7 @@ const lucideIcons = {
 	settings: Settings,
 	sun: Sun,
 	ticket: Ticket,
+	'ticket-check': TicketCheck,
 	'ticket-plus': TicketPlus,
 	tickets: Tickets,
 	tags: Tags,
@@ -140,6 +144,20 @@ document.querySelectorAll('.ticket-overdue-filters select').forEach((filter) => 
 	filter.addEventListener('change', () => filter.form?.requestSubmit());
 });
 
+// A single polite live region announces filter results to assistive technology.
+function announce(message) {
+	let region = document.querySelector('#helpdesk-live-status');
+	if (!region) {
+		region = document.createElement('div');
+		region.id = 'helpdesk-live-status';
+		region.className = 'sr-only';
+		region.setAttribute('aria-live', 'polite');
+		region.setAttribute('aria-atomic', 'true');
+		document.body.appendChild(region);
+	}
+	region.textContent = message;
+}
+
 const technicianSearch = document.querySelector('[data-technician-search]');
 const technicianOptions = [...document.querySelectorAll('.ticket-technician-option[data-technician-name]')];
 const technicianNoResults = document.querySelector('[data-technician-no-results]');
@@ -155,6 +173,9 @@ technicianSearch?.addEventListener('input', () => {
 	}
 
 	if (technicianNoResults) technicianNoResults.hidden = visibleCount > 0;
+	announce(visibleCount === 0
+		? 'No technicians match this search.'
+		: `${visibleCount} technician${visibleCount === 1 ? '' : 's'} match this search.`);
 });
 
 const roleTabs = [...document.querySelectorAll('[data-role-tab]')];
@@ -193,6 +214,9 @@ document.querySelectorAll('.user-group-member-search input').forEach((search) =>
 			if (matches) visibleCount++;
 		}
 		if (emptyMessage) emptyMessage.hidden = visibleCount > 0;
+		announce(visibleCount === 0
+			? 'No members match this search.'
+			: `${visibleCount} member${visibleCount === 1 ? '' : 's'} match this search.`);
 	});
 });
 
@@ -282,6 +306,23 @@ isMobileNavigation.addEventListener('change', () => {
 });
 
 updateSidebarToggle();
+
+// Programmatically associate server-side validation messages with their inputs.
+// Blade renders error paragraphs with ids like "email-error"; wire them back to
+// the matching control so screen readers announce the failure on focus.
+const validationErrors = [...document.querySelectorAll('[id$="-error"][role="alert"]')];
+let firstInvalidControl = null;
+for (const error of validationErrors) {
+	const field = error.id.slice(0, -'-error'.length);
+	const control = document.getElementById(field)
+		?? document.querySelector(`[name="${field}"]`);
+	if (!control) continue;
+	control.setAttribute('aria-invalid', 'true');
+	const describedBy = control.getAttribute('aria-describedby');
+	control.setAttribute('aria-describedby', describedBy ? `${describedBy} ${error.id}` : error.id);
+	if (!firstInvalidControl) firstInvalidControl = control;
+}
+firstInvalidControl?.focus();
 
 sidebarClose?.addEventListener('click', closeSidebar);
 

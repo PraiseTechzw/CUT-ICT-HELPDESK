@@ -1,13 +1,30 @@
 <!doctype html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#ffffff">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Helpdesk') · {{ config('app.name', 'CUT ICT Helpdesk') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="helpdesk-body">
+<script>
+    // Apply the saved theme before any body content paints to avoid a flash and
+    // keep native controls (date pickers, scrollbars) in the same colour scheme.
+    (function () {
+        try {
+            var dark = localStorage.getItem('helpdesk-theme') === 'dark';
+            document.body.dataset.theme = dark ? 'dark' : 'light';
+            document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
+            document.querySelector('meta[name="theme-color"]')
+                .setAttribute('content', dark ? '#111c2b' : '#ffffff');
+        } catch (error) {
+            document.body.dataset.theme = 'light';
+        }
+    })();
+</script>
+<a class="skip-link" href="#main-content">Skip to main content</a>
 @auth
     @php
         $user = auth()->user();
@@ -16,7 +33,7 @@
     @endphp
     <header class="workspace-header">
         <a class="workspace-brand" href="{{ route('dashboard') }}" aria-label="Chinhoyi University of Technology Helpdesk home">
-            <img src="{{ asset('logo.png') }}" alt="Chinhoyi University of Technology: Technology, Innovation, Wealth">
+            <img src="{{ asset('logo.png') }}" width="2172" height="724" alt="Chinhoyi University of Technology: Technology, Innovation, Wealth">
         </a>
         <button class="sidebar-toggle" type="button" data-sidebar-toggle aria-controls="helpdesk-sidebar" aria-expanded="false" aria-label="Open navigation">
             <svg data-lucide="menu" aria-hidden="true"></svg>
@@ -39,7 +56,7 @@
                 <svg data-lucide="bell" aria-hidden="true"></svg>
                 @if ($unreadNotificationCount > 0)<span class="header-notification-dot"></span>@endif
             </a>
-            <button class="header-icon-button theme-toggle" type="button" data-theme-toggle aria-label="Switch to dark appearance" title="Switch appearance">
+            <button class="header-icon-button theme-toggle" type="button" data-theme-toggle aria-label="Switch appearance" title="Switch appearance">
                 <svg class="theme-sun" data-lucide="sun" aria-hidden="true"></svg>
                 <svg class="theme-moon" data-lucide="moon" aria-hidden="true"></svg>
             </button>
@@ -174,14 +191,14 @@
             </nav>
 
             <div class="sidebar-footer">
-                <img class="sidebar-campus-art" src="{{ asset('sidebar-vector.png') }}" alt="" aria-hidden="true">
+                <img class="sidebar-campus-art" src="{{ asset('sidebar-vector.png') }}" width="2172" height="724" alt="" aria-hidden="true">
                 <div class="sidebar-caption">Chinhoyi University of Technology<br>ICT Helpdesk System</div>
                 <div class="sidebar-version">v1.0.0</div>
             </div>
         </aside>
 
         <div class="helpdesk-content">
-            <main class="workspace-main">
+            <main class="workspace-main" id="main-content" tabindex="-1">
                 @if (session('status'))
                     <div role="status" class="mb-6 rounded-md border border-green-300 bg-green-50 px-4 py-3 text-sm text-green-900">{{ session('status') }}</div>
                 @endif
@@ -191,9 +208,9 @@
     </div>
 @else
     <header class="guest-header">
-        <a class="guest-brand" href="{{ route('login') }}"><img src="{{ asset('logo.png') }}" alt="Chinhoyi University of Technology"></a>
+        <a class="guest-brand" href="{{ route('login') }}"><img src="{{ asset('logo.png') }}" width="2172" height="724" alt="Chinhoyi University of Technology"></a>
     </header>
-    <main class="guest-main">
+    <main class="guest-main" id="main-content" tabindex="-1">
         @if (session('status'))
             <div role="status" class="mb-6 rounded-md border border-green-300 bg-green-50 px-4 py-3 text-sm text-green-900">{{ session('status') }}</div>
         @endif

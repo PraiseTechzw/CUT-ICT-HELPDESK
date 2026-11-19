@@ -8,7 +8,7 @@
         <div class="auth-intro-backdrop" aria-hidden="true"></div>
         <div class="auth-intro-content">
             <div class="auth-brand-lockup">
-                <img src="{{ asset('logo.png') }}" alt="Chinhoyi University of Technology">
+                <img src="{{ asset('logo.png') }}" width="2172" height="724" alt="Chinhoyi University of Technology">
             </div>
 
             <p class="auth-kicker"><span aria-hidden="true"></span>CUT ICT HELPDESK</p>
@@ -91,7 +91,10 @@
 
                 <div class="auth-form-options">
                     <label class="auth-remember"><input type="checkbox" name="remember" value="1"> <span>Remember me</span></label>
-                    <span class="auth-forgot" aria-disabled="true" title="Password reset is not enabled">Forgot password?</span>
+                    <span class="auth-forgot-group">
+                        <button type="button" class="auth-forgot" disabled title="Password reset is not enabled">Forgot password?</button>
+                        <small class="auth-forgot-hint">Reset is not enabled yet</small>
+                    </span>
                 </div>
 
                 <button type="submit" class="auth-submit">
