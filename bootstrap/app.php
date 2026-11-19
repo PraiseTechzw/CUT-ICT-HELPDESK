@@ -13,7 +13,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->trustProxies(at: '*');
+        // Never trust every client as a proxy: forged X-Forwarded-* headers would
+        // otherwise let an attacker rotate the login throttle key and poison URLs.
+        $trustedProxies = array_values(array_filter(
+            array_map('trim', explode(',', (string) env('TRUSTED_PROXIES', ''))),
+        ));
+        $middleware->trustProxies(at: $trustedProxies);
         $middleware->alias([
             'account.active' => EnsureAccountIsActive::class,
         ]);

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Support\Permissions;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -106,6 +108,16 @@ class AdminPlaceholderController extends Controller
             in_array($page, ['system-settings', 'email-templates'], true) => 'settings',
             default => 'assets',
         };
+
+        // Placeholder portals are setup-ready administration surfaces. They contain
+        // no records today, but must still enforce the intended authorization
+        // boundary before real data is connected. Knowledge placeholders are
+        // intentionally general information and remain available to all accounts.
+        if ($group !== 'knowledge') {
+            Gate::authorize($group === 'reports'
+                ? Permissions::TICKETS_VIEW_ALL
+                : Permissions::USERS_VIEW);
+        }
 
         $columns = match ($group) {
             'reports' => ['Report', 'Coverage', 'Last refreshed', 'Status', 'Action'],

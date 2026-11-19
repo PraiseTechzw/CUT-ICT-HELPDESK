@@ -126,4 +126,25 @@ class AuthFeatureTest extends TestCase
             'password' => 'wrong password',
         ])->assertStatus(429);
     }
+
+    public function test_spoofed_forwarded_for_header_cannot_bypass_login_throttle(): void
+    {
+        // The application trusts only explicitly configured proxies. With no
+        // trusted proxies in the test environment, rotating X-Forwarded-For
+        // must not create a fresh rate-limit bucket.
+        for ($attempt = 1; $attempt <= 5; $attempt++) {
+            $this->from('/login')
+                ->withHeader('X-Forwarded-For', '198.51.100.'.$attempt)
+                ->post('/login', [
+                    'email' => 'spoof-throttle@example.test',
+                    'password' => 'wrong password',
+                ])->assertRedirect('/login');
+        }
+
+        $this->withHeader('X-Forwarded-For', '203.0.113.99')
+            ->post('/login', [
+                'email' => 'spoof-throttle@example.test',
+                'password' => 'wrong password',
+            ])->assertStatus(429);
+    }
 }
