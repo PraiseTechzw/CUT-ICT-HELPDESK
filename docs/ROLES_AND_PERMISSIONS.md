@@ -1,6 +1,6 @@
 # Roles and Permissions
 
-**Status:** Phases 1–4 authorization behavior is implemented and tested. System Administrators receive all currently defined permissions, including ticket operations and reports. `teams.manage` is a provisional administration grant. Role labels and grants are not confirmed CUT job titles or institutional policy.
+**Status:** Phases 1–5 authorization behavior is implemented and tested. System Administrators receive all currently defined permissions, including ticket operations and reports. `teams.manage` is a provisional administration grant. Role labels and grants are not confirmed CUT job titles or institutional policy.
 
 ## Centralized role catalogue
 

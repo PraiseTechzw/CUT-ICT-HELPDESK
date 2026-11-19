@@ -11,7 +11,7 @@
 
 ## Implemented coverage
 
-The latest full run reported **71 tests passed (536 assertions)**, covering:
+The latest full run reported **85 tests passed (591 assertions)** on 2026-11-19, covering:
 
 - Login page, valid/invalid credentials, inactive login/session denial, session ID rotation, logout invalidation/CSRF regeneration, guest-route protection, and rate limiting.
 - Requester denial for account/location administration; account creation, normalized email, least-privilege role, password hashing, audit metadata, protected-field mass-assignment resistance, role assignment/revocation, self-change denial, deactivation/reactivation, last-admin safeguards, account search, and bootstrap command.
@@ -32,16 +32,27 @@ The latest full run reported **71 tests passed (536 assertions)**, covering:
 - Reports are denied to Requesters and Technicians; Helpdesk Officers and System Administrators receive only aggregate date-range counts. Tests cover inclusive date boundaries, current-status/category/priority groupings, no ticket/requester text, empty reports, paired and ordered dates, 366-day limits, and malformed query values.
 - Guest root redirection and the framework health endpoint.
 
-## Actual checks performed
+## Current verification (single source of truth)
 
-- `composer test` — **71 passed, 536 assertions**; test database is in-memory SQLite.
-- `npm run build` — passed; Vite production assets generated.
-- `composer audit --locked` — no security vulnerability advisories found; `npm audit --audit-level=moderate` — zero vulnerabilities found in the latest locked dependency audit.
-- `./vendor/bin/pint --test` — passed for 113 PHP files; `composer validate --no-check-publish` passed.
-- `npm run build` — passed; Vite production assets generated.
-- Fresh-migration check: all 18 migrations ran and showed `Ran` on a new disposable SQLite database; the temporary database file was removed after verification. This is not MySQL/MariaDB or production migration verification.
+This block is the canonical record of the latest verification run. Other documents link here instead of restating counts.
 
-Commands/results describe this sandbox verification only. Do not infer that security review, MySQL/MariaDB migrations, CI, deployment, institutional UAT, or production readiness have been completed.
+**Run date:** 2026-11-19 · **Branch:** `main` after audit remediation PRs #37–#40
+
+| Check | Result |
+| --- | --- |
+| `composer test` | **85 passed, 591 assertions** (in-memory SQLite) |
+| `./vendor/bin/pint --test` | Passed for **133 PHP files** |
+| `npm run build` | Passed; Vite assets generated with no unresolved-asset warnings |
+| `composer audit --locked` | No security vulnerability advisories (was 11 before the lockfile update) |
+| `npm audit --audit-level=moderate` | 0 vulnerabilities |
+| `composer validate --no-check-publish` | Passed |
+| Fresh migration check | All **22 migrations** ran on a new disposable SQLite database; the file was removed afterward |
+| `git diff --check` | Passed |
+| CI | `.github/workflows/ci.yml` enforces all of the above on every PR and push to `main` |
+
+Historical per-phase counts in the [Feature roadmap](FEATURE_ROADMAP.md) are deliberately preserved as history and are not current figures.
+
+Commands/results describe local verification only. Do not infer that independent security review, MySQL/MariaDB migrations, deployment, institutional UAT, or production readiness have been completed.
 
 ## Required later-phase tests
 

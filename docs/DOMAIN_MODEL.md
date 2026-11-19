@@ -1,6 +1,6 @@
 # Implemented and Deferred Domain Model
 
-**Status:** Phases 1–4 are implemented and tested with SQLite. Phase 3 team/membership/deployment semantics and Phase 4 report definitions/audience are provisional implementation choices, not CUT policy. Role names/grants, institutional privacy rules, ticket catalogue values, location ownership, reporting timezone, and production database behavior still require CUT ICT review.
+**Status:** Phases 1–5 are implemented and tested with SQLite. Phase 3 team/membership/deployment semantics, Phase 4 report definitions/audience and Phase 5 notification/audit behavior are provisional implementation choices, not CUT policy. Several schema objects (attachments, ticket `due_at`, `room_id`, notifications, user groups) exist in migrations but are not all user-facing; see the [Database schema reference](DATABASE_SCHEMA.md). Role names/grants, institutional privacy rules, ticket catalogue values, location ownership, reporting timezone, and production database behavior still require CUT ICT review.
 
 ## Implemented entities
 

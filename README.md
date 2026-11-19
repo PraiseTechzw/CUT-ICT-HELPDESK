@@ -7,8 +7,8 @@
 [![Laravel](https://img.shields.io/badge/Laravel-13-FF2D20?logo=laravel&logoColor=white)](https://laravel.com/)
 [![PHP](https://img.shields.io/badge/PHP-8.3%2B-777BB4?logo=php&logoColor=white)](https://www.php.net/)
 [![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)](https://vite.dev/)
-[![Tests](https://img.shields.io/badge/tests-71%20passing-2ea44f?logo=github)](#quality-gates)
-[![Assertions](https://img.shields.io/badge/assertions-536-2ea44f)](#quality-gates)
+[![CI](https://github.com/PraiseTechzw/CUT-ICT-HELPDESK/actions/workflows/ci.yml/badge.svg)](https://github.com/PraiseTechzw/CUT-ICT-HELPDESK/actions/workflows/ci.yml)
+[![Verification](https://img.shields.io/badge/verification-latest%20run-2ea44f)](docs/TESTING_STRATEGY.md)
 [![Status](https://img.shields.io/badge/status-prototype%20for%20CUT%20review-f2cc60)](#project-boundary)
 
 <p align="center">
@@ -98,14 +98,9 @@ composer audit --locked
 npm audit --audit-level=moderate
 ```
 
-Latest UI-review run:
+The [current verification record](docs/TESTING_STRATEGY.md) is maintained in one place; CI re-runs these gates on every pull request and reports the result via the badge above. The latest run passed (85 tests / 591 assertions) with a clean Vite build, clean Pint check and no dependency advisories.
 
-- **71 tests passed**
-- **536 assertions passed**
-- Blade templates cached successfully
-- Vite production build completed successfully
-- `git diff --check` passed
-- Authenticated browser review completed across dashboard, tickets, forms, locations, teams, assets, knowledge base, reports, settings, and audit
+An authenticated browser review was previously completed across dashboard, tickets, forms, locations, teams, assets, knowledge base, reports, settings, and audit. See [UI review evidence](docs/UI_REVIEW.md).
 
 ## Documentation map
 
